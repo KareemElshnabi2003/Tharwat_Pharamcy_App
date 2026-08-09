@@ -1,0 +1,69 @@
+name: tharwat_pharmacy
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+ 
+
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  image_picker:
+  cached_network_image:
+  path:
+  url_launcher: ^6.3.0
+  get:
+  google_fonts:
+  flutter_otp_text_field:
+  intl:
+  jiffy:
+  device_preview:
+  http:
+  jwt_decoder:
+  flutter_offline: ^3.0.1
+  shared_preferences:
+  dartz:
+  dotted_border: 
+  screen_go: ^1.1.7
+  carousel_slider: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
+  flutter_svg:
+  flutter_image_compress: ^2.4.0
+  mobile_scanner:
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "lib/Images/logo_2.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "lib/Images/logo_2.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "lib/Images/logo_2.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "lib/Images/logo_2.png" 
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - lib/Images/
+
+  

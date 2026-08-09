@@ -1,0 +1,30 @@
+class AppImages {
+  static String logo_1 = "lib/Images/logo_1.png";
+  static String logo_2 = "lib/Images/logo_2.png";
+  static String onBoard_1 = "lib/Images/onBoard_1.png";
+  static String onBoard_2 = "lib/Images/onBoard_2.png";
+  static String onBoard_3 = "lib/Images/onBoard_3.png";
+  static String faceBookImage = "lib/Images/faceBookImage.png";
+  static String googleImage = "lib/Images/googleImage.png";
+  static String succsessImage = "lib/Images/succses.png";
+  static String watsAppImage = "lib/Images/wats_app.png";
+  static String otpImage = "lib/Images/otp.png";
+  static String resetPassImage = "lib/Images/resetPass.png";
+  static String specialImage = "lib/Images/special.png";
+  static String categoryImage = "lib/Images/category.png";
+  static String productImage = "lib/Images/item.png";
+  static String noNotifyImage = "lib/Images/nonotify.png";
+  static String medicineImage = "lib/Images/medicine.png";
+  static String noResultSearchImage = "lib/Images/noResultSearch.png";
+  static String noFavImage = "lib/Images/noFav.png";
+  static String watsappImage = "lib/Images/watsapp.png";
+  static String instaImage = "lib/Images/instegram.png";
+  static String twitterImage = "lib/Images/twitter.png";
+  static String instapayImage = "lib/Images/instapay.png";
+  static String vodafoneImage = "lib/Images/vodafone.png";
+  static String cardImage = "lib/Images/card.png";
+  static String cashImage = "lib/Images/cash.png";
+  static String doneImage = "lib/Images/done.png";
+  static String trafficImage = "lib/Images/traffic.png";
+  static String noImage = "lib/Images/noImage.png";
+}

@@ -1,0 +1,223 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tharwat_pharmacy/Core/Class/api.dart';
+import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
+import 'package:tharwat_pharmacy/Data/Data%20Source/Home/favourite_source.dart';
+import 'package:tharwat_pharmacy/Data/Model/Categories/product_model.dart';
+import 'package:tharwat_pharmacy/View/Screeens/Auth/login_page.dart';
+import 'package:tharwat_pharmacy/View/Widget/PublicWidget/message_error.dart';
+import 'package:tharwat_pharmacy/main.dart';
+
+class FavouriteController extends GetxController {
+  StatuesRequest statuesRequest = StatuesRequest.none;
+  FavouriteRemoteData favouriteRemoteData = FavouriteRemoteData(Get.put(Api()));
+
+  List<ProductModel> favItems = [];
+  List favProductsId = [];
+
+  bool choose_1 = true;
+  bool choose_2 = false;
+
+  // Pagination variables
+  int currentPage = 1;
+  bool hasMoreData = true;
+  bool isLoadingMore = false;
+
+  ScrollController scrollController = ScrollController();
+
+  @override
+  void onInit() {
+    super.onInit();
+    scrollController.addListener(_scrollListener);
+    getFavItems();
+  }
+
+  @override
+  void onClose() {
+    scrollController.removeListener(_scrollListener);
+    scrollController.dispose();
+    super.onClose();
+  }
+
+  void _scrollListener() {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 200) {
+      if (!isLoadingMore &&
+          hasMoreData &&
+          statuesRequest == StatuesRequest.success) {
+        loadMoreFavItems();
+      }
+    }
+  }
+
+  void resetPagination() {
+    currentPage = 1;
+    hasMoreData = true;
+    favItems.clear();
+  }
+
+  favProducts(id) {
+    print(id);
+    favProductsId.add(id);
+    addItemToFav(id);
+    update();
+  }
+
+  notFavProducts(id) {
+    print(id);
+    favProductsId.remove(id);
+    removeItemFromFav(id);
+    update();
+  }
+
+  change_1() {
+    choose_1 = true;
+    choose_2 = false;
+    update();
+  }
+
+  change_2() {
+    choose_1 = false;
+    choose_2 = true;
+    update();
+  }
+
+  // Initial load
+  Future<List<ProductModel>> getFavItems() async {
+    if (currentPage == 1) {
+      favItems.clear();
+      statuesRequest = StatuesRequest.loading;
+      update();
+    }
+
+    var response = await favouriteRemoteData.getFavProducts(
+      token: sharedPreferences!.getString("token"),
+      page: currentPage,
+    );
+
+    print("response ??? $response");
+    statuesRequest = handlingData(response);
+
+    if (statuesRequest == StatuesRequest.success) {
+      Map<String, dynamic> responseBody = response;
+      print("response :: $responseBody");
+
+      List<ProductModel> newItems = (responseBody['data'] as List)
+          .map((item) => ProductModel.fromJson(item))
+          .toList();
+
+      if (currentPage == 1) {
+        favItems = newItems;
+      } else {
+        favItems.addAll(newItems);
+      }
+
+      // Check if there's more data (assuming less than 20 items means no more data)
+      if (newItems.isEmpty || newItems.length < 20) {
+        hasMoreData = false;
+      }
+    } else if (statuesRequest == StatuesRequest.unauthorizedException) {
+      messageErrorWithButton("Error", "You need to login ", () {
+        Get.offAll(() => const LoginPage());
+      }, "LogIn");
+    } else if (statuesRequest == StatuesRequest.socketException) {
+      messageError("Error", "please, check your internet");
+    } else {
+      messageError("Error", "There is a problem. Please, try again later");
+    }
+
+    return favItems;
+  }
+
+  // Load more for pagination
+  Future<void> loadMoreFavItems() async {
+    if (isLoadingMore || !hasMoreData) return;
+
+    isLoadingMore = true;
+    update();
+
+    currentPage++;
+
+    var response = await favouriteRemoteData.getFavProducts(
+      token: sharedPreferences!.getString("token"),
+      page: currentPage,
+    );
+
+    print("Load more response ??? $response");
+    StatuesRequest loadMoreStatus = handlingData(response);
+
+    if (loadMoreStatus == StatuesRequest.success) {
+      Map<String, dynamic> responseBody = response;
+
+      List<ProductModel> newItems = (responseBody['data'] as List)
+          .map((item) => ProductModel.fromJson(item))
+          .toList();
+
+      favItems.addAll(newItems);
+
+      // Check if there's more data
+      if (newItems.isEmpty || newItems.length < 20) {
+        hasMoreData = false;
+      }
+    } else if (loadMoreStatus == StatuesRequest.socketException) {
+      messageError("Error", "please, check your internet");
+      currentPage--; // Rollback page number
+    } else {
+      currentPage--; // Rollback page number
+    }
+
+    isLoadingMore = false;
+    update();
+  }
+
+  addItemToFav(itemId) async {
+    var response = await favouriteRemoteData.addToFav(
+        id: itemId, token: sharedPreferences!.getString("token"));
+    print("response ??? $response");
+    statuesRequest = handlingData(response);
+
+    if (statuesRequest == StatuesRequest.success) {
+      final responseBody = response;
+      print("response :: $responseBody");
+    } else if (statuesRequest == StatuesRequest.serverException) {
+      print("error add");
+      favProductsId.remove(itemId);
+      update();
+    } else if (statuesRequest == StatuesRequest.socketException) {
+      messageError("Error", "please, check your internet");
+    } else {
+      messageError("Error", "There is a problem. Please, try again later");
+    }
+    update();
+  }
+
+  removeItemFromFav(itemId) async {
+    var response = await favouriteRemoteData.removeFromFav(
+        id: itemId, token: sharedPreferences!.getString("token"));
+    print("response ??? $response");
+    statuesRequest = handlingData(response);
+
+    if (statuesRequest == StatuesRequest.success) {
+      final responseBody = response;
+      print("response :: $responseBody");
+      // Remove from local list
+      favItems.removeWhere((item) => item.id.toString() == itemId);
+    } else if (statuesRequest == StatuesRequest.serverException) {
+      print("error remove");
+      favProductsId.add(itemId);
+      update();
+    } else if (statuesRequest == StatuesRequest.socketException) {
+      messageError("Error", "please, check your internet");
+    } else {
+      messageError("Error", "There is a problem. Please, try again later");
+    }
+    update();
+  }
+
+  // Refresh functionality
+  Future<void> refreshFavItems() async {
+    resetPagination();
+    await getFavItems();
+  }
+}
