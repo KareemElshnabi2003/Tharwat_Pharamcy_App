@@ -59,7 +59,7 @@ class HomeDelivery extends StatelessWidget {
                     22.w,
                     controller.currentIndex == 0
                         ? LightMode.whiteColor
-                        : LightMode.whiteColor.withOpacity(.5),
+                        : LightMode.whiteColor.withValues(alpha: .5),
                     controller.choose_1),
                 itemNavigationBar("Active", () {
                   controller.change_2();
@@ -71,7 +71,7 @@ class HomeDelivery extends StatelessWidget {
                     22.w,
                     controller.currentIndex == 1
                         ? LightMode.whiteColor
-                        : LightMode.whiteColor.withOpacity(.5),
+                        : LightMode.whiteColor.withValues(alpha: .5),
                     controller.choose_2),
                 itemNavigationBar("Completed", () {
                   controller.change_3();
@@ -83,7 +83,7 @@ class HomeDelivery extends StatelessWidget {
                     22.w,
                     controller.currentIndex == 2
                         ? LightMode.whiteColor
-                        : LightMode.whiteColor.withOpacity(.5),
+                        : LightMode.whiteColor.withValues(alpha: .5),
                     controller.choose_3),
               ],
             ),

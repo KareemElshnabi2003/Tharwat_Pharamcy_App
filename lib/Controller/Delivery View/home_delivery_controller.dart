@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/View/DeliveryView/completed_orders_delivery.dart';
-import 'package:tharwat_pharmacy/View/DeliveryView/map_delivery.dart';
 import 'package:tharwat_pharmacy/View/DeliveryView/my_orders_delivery.dart';
 import 'package:tharwat_pharmacy/View/DeliveryView/orders_delivery.dart';
 

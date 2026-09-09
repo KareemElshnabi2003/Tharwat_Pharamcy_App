@@ -56,10 +56,12 @@ class AppApi {
   static const String cancelOrderUrl = "$baseUrl/cancel-order";
 
 //orders delivery
-static const String getCompleteOrderDeliveryUrl = "$baseUrl/get-delivery-orders";
+  static const String getCompleteOrderDeliveryUrl =
+      "$baseUrl/get-delivery-orders";
   static const String acceptOrderDeliveryUrl = "$baseUrl/accept-order";
   static const String getMyOrderDeliveryUrl = "$baseUrl/get-delivery-orders";
-  static const String getPendingOrderDeliveryUrl = "$baseUrl/get-orders-for-delivery";
+  static const String getPendingOrderDeliveryUrl =
+      "$baseUrl/get-orders-for-delivery";
   static const String updateOrderDeliveryUrl = "$baseUrl/orders";
 //payment
   static const String checkPaymentUrl = "$baseUrl/check-payment-status";

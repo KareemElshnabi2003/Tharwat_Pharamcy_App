@@ -32,17 +32,13 @@ class MostOrders extends StatelessWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) => messageErrorWithButton("Warning", "Close app?", () => exit(0), "Close"),
-      child: Scaffold(
-        backgroundColor: ThemeService.backgroundColor,
-        body: GetBuilder<MostOrdersController>(
-          builder: (controller) => Column(
-            children: [
-              AppBarWidget(
-                onPressBack: () {
+      onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
                   homeController.goToHome(0, {});
                   homeController.change_1();
-                },
+                });
+        },
                 onPressNotify: () => Get.to(() => const NotificatioPage()),
                 title: "Most Orders",
               ),
@@ -62,7 +58,9 @@ class MostOrders extends StatelessWidget {
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: controller.refreshProducts,
-                  child: controller.isSearch ? _buildList(controller.searchList, controller) : _buildList(controller.mostOrderProducts, controller),
+                  child: controller.isSearch
+                      ? _buildList(controller.searchList, controller)
+                      : _buildList(controller.mostOrderProducts, controller),
                 ),
               ),
             ],
@@ -73,21 +71,39 @@ class MostOrders extends StatelessWidget {
   }
 
   Widget _buildList(List list, MostOrdersController controller) {
-    if (controller.statuesRequest == StatuesRequest.loading && list.isEmpty) return LoadingWidget(height: 60.h);
-    if (list.isEmpty) return SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), child: SizedBox(height: 60.h, child: const Center(child: NoDataWidget(text: "No Items."))));
+    if (controller.statuesRequest == StatuesRequest.loading && list.isEmpty)
+      return LoadingWidget(height: 60.h);
+    if (list.isEmpty)
+      return SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+              height: 60.h,
+              child: const Center(child: NoDataWidget(text: "No Items."))));
 
     return GridView.builder(
       controller: controller.scrollController,
       padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: .7, crossAxisSpacing: 4.w, mainAxisSpacing: 4.w),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: .7,
+          crossAxisSpacing: 4.w,
+          mainAxisSpacing: 4.w),
       itemCount: list.length,
       itemBuilder: (context, index) => GetBuilder<FavouriteController>(
         builder: (fav) => ProductWidget(
           body: list[index].itmNameEn ?? "",
-          decorationImage: list[index].primaryImage == null ? AssetImage(AppImages.noImage) : CachedNetworkImageProvider("${AppApi.imgUrl}/${list[index].primaryImage}"),
+          decorationImage: list[index].primaryImage == null
+              ? AssetImage(AppImages.noImage)
+              : CachedNetworkImageProvider(
+                  "${AppApi.imgUrl}/${list[index].primaryImage}"),
           fav: fav.favProductsId.contains(list[index].id),
-          onPressFav: () => fav.favProductsId.contains(list[index].id) ? fav.notFavProducts(list[index].id) : fav.favProducts(list[index].id),
-          onPressShop: () => Get.to(() => const ProductInfo(), arguments: {"id": list[index].id.toString(), "product": list[index]}),
+          onPressFav: () => fav.favProductsId.contains(list[index].id)
+              ? fav.notFavProducts(list[index].id)
+              : fav.favProducts(list[index].id),
+          onPressShop: () => Get.to(() => const ProductInfo(), arguments: {
+            "id": list[index].id.toString(),
+            "product": list[index]
+          }),
           price: list[index].itmSellPrice ?? "0",
           title: list[index].itmNameEn ?? "",
         ),

@@ -31,14 +31,19 @@ void showDialogGovernate({
               padding: EdgeInsets.only(right: 5.w),
               alignment: Alignment.centerRight,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(2.w), topRight: Radius.circular(2.w)),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(2.w),
+                    topRight: Radius.circular(2.w)),
                 color: LightMode.whiteColor,
               ),
               width: 80.w,
               height: 8.h,
               child: Text(
                 title,
-                style: GoogleFonts.poppins(fontSize: 5.w, color: LightMode.mainColor, fontWeight: FontWeight.w500),
+                style: GoogleFonts.poppins(
+                    fontSize: 5.w,
+                    color: LightMode.mainColor,
+                    fontWeight: FontWeight.w500),
               ),
             ),
             SizedBox(
@@ -48,26 +53,36 @@ void showDialogGovernate({
                   padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   itemBuilder: (context, index) => InkWell(
-                    onTap: () async {
-                      String selectedId = valueCountry![index].id.toString();
-                      String selectedName = valueCountry[index].name!;
+                        onTap: () async {
+                          String selectedId =
+                              valueCountry![index].id.toString();
+                          String selectedName = valueCountry[index].name!;
 
-                      onSelect(selectedId, selectedName); // إرجاع القيمة للكنترولر
-                      await getNextLocation;
+                          onSelect(selectedId,
+                              selectedName); // إرجاع القيمة للكنترولر
+                          await getNextLocation;
 
-                      Get.back();
-                      Get.appUpdate();
-                    },
-                    child: Container(
-                      padding: EdgeInsets.only(top: 3.w, right: 5.w, left: 5.w),
-                      height: 6.h,
-                      width: 80.w,
-                      child: Text(
-                        type == "city" ? valueCity![index].name! : type == "country" ? valueCountry![index].name! : valueDistrict![index].name!,
-                        style: GoogleFonts.tajawal(fontSize: 4.w, color: LightMode.mainColor, fontWeight: FontWeight.w500),
+                          Get.back();
+                          Get.appUpdate();
+                        },
+                        child: Container(
+                          padding:
+                              EdgeInsets.only(top: 3.w, right: 5.w, left: 5.w),
+                          height: 6.h,
+                          width: 80.w,
+                          child: Text(
+                            type == "city"
+                                ? valueCity![index].name!
+                                : type == "country"
+                                    ? valueCountry![index].name!
+                                    : valueDistrict![index].name!,
+                            style: GoogleFonts.tajawal(
+                                fontSize: 4.w,
+                                color: LightMode.mainColor,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
                   separatorBuilder: (context, index) => const Divider(),
                   itemCount: count),
             ),

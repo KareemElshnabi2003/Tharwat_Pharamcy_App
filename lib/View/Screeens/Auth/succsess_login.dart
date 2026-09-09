@@ -40,14 +40,21 @@ class _SuccsessLoginState extends State<SuccsessLogin> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(AppImages.succsessImage, width: 25.w, height: 25.w, fit: BoxFit.fill),
+            Image.asset(AppImages.succsessImage,
+                width: 25.w, height: 25.w, fit: BoxFit.fill),
             SizedBox(height: 5.w),
-            TextNormalWidget(text: "Welcome Back!", color: LightMode.whiteColor, size: 7.w, weight: FontWeight.bold, center: true),
+            TextNormalWidget(
+                text: "Welcome Back!",
+                color: LightMode.whiteColor,
+                size: 7.w,
+                weight: FontWeight.bold,
+                center: true),
             SizedBox(height: 5.w),
             SizedBox(
               width: 80.w,
               child: TextNormalWidget(
-                  text: "You will be redirected to the homepage within moments.",
+                  text:
+                      "You will be redirected to the homepage within moments.",
                   color: LightMode.whiteColor,
                   size: 4.w,
                   center: true,

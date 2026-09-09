@@ -27,10 +27,17 @@ class LoginPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            AppBarPageWidget(back : false,onPress:  null,title:  "Sign in",colorText:  LightMode.mainColor,colorIcon:  LightMode.mainColor),
-            bodyAuthTextPageWidget("Welcome Back, again!", "Please complete your data to get you in your account."),
+            const AppBarPageWidget(
+                back: false,
+                onPress: null,
+                title: "Sign in",
+                colorText: LightMode.mainColor,
+                colorIcon: LightMode.mainColor),
+            bodyAuthTextPageWidget("Welcome Back, again!",
+                "Please complete your data to get you in your account."),
             GetBuilder<LoginController>(
-              init: LoginController(), // <-- الطريقة الصحيحة للتهيئة داخل الـ GetBuilder
+              init:
+                  LoginController(), // <-- الطريقة الصحيحة للتهيئة داخل الـ GetBuilder
               builder: (controller) => Form(
                   key: controller.loginKey,
                   child: Column(
@@ -38,10 +45,16 @@ class LoginPage extends StatelessWidget {
                       Container(
                         margin: EdgeInsets.only(right: 5.w, left: 5.w),
                         child: TextFieldWidget(
-                          controller:   controller.emailController,hintText:  "Email",iconic:  false,obscure:  false,
-                               validator:  (val) {
+                            controller: controller.emailController,
+                            hintText: "Email",
+                            iconic: false,
+                            obscure: false,
+                            validator: (val) {
                               return controller.emailValidtor(val!);
-                            },keyBoard:  TextInputType.emailAddress,onPress:  () {},icon:  Icons.email),
+                            },
+                            keyBoard: TextInputType.emailAddress,
+                            onPress: () {},
+                            icon: Icons.email),
                       ),
                       SizedBox(
                         height: 3.h,
@@ -49,41 +62,45 @@ class LoginPage extends StatelessWidget {
                       Container(
                         margin: EdgeInsets.only(right: 5.w, left: 5.w),
                         child: TextFieldWidget(
-
-                          controller:   controller.passwordController,
+                            controller: controller.passwordController,
                             hintText: "Password",
-                           iconic:  true,
-                           obscure:  controller.show,
-                               validator:  (val) {
+                            iconic: true,
+                            obscure: controller.show,
+                            validator: (val) {
                               return controller.passwordValidtor(val!);
                             },
-                           keyBoard:  TextInputType.visiblePassword,
-                               onPress:  () {
+                            keyBoard: TextInputType.visiblePassword,
+                            onPress: () {
                               controller.changeShow();
                             },
-                       icon:      Icons.lock),
+                            icon: Icons.lock),
                       ),
                       SizedBox(
                         height: 5.h,
                       ),
                       controller.statuesRequest == StatuesRequest.loading
-                          ? LoadingWidget(height:7.h)
+                          ? LoadingWidget(height: 7.h)
                           : ButtonWidget(
-                          colorBorder: ThemeService.primaryColor,
-                          colorFill: ThemeService.primaryColor,
-                          colorText: LightMode.whiteColor,
-                          width: 90.w,
-                          text: "Login",
-                          onPress: () {
-                            controller.login();
-                          },
-                          size: 5.w),
+                              colorBorder: ThemeService.primaryColor,
+                              colorFill: ThemeService.primaryColor,
+                              colorText: LightMode.whiteColor,
+                              width: 90.w,
+                              text: "Login",
+                              onPress: () {
+                                controller.login();
+                              },
+                              size: 5.w),
                       SizedBox(
                         height: 3.w,
                       ),
-                      TextClickWidget(text: "Did you forget your password ? ",decoration:  true,onPress:  () {
-                        Get.to(() => const ForgetPass());
-                      },color:  LightMode.mainColor,size:  3.w),
+                      TextClickWidget(
+                          text: "Did you forget your password ? ",
+                          decoration: true,
+                          onPress: () {
+                            Get.to(() => const ForgetPass());
+                          },
+                          color: LightMode.mainColor,
+                          size: 3.w),
                       SizedBox(
                         height: 2.h,
                       ),
@@ -94,12 +111,18 @@ class LoginPage extends StatelessWidget {
                             children: [
                               TextNormalWidget(
                                   text: "Don't have an account ?",
-                                 color:  ThemeService.textColor, // استخدام الثيم
-                                 size:  3.5.w,
-                                 weight:  FontWeight.w500),
-                              TextClickWidget(text: "Sign up",decoration:  true,onPress:  () {
-                                Get.to(() => const SignUp());
-                              },  color:  LightMode.mainColor,size:  4.w),
+                                  color:
+                                      ThemeService.textColor, // استخدام الثيم
+                                  size: 3.5.w,
+                                  weight: FontWeight.w500),
+                              TextClickWidget(
+                                  text: "Sign up",
+                                  decoration: true,
+                                  onPress: () {
+                                    Get.to(() => const SignUp());
+                                  },
+                                  color: LightMode.mainColor,
+                                  size: 4.w),
                             ],
                           ),
                           SizedBox(

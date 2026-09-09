@@ -22,18 +22,23 @@ class SuccessOrder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     HomeController homeController = Get.put(HomeController());
-    Get.put(CheckOutController()); // قمنا بحذف تعريف المتغير إذا لم نكن نستخدمه لتنظيف الكود
+    Get.put(
+        CheckOutController()); // قمنا بحذف تعريف المتغير إذا لم نكن نستخدمه لتنظيف الكود
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (e) {
+      onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
         homeController.goToHome(0, null);
-      },
+      });
+        },
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.only(right: 5.w, left: 5.w, top: 6.h, bottom: 2.h),
+            padding:
+                EdgeInsets.only(right: 5.w, left: 5.w, top: 6.h, bottom: 2.h),
             child: Column(
               children: [
                 Image.asset(
@@ -55,10 +60,11 @@ class SuccessOrder extends StatelessWidget {
                 ),
                 TextNormalWidget(
                     center: true,
-                    text: "Congratulations! Your order has been successfully proceed. We will pick up your order as soon as possible!",
+                    text:
+                        "Congratulations! Your order has been successfully proceed. We will pick up your order as soon as possible!",
                     color: ThemeService.isDark
                         ? LightMode.whiteBlueColor
-                        : LightMode.blackColor.withOpacity(.5),
+                        : LightMode.blackColor.withValues(alpha: .5),
                     size: 3.w,
                     weight: FontWeight.w700),
                 const SizedBox(
@@ -104,7 +110,8 @@ class SuccessOrder extends StatelessWidget {
                         padding: EdgeInsets.all(3.w),
                         margin: const EdgeInsets.only(top: 20, bottom: 10),
                         decoration: BoxDecoration(
-                          border: Border.all(color: LightMode.mainColor, width: 2),
+                          border:
+                              Border.all(color: LightMode.mainColor, width: 2),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Column(
@@ -132,8 +139,11 @@ class SuccessOrder extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 TextNormalWidget(
-                                    text: "${orderModel.user ?? sharedPreferences!.getString("name")}",
-                                    color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+                                    text:
+                                        "${orderModel.user ?? sharedPreferences!.getString("name")}",
+                                    color: ThemeService.isDark
+                                        ? LightMode.whiteBlueColor
+                                        : LightMode.blackColor,
                                     size: 3.w,
                                     weight: FontWeight.w600),
                                 TextNormalWidget(
@@ -168,13 +178,19 @@ class SuccessOrder extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 TextNormalWidget(
-                                    text: "${Get.find<CheckOutController>().editDate(orderModel.createdAt)}",
-                                    color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+                                    text:
+                                        "${Get.find<CheckOutController>().editDate(orderModel.createdAt)}",
+                                    color: ThemeService.isDark
+                                        ? LightMode.whiteBlueColor
+                                        : LightMode.blackColor,
                                     size: 3.w,
                                     weight: FontWeight.w600),
                                 TextNormalWidget(
-                                    text: "${Get.find<CheckOutController>().edittime(orderModel.createdAt)}",
-                                    color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+                                    text:
+                                        "${Get.find<CheckOutController>().edittime(orderModel.createdAt)}",
+                                    color: ThemeService.isDark
+                                        ? LightMode.whiteBlueColor
+                                        : LightMode.blackColor,
                                     size: 3.w,
                                     weight: FontWeight.w600),
                               ],
@@ -205,12 +221,16 @@ class SuccessOrder extends StatelessWidget {
                               children: [
                                 TextNormalWidget(
                                     text: orderModel.paymentMethod ?? "",
-                                    color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+                                    color: ThemeService.isDark
+                                        ? LightMode.whiteBlueColor
+                                        : LightMode.blackColor,
                                     size: 3.w,
                                     weight: FontWeight.w600),
                                 TextNormalWidget(
                                     text: orderModel.phone ?? "",
-                                    color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+                                    color: ThemeService.isDark
+                                        ? LightMode.whiteBlueColor
+                                        : LightMode.blackColor,
                                     size: 3.w,
                                     weight: FontWeight.w600),
                               ],
@@ -227,10 +247,13 @@ class SuccessOrder extends StatelessWidget {
                               height: 5,
                             ),
                             TextNormalWidget(
-                                text: "${orderModel.address} , ${orderModel.street} , ${orderModel.buildingNum}",
+                                text:
+                                    "${orderModel.address} , ${orderModel.street} , ${orderModel.buildingNum}",
                                 multi: true,
                                 numOfRow: 4,
-                                color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+                                color: ThemeService.isDark
+                                    ? LightMode.whiteBlueColor
+                                    : LightMode.blackColor,
                                 size: 3.w,
                                 weight: FontWeight.w600),
                           ],

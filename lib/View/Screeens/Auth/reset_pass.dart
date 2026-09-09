@@ -19,9 +19,12 @@ class ResetPass extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.offAll(() => const LoginPage());
-      },
+      });
+        },
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: SingleChildScrollView(
@@ -42,7 +45,8 @@ class ResetPass extends StatelessWidget {
                       child: Column(
                         children: [
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.w),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 5.w, vertical: 2.w),
                             child: TextFieldWidget(
                               controller: controller.passwordController,
                               hintText: "Password",
@@ -50,11 +54,13 @@ class ResetPass extends StatelessWidget {
                               obscure: controller.show_1,
                               iconic: true,
                               onPress: () => controller.changeShow_1(),
-                              validator: (val) => controller.passwordValidtor(val!),
+                              validator: (val) =>
+                                  controller.passwordValidtor(val!),
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.w),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 5.w, vertical: 5.w),
                             child: TextFieldWidget(
                               controller: controller.passwordConfirmController,
                               hintText: "Confirm Password",
@@ -62,21 +68,22 @@ class ResetPass extends StatelessWidget {
                               obscure: controller.show_2,
                               iconic: true,
                               onPress: () => controller.changeShow_2(),
-                              validator: (val) => controller.passwordConfirmValidtor(val!),
+                              validator: (val) =>
+                                  controller.passwordConfirmValidtor(val!),
                             ),
                           ),
                           controller.statuesRequest == StatuesRequest.loading
                               ? LoadingWidget(height: 7.h)
                               : ButtonWidget(
-                            colorBorder: ThemeService.primaryColor,
-                            colorFill: ThemeService.primaryColor,
-                            colorText: LightMode.whiteColor,
-                            width: 90.w,
-                            text: "Confirm",
-                            onPress: () => controller.resetPass(),
-                            size: 5.w,
-                            margin: false,
-                          ),
+                                  colorBorder: ThemeService.primaryColor,
+                                  colorFill: ThemeService.primaryColor,
+                                  colorText: LightMode.whiteColor,
+                                  width: 90.w,
+                                  text: "Confirm",
+                                  onPress: () => controller.resetPass(),
+                                  size: 5.w,
+                                  margin: false,
+                                ),
                         ],
                       ))),
             ],

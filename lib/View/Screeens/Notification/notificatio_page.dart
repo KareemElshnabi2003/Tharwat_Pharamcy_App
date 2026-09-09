@@ -25,11 +25,21 @@ class NotificatioPage extends StatelessWidget {
                     back: true,
                     onPress: () => Get.back(),
                     title: "Notification",
-                    colorText: ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor,
-                    colorIcon: ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor),
+                    colorText: ThemeService.isDark
+                        ? LightMode.mainColor
+                        : LightMode.blackColor,
+                    colorIcon: ThemeService.isDark
+                        ? LightMode.mainColor
+                        : LightMode.blackColor),
                 Padding(
                   padding: EdgeInsets.only(right: 5.w, left: 5.w, top: 3.h),
-                  child: TextNormalWidget(text: "New", color: ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor, size: 4.w, weight: FontWeight.bold),
+                  child: TextNormalWidget(
+                      text: "New",
+                      color: ThemeService.isDark
+                          ? LightMode.mainColor
+                          : LightMode.blackColor,
+                      size: 4.w,
+                      weight: FontWeight.bold),
                 ),
                 Container(
                     margin: EdgeInsets.only(right: 6.w, left: 6.w),
@@ -41,14 +51,21 @@ class NotificatioPage extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) => const ItemNotifyWidget(
-                          subtitle: "We have new offers for you please check it .",
+                          subtitle:
+                              "We have new offers for you please check it .",
                           title: "New Offers",
                           icon: Icons.discount,
                           trailing: "Today"),
                     )),
                 Padding(
                   padding: EdgeInsets.only(right: 5.w, left: 5.w, top: 3.h),
-                  child: TextNormalWidget(text: "Older", color: ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor, size: 4.w, weight: FontWeight.bold),
+                  child: TextNormalWidget(
+                      text: "Older",
+                      color: ThemeService.isDark
+                          ? LightMode.mainColor
+                          : LightMode.blackColor,
+                      size: 4.w,
+                      weight: FontWeight.bold),
                 ),
                 Container(
                     margin: EdgeInsets.only(right: 6.w, left: 6.w),
@@ -61,7 +78,8 @@ class NotificatioPage extends StatelessWidget {
                       shrinkWrap: true,
                       padding: EdgeInsets.zero,
                       itemBuilder: (context, index) => const ItemNotifyWidget(
-                          subtitle: "We have new offers for you please check it .",
+                          subtitle:
+                              "We have new offers for you please check it .",
                           title: "New Offers",
                           icon: Icons.discount,
                           trailing: "Yesterday"),

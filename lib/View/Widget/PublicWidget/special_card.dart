@@ -32,7 +32,7 @@ class SpecialCardWidget extends StatelessWidget {
         children: [
           Container(
             height: 24.h,
-       padding: EdgeInsets.all(3.w),
+            padding: EdgeInsets.all(3.w),
             width: 90.w,
             margin: EdgeInsets.symmetric(horizontal: 5.w),
             decoration: BoxDecoration(
@@ -60,7 +60,9 @@ class SpecialCardWidget extends StatelessWidget {
                       child: TextNormalWidget(
                           bgcolor: !ThemeService.isDark,
                           text: descripe,
-                          color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+                          color: ThemeService.isDark
+                              ? LightMode.whiteBlueColor
+                              : LightMode.blackColor,
                           size: 4.w,
                           weight: FontWeight.w600),
                     ),
@@ -69,7 +71,9 @@ class SpecialCardWidget extends StatelessWidget {
                       child: TextNormalWidget(
                           bgcolor: !ThemeService.isDark,
                           text: offer,
-                          color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+                          color: ThemeService.isDark
+                              ? LightMode.whiteBlueColor
+                              : LightMode.blackColor,
                           size: 4.w,
                           weight: FontWeight.w500),
                     ),
@@ -90,9 +94,9 @@ class SpecialCardWidget extends StatelessWidget {
                     child: decorationImage == null
                         ? Image.asset(AppImages.noImage, fit: BoxFit.fill)
                         : CachedNetworkImage(
-                      imageUrl: decorationImage!,
-                      fit: BoxFit.fill,
-                    ))
+                            imageUrl: decorationImage!,
+                            fit: BoxFit.fill,
+                          ))
               ],
             ),
           ),

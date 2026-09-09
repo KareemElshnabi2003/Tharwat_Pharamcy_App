@@ -33,7 +33,7 @@ class Data {
   TrendingProducts? trendingProducts;
   TrendingProducts? mostOrderedProducts;
 
- Data(
+  Data(
       {this.offers,
       this.categories,
       this.trendingProducts,
@@ -167,6 +167,7 @@ class TrendingProducts {
     return data;
   }
 }
+
 class MostOrderedProducts {
   List<ProductModel>? data;
 
@@ -189,4 +190,3 @@ class MostOrderedProducts {
     return data;
   }
 }
-

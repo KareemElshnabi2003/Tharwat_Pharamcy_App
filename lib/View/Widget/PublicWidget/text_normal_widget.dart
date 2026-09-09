@@ -32,7 +32,8 @@ class TextNormalWidget extends StatelessWidget {
       textAlign: center ? TextAlign.center : null,
       maxLines: multi ? numOfRow : 2,
       style: GoogleFonts.poppins(
-        backgroundColor: bgcolor ? LightMode.whiteColor.withOpacity(.5) : null,
+        backgroundColor:
+            bgcolor ? LightMode.whiteColor.withValues(alpha: .5) : null,
         color: color,
         fontSize: size,
         fontWeight: weight,

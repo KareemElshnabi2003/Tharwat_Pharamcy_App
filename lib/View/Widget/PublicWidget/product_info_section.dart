@@ -34,7 +34,9 @@ class ProductInfoSectionWidget extends StatelessWidget {
                   size: 4.w,
                   weight: FontWeight.bold),
               Icon(
-                moreRead ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                moreRead
+                    ? Icons.keyboard_arrow_up_rounded
+                    : Icons.keyboard_arrow_down_rounded,
                 color: LightMode.mainColor,
                 size: 10.w,
               )
@@ -44,7 +46,9 @@ class ProductInfoSectionWidget extends StatelessWidget {
         if (moreRead)
           TextNormalWidget(
               text: body,
-              color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor.withOpacity(.5),
+              color: ThemeService.isDark
+                  ? LightMode.whiteBlueColor
+                  : LightMode.blackColor.withValues(alpha: .5),
               size: 3.w,
               weight: FontWeight.w500)
       ],

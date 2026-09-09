@@ -19,11 +19,14 @@ class CompletedOrdersDelivery extends StatelessWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
         homeController.changePage(0);
         homeController.choose_1 = true;
         homeController.choose_2 = false;
-      },
+      });
+        },
       child: Scaffold(
         backgroundColor: LightMode.whiteColor,
         body: Column(
@@ -41,7 +44,8 @@ class CompletedOrdersDelivery extends StatelessWidget {
             ),
             Expanded(
               child: GetBuilder<OrdersDeliveryController>(
-                builder: (controller) => FutureBuilder<List<OrdersDeliveryModel>>(
+                builder: (controller) =>
+                    FutureBuilder<List<OrdersDeliveryModel>>(
                   future: controller.completedOrdersFuture,
                   builder: (context, snapshot) {
                     return RefreshIndicator(
@@ -50,13 +54,13 @@ class CompletedOrdersDelivery extends StatelessWidget {
                       child: _buildContent(
                           snapshot: snapshot,
                           orders: controller.completeOrdered,
-                          scrollController: controller.completedScrollController,
+                          scrollController:
+                              controller.completedScrollController,
                           isLoadingMore: controller.isLoadingMoreCompleted,
                           emptyIcon: Icons.inbox_outlined,
                           emptyMessage: "No Completed Orders",
                           orderType: 2,
-                          controller: controller
-                      ),
+                          controller: controller),
                     );
                   },
                 ),
@@ -78,8 +82,10 @@ class CompletedOrdersDelivery extends StatelessWidget {
     required int orderType,
     required OrdersDeliveryController controller,
   }) {
-    if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-    if (snapshot.hasError) return Center(child: Text("Error loading orders"));
+    if (snapshot.connectionState == ConnectionState.waiting)
+      return const Center(child: CircularProgressIndicator());
+    if (snapshot.hasError)
+      return const Center(child: Text("Error loading orders"));
     if (orders.isEmpty) return Center(child: Text(emptyMessage));
 
     return ListView.separated(
@@ -91,7 +97,11 @@ class CompletedOrdersDelivery extends StatelessWidget {
           final order = orders[index];
           return OrderCardWidget(
             onPressYes: () {},
-            status: orderType == 0 ? "active" : orderType == 1 ? "finsh" : "none",
+            status: orderType == 0
+                ? "active"
+                : orderType == 1
+                    ? "finsh"
+                    : "none",
             date: controller.editDate(order.createdAt!),
             index: orderType,
             delivery: true,
@@ -102,7 +112,9 @@ class CompletedOrdersDelivery extends StatelessWidget {
             price: "${order.total} EGP",
           );
         } else {
-          return isLoadingMore ? const Center(child: CircularProgressIndicator()) : const SizedBox.shrink();
+          return isLoadingMore
+              ? const Center(child: CircularProgressIndicator())
+              : const SizedBox.shrink();
         }
       },
       separatorBuilder: (context, index) => const SizedBox(height: 20),

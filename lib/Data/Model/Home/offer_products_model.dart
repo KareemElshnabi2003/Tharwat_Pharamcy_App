@@ -110,4 +110,3 @@ class OfferProductsModel {
     return data;
   }
 }
-

@@ -1,5 +1,4 @@
 class CityModel {
- 
   int? id;
   String? name;
   int? countryId;
@@ -23,5 +22,3 @@ class CityModel {
     return data;
   }
 }
-
-

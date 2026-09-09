@@ -38,12 +38,16 @@ class Filter extends StatelessWidget {
                       padding: EdgeInsets.only(left: 6.w, right: 6.w, top: 2.h),
                       child: TextNormalWidget(
                           text: "Price Range",
-                          color: ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor,
+                          color: ThemeService.isDark
+                              ? LightMode.mainColor
+                              : LightMode.blackColor,
                           size: 4.w,
                           weight: FontWeight.bold),
                     ),
                     RangeSlider(
-                      activeColor: ThemeService.isDark ? LightMode.darkMainColor : LightMode.mainColor,
+                      activeColor: ThemeService.isDark
+                          ? LightMode.darkMainColor
+                          : LightMode.mainColor,
                       inactiveColor: LightMode.whiteBlueColor,
                       values: controller.currentRangeValues,
                       max: 100,
@@ -66,10 +70,13 @@ class Filter extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) => TextNormalWidget(
                               text: controller.ranges[index],
-                              color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+                              color: ThemeService.isDark
+                                  ? LightMode.whiteBlueColor
+                                  : LightMode.blackColor,
                               size: 3.w,
                               weight: FontWeight.w600),
-                          separatorBuilder: (context, index) => SizedBox(width: 3.w),
+                          separatorBuilder: (context, index) =>
+                              SizedBox(width: 3.w),
                           itemCount: controller.ranges.length),
                     ),
 
@@ -77,26 +84,32 @@ class Filter extends StatelessWidget {
                       padding: EdgeInsets.only(left: 6.w, right: 6.w, top: 2.h),
                       child: TextNormalWidget(
                           text: "Availability",
-                          color: ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor,
+                          color: ThemeService.isDark
+                              ? LightMode.mainColor
+                              : LightMode.blackColor,
                           size: 4.w,
                           weight: FontWeight.bold),
                     ),
                     Row(
                       children: [
                         Container(
-
-                          margin: EdgeInsets.only(top: 1.h,right:3.w),
+                          margin: EdgeInsets.only(top: 1.h, right: 3.w),
                           height: 4.h,
-                          child: ButtonFilterWidget( // إذا قمت بتحويلها لـ Class استخدم ButtonFilterWidget
+                          child: ButtonFilterWidget(
+                              // إذا قمت بتحويلها لـ Class استخدم ButtonFilterWidget
                               colorBorder: controller.chooseAllAvailable
-                                  ? (ThemeService.isDark ? LightMode.darkMainColor : LightMode.mainColor)
+                                  ? (ThemeService.isDark
+                                      ? LightMode.darkMainColor
+                                      : LightMode.mainColor)
                                   : LightMode.greyColor,
                               colorFill: controller.chooseAllAvailable
-                                  ? (ThemeService.isDark ? LightMode.darkMainColor : LightMode.mainColor)
+                                  ? (ThemeService.isDark
+                                      ? LightMode.darkMainColor
+                                      : LightMode.mainColor)
                                   : LightMode.greyColor,
                               colorText: controller.chooseAllAvailable
                                   ? LightMode.whiteColor
-                                  : LightMode.blackColor.withOpacity(.5),
+                                  : LightMode.blackColor.withValues(alpha: .5),
                               text: "All",
                               onPress: () => controller.chooseAllAvailabel(),
                               size: 3.w),
@@ -104,24 +117,35 @@ class Filter extends StatelessWidget {
                         Container(
                           width: 74.w,
                           height: 4.h,
-                          margin: EdgeInsets.only(top: 1.h, right: 5.w, left: 5.w),
+                          margin:
+                              EdgeInsets.only(top: 1.h, right: 5.w, left: 5.w),
                           child: ListView.separated(
-                              separatorBuilder: (context, index) => SizedBox(width: 2.w),
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(width: 2.w),
                               padding: EdgeInsets.zero,
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
-                                bool isSelected = controller.available == controller.availablety[index]['name'];
+                                bool isSelected = controller.available ==
+                                    controller.availablety[index]['name'];
                                 return ButtonFilterWidget(
                                     colorBorder: isSelected
-                                        ? (ThemeService.isDark ? LightMode.darkMainColor : LightMode.mainColor)
+                                        ? (ThemeService.isDark
+                                            ? LightMode.darkMainColor
+                                            : LightMode.mainColor)
                                         : LightMode.greyColor,
                                     colorFill: isSelected
-                                        ? (ThemeService.isDark ? LightMode.darkMainColor : LightMode.mainColor)
+                                        ? (ThemeService.isDark
+                                            ? LightMode.darkMainColor
+                                            : LightMode.mainColor)
                                         : LightMode.greyColor,
-                                    colorText: isSelected ? LightMode.whiteColor : LightMode.blackColor.withOpacity(.5),
+                                    colorText: isSelected
+                                        ? LightMode.whiteColor
+                                        : LightMode.blackColor
+                                            .withValues(alpha: .5),
                                     text: controller.availablety[index]['name'],
-                                    onPress: () => controller.addToMapAvailabel(index),
+                                    onPress: () =>
+                                        controller.addToMapAvailabel(index),
                                     size: 3.w);
                               },
                               itemCount: controller.availablety.length),
@@ -137,7 +161,8 @@ class Filter extends StatelessWidget {
                 bottom: 0,
                 right: 3.w,
                 left: 3.w,
-                child: ButtomFilterWidget( // استخدم ButtomFilterWidget لو حولتها لكلاس
+                child: ButtomFilterWidget(
+                    // استخدم ButtomFilterWidget لو حولتها لكلاس
                     onPressApply: () => controller.saveData(),
                     onPressResetFilter: () => controller.clearData())),
           ],

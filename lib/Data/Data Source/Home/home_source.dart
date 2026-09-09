@@ -80,8 +80,8 @@ class HomeRemoteData {
   }
 
   scanCode({itemCode}) async {
-    var response =
-        await api.getData("${AppApi.allProductstUrl}?itnl_code=${int.parse(itemCode)}", {
+    var response = await api
+        .getData("${AppApi.allProductstUrl}?itnl_code=${int.parse(itemCode)}", {
       "Accept": "application/json",
       'authorization': 'Bearer ${sharedPreferences!.getString('token')}',
       "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",

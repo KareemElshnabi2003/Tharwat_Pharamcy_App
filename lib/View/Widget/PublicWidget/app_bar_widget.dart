@@ -26,14 +26,14 @@ class AppBarPageWidget extends StatelessWidget {
         children: [
           back
               ? InkWell(
-              onTap: onPress,
-              child: SizedBox(
-                  width: 10.w,
-                  child: Icon(
-                    Icons.arrow_back_ios_new,
-                    color: colorIcon,
-                    size: 5.w,
-                  )))
+                  onTap: onPress,
+                  child: SizedBox(
+                      width: 10.w,
+                      child: Icon(
+                        Icons.arrow_back_ios_new,
+                        color: colorIcon,
+                        size: 5.w,
+                      )))
               : SizedBox(width: 10.w),
           Container(
             alignment: Alignment.center,

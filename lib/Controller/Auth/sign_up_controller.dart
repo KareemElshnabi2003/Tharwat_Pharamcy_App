@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
@@ -206,9 +205,8 @@ class SignUpController extends GetxController {
         status: statuesRequest,
         response: response,
         onSuccess: (data) {
-          Get.to(() => const VerifySign(), arguments: {
-            "email": emailController.text
-          });
+          Get.to(() => const VerifySign(),
+              arguments: {"email": emailController.text});
         },
       );
     } else if (!check) {
@@ -225,5 +223,16 @@ class SignUpController extends GetxController {
   void onInit() {
     getCountry();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    emailController.dispose();
+    userNameController.dispose();
+    ageController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    passwordConfirmController.dispose();
+    super.onClose();
   }
 }

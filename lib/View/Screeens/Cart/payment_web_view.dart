@@ -60,10 +60,13 @@
 
 //     return PopScope(
 //         canPop: false,
-//         onPopInvoked: (b) async {
+//         onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
 //           await paymentController.checkStatusofPayment();
 //           paymentController.update();
-//         },
+//         });
+        },
 //         child: Scaffold(
 //           appBar: AppBar(
 //             backgroundColor: sharedPreferences!.getString("Mood") == "Dark"

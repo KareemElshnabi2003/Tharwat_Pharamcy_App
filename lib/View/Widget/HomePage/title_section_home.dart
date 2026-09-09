@@ -34,7 +34,9 @@ class TitleSectionHomeWidget extends StatelessWidget {
             text: "See all",
             decoration: false,
             onPress: onPressSeeAll,
-            color: ThemeService.isDark ? LightMode.orangeColor : LightMode.mainColor,
+            color: ThemeService.isDark
+                ? LightMode.orangeColor
+                : LightMode.mainColor,
             size: 3.5.w,
           ),
         ],

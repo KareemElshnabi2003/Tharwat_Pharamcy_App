@@ -25,7 +25,9 @@ class ItemNotifyWidget extends StatelessWidget {
         padding: EdgeInsets.all(3.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(2.w),
-          color: ThemeService.isDark ? LightMode.darkMainColor : LightMode.whiteBlueColor,
+          color: ThemeService.isDark
+              ? LightMode.darkMainColor
+              : LightMode.whiteBlueColor,
         ),
         child: Icon(
           icon,
@@ -35,12 +37,15 @@ class ItemNotifyWidget extends StatelessWidget {
       ),
       title: TextNormalWidget(
           text: title,
-          color: ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor,
+          color:
+              ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor,
           size: 3.5.w,
           weight: FontWeight.w600),
       subtitle: TextNormalWidget(
           text: subtitle,
-          color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor.withOpacity(.5),
+          color: ThemeService.isDark
+              ? LightMode.whiteBlueColor
+              : LightMode.blackColor.withValues(alpha: .5),
           size: 3.2.w,
           weight: FontWeight.w600),
       trailing: TextNormalWidget(

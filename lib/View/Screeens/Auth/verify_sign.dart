@@ -22,55 +22,62 @@ class VerifySign extends StatelessWidget {
     Get.put(VerifyCodeController());
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.offAll(() => const LoginPage());
-      },
+      });
+        },
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<VerifyCodeController>(
-          builder: (controller) => controller.statuesRequest == StatuesRequest.loading
-              ? LoadingWidget(height: 80.h)
-              : SingleChildScrollView(
-            child: Column(
-              children: [
-                AppBarPageWidget(
-                    back: true,
-                    onPress: () => Get.offAll(() => const SignUp()),
-                    title: "Enter OTP Code",
-                    colorText: LightMode.mainColor,
-                    colorIcon: LightMode.mainColor
-                ),
-                SizedBox(height: 5.w),
-                Image.asset(AppImages.otpImage, width: 70.w, height: 30.h, fit: BoxFit.fill),
-                SizedBox(height: 3.w),
-                TextNormalWidget(
-                    text: "We have sent OTP code to your email",
-                    color: ThemeService.textColor,
-                    size: 3.w,
-                    weight: FontWeight.w400
-                ),
-                SizedBox(height: 3.w),
-                otpWidget(controller.verifyCodeSign, (val) {
-                  controller.setValSign(val);
-                }),
-                SizedBox(height: 3.w),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextNormalWidget(
-                        text: "Didn't receive the code ?",
-                        color: ThemeService.textColor,
-                        size: 3.5.w,
-                        weight: FontWeight.w500
+          builder: (controller) =>
+              controller.statuesRequest == StatuesRequest.loading
+                  ? LoadingWidget(height: 80.h)
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          AppBarPageWidget(
+                              back: true,
+                              onPress: () => Get.offAll(() => const SignUp()),
+                              title: "Enter OTP Code",
+                              colorText: LightMode.mainColor,
+                              colorIcon: LightMode.mainColor),
+                          SizedBox(height: 5.w),
+                          Image.asset(AppImages.otpImage,
+                              width: 70.w, height: 30.h, fit: BoxFit.fill),
+                          SizedBox(height: 3.w),
+                          TextNormalWidget(
+                              text: "We have sent OTP code to your email",
+                              color: ThemeService.textColor,
+                              size: 3.w,
+                              weight: FontWeight.w400),
+                          SizedBox(height: 3.w),
+                          otpWidget(controller.verifyCodeSign, (val) {
+                            controller.setValSign(val);
+                          }),
+                          SizedBox(height: 3.w),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextNormalWidget(
+                                  text: "Didn't receive the code ?",
+                                  color: ThemeService.textColor,
+                                  size: 3.5.w,
+                                  weight: FontWeight.w500),
+                              TextClickWidget(
+                                  text: "Resend OTP",
+                                  decoration: true,
+                                  onPress: () {
+                                    controller.sendOTP();
+                                  },
+                                  color: LightMode.mainColor,
+                                  size: 4.w),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    TextClickWidget(text: "Resend OTP",decoration:  true,onPress:  () {
-                      controller.sendOTP();
-                    },color:  LightMode.mainColor,size:  4.w),
-                  ],
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );

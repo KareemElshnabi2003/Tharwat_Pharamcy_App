@@ -21,22 +21,29 @@ class ForgetPass extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
         canPop: false,
-        onPopInvoked: (didPop) {
-          Navigator.canPop(context)
-              ? Get.back()
-              : Get.off(() => const LoginPage());
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.canPop(context)
+                ? Get.back()
+                : Get.off(() => const LoginPage());
+          });
         },
         child: Scaffold(
           backgroundColor: ThemeService.backgroundColor,
           body: SingleChildScrollView(
             child: Column(
               children: [
-               AppBarPageWidget(back:   true,onPress:  () {
-                  Navigator.canPop(context)
-                      ? Get.back()
-                      : Get.off(() => const LoginPage());
-                }, title: "Reset your password",colorIcon:  LightMode.mainColor,
-                  colorText:  LightMode.mainColor),
+                AppBarPageWidget(
+                    back: true,
+                    onPress: () {
+                      Navigator.canPop(context)
+                          ? Get.back()
+                          : Get.off(() => const LoginPage());
+                    },
+                    title: "Reset your password",
+                    colorIcon: LightMode.mainColor,
+                    colorText: LightMode.mainColor),
                 SizedBox(
                   height: 5.w,
                 ),
@@ -50,10 +57,10 @@ class ForgetPass extends StatelessWidget {
                   height: 5.w,
                 ),
                 TextNormalWidget(
-text:"Please enter your email to send your OTP code",
-                  color:  ThemeService.textColor,
-                   size:3.w,
-                 weight:    FontWeight.w500),
+                    text: "Please enter your email to send your OTP code",
+                    color: ThemeService.textColor,
+                    size: 3.w,
+                    weight: FontWeight.w500),
                 GetBuilder<ForgetPassController>(
                   init: ForgetPassController(), // تهيئة الـ Controller هنا
                   builder: (controller) => Form(
@@ -63,23 +70,30 @@ text:"Please enter your email to send your OTP code",
                           Container(
                             margin: EdgeInsets.only(
                                 right: 5.w, left: 5.w, bottom: 10.w, top: 5.w),
-                            child: TextFieldWidget( controller:controller.emailController,
-                               hintText: "Email",iconic:  false,obscure:  false,validator:  (val) {
+                            child: TextFieldWidget(
+                                controller: controller.emailController,
+                                hintText: "Email",
+                                iconic: false,
+                                obscure: false,
+                                validator: (val) {
                                   return controller.emailValidtor(val!);
-                                },keyBoard:  TextInputType.emailAddress,onPress:  null,icon:  Icons.email),
+                                },
+                                keyBoard: TextInputType.emailAddress,
+                                onPress: null,
+                                icon: Icons.email),
                           ),
                           controller.statuesRequest == StatuesRequest.loading
-                              ? LoadingWidget( height:7.h)
+                              ? LoadingWidget(height: 7.h)
                               : ButtonWidget(
-                              colorBorder: ThemeService.primaryColor,
-                              colorFill: ThemeService.primaryColor,
-                              colorText: LightMode.whiteColor,
-                              width: 90.w,
-                              text: "Next",
-                              onPress: () {
-                                controller.forgetPass();
-                              },
-                              size: 5.w),
+                                  colorBorder: ThemeService.primaryColor,
+                                  colorFill: ThemeService.primaryColor,
+                                  colorText: LightMode.whiteColor,
+                                  width: 90.w,
+                                  text: "Next",
+                                  onPress: () {
+                                    controller.forgetPass();
+                                  },
+                                  size: 5.w),
                           SizedBox(
                             height: 15.w,
                           ),
@@ -92,11 +106,12 @@ text:"Please enter your email to send your OTP code",
                                   color: ThemeService.unselectedColor,
                                 ),
                               ),
-                             TextNormalWidget(
-                               text:    "    OR     ",
-                                color:   LightMode.greyColor.withOpacity(.5),
-                               size:    4.w,
-                                weight:  FontWeight.bold),
+                              TextNormalWidget(
+                                  text: "    OR     ",
+                                  color:
+                                      LightMode.greyColor.withValues(alpha: .5),
+                                  size: 4.w,
+                                  weight: FontWeight.bold),
                               SizedBox(
                                 width: 35.w,
                                 child: Divider(
@@ -108,7 +123,8 @@ text:"Please enter your email to send your OTP code",
                           SizedBox(
                             height: 5.w,
                           ),
-                        IconLoginWidget(img:  AppImages.watsAppImage,onPress:  () {}),
+                          IconLoginWidget(
+                              img: AppImages.watsAppImage, onPress: () {}),
                         ],
                       )),
                 ),

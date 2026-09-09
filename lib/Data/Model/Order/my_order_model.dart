@@ -32,8 +32,7 @@ class MyOrderModel {
 
   MyOrderModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    userId =
-        json['user_id'] != null ? UserId.fromJson(json['user_id']) : null;
+    userId = json['user_id'] != null ? UserId.fromJson(json['user_id']) : null;
     status = json['status'];
     address = json['address'];
     street = json['street'];

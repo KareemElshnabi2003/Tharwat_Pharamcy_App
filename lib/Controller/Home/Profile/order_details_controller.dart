@@ -6,7 +6,7 @@ import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Order/order_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Order/my_order_model.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/message_error.dart';
-  import 'package:tharwat_pharmacy/main.dart';
+import 'package:tharwat_pharmacy/main.dart';
 
 class OrderDetailsController extends GetxController {
   MyOrderModel? orderModel;
@@ -33,9 +33,9 @@ class OrderDetailsController extends GetxController {
       orderModel!.status = responseBody['status'];
 
       Get.back();
-    }else if (statuesRequest == StatuesRequest.socketException) {
-        messageError("Error", "please, check your internet");
-      } else {
+    } else if (statuesRequest == StatuesRequest.socketException) {
+      messageError("Error", "please, check your internet");
+    } else {
       messageError("Error", "There is a problem. Please,  try again later");
     }
     update();

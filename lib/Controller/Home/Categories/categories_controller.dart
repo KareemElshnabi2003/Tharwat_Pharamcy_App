@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
@@ -10,7 +9,8 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class CategoriesController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  CategoriesRemoteData categoriesRemoteData = CategoriesRemoteData(Get.put(Api()));
+  CategoriesRemoteData categoriesRemoteData =
+      CategoriesRemoteData(Get.put(Api()));
 
   List<CategoryModel> categories = [];
   List<CategoryModel> subCategories = [];
@@ -26,7 +26,8 @@ class CategoriesController extends GetxController {
 
   void _setupScrollListener() {
     scrollController.addListener(() {
-      if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 200) {
         loadMoreSubCategories();
       }
     });
@@ -77,14 +78,17 @@ class CategoriesController extends GetxController {
     statuesRequest = StatuesRequest.loading;
     update();
 
-    var response = await categoriesRemoteData.getCategories(token: sharedPreferences!.getString("token"));
+    var response = await categoriesRemoteData.getCategories(
+        token: sharedPreferences!.getString("token"));
     statuesRequest = handlingData(response);
 
     handleApiResponse(
       status: statuesRequest,
       response: response,
       onSuccess: (data) {
-        categories = (data['data'] as List).map((item) => CategoryModel.fromJson(item)).toList();
+        categories = (data['data'] as List)
+            .map((item) => CategoryModel.fromJson(item))
+            .toList();
         if (categories.isNotEmpty) {
           indexCat = categories[0].id!;
           getSubCategories();
@@ -100,7 +104,9 @@ class CategoriesController extends GetxController {
     update();
 
     var response = await categoriesRemoteData.getSubCategories(
-        catId: indexCat, page: currentPage, token: sharedPreferences!.getString("token"));
+        catId: indexCat,
+        page: currentPage,
+        token: sharedPreferences!.getString("token"));
 
     statuesRequest = handlingData(response);
 

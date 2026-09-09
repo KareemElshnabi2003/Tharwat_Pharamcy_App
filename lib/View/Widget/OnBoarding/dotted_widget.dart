@@ -30,18 +30,26 @@ class DottedListWidget extends StatelessWidget {
       height: 3.w,
       padding: EdgeInsets.all(.5.w),
       decoration: BoxDecoration(
-          color: ThemeService.isDark ? LightMode.darkMainColor : LightMode.whiteColor,
+          color: ThemeService.isDark
+              ? LightMode.darkMainColor
+              : LightMode.whiteColor,
           border: Border.all(
             color: isActive
-                ? (ThemeService.isDark ? LightMode.darkMainColor : LightMode.mainColor)
-                : (ThemeService.isDark ? LightMode.greyColor : LightMode.whiteColor),
+                ? (ThemeService.isDark
+                    ? LightMode.darkMainColor
+                    : LightMode.mainColor)
+                : (ThemeService.isDark
+                    ? LightMode.greyColor
+                    : LightMode.whiteColor),
           ),
           shape: BoxShape.circle),
       child: Container(
         decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isActive
-                ? (ThemeService.isDark ? LightMode.darkMainColor : LightMode.mainColor)
+                ? (ThemeService.isDark
+                    ? LightMode.darkMainColor
+                    : LightMode.mainColor)
                 : LightMode.greyColor),
       ),
     );

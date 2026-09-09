@@ -31,6 +31,7 @@ class ProductInfoController extends GetxController {
     count++;
     update();
   }
+
   decreseCount() {
     if (count > 0) count--;
     update();
@@ -102,11 +103,30 @@ class ProductInfoController extends GetxController {
     update();
   }
 
-  change_1() { readMore_1 = !readMore_1; update(); }
-  change_2() { readMore_2 = !readMore_2; update(); }
-  change_3() { readMore_3 = !readMore_3; update(); }
-  change_4() { readMore_4 = !readMore_4; update(); }
-  change_5() { readMore_5 = !readMore_5; update(); }
+  change_1() {
+    readMore_1 = !readMore_1;
+    update();
+  }
+
+  change_2() {
+    readMore_2 = !readMore_2;
+    update();
+  }
+
+  change_3() {
+    readMore_3 = !readMore_3;
+    update();
+  }
+
+  change_4() {
+    readMore_4 = !readMore_4;
+    update();
+  }
+
+  change_5() {
+    readMore_5 = !readMore_5;
+    update();
+  }
 
   @override
   void onInit() {

@@ -64,9 +64,8 @@ class ForgetPassController extends GetxController {
       response: response,
       onSuccess: (data) {
         sharedPreferences!.setString("pageStart", "VerifyForget");
-        Get.to(() => const VerifyForgetPass(), arguments: {
-          "email": emailController.text
-        });
+        Get.to(() => const VerifyForgetPass(),
+            arguments: {"email": emailController.text});
       },
     );
     update();
@@ -99,5 +98,13 @@ class ForgetPassController extends GetxController {
       );
       update();
     }
+  }
+
+  @override
+  void onClose() {
+    emailController.dispose();
+    passwordController.dispose();
+    passwordConfirmController.dispose();
+    super.onClose();
   }
 }

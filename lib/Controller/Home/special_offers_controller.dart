@@ -53,13 +53,15 @@ class SpecialOffersController extends GetxController {
   }
 
   void _offersScrollListener() {
-    if (offersScrollController.position.pixels >= offersScrollController.position.maxScrollExtent - 200) {
+    if (offersScrollController.position.pixels >=
+        offersScrollController.position.maxScrollExtent - 200) {
       if (moreOffers && !isLoadingMoreOffers) getMoreOffers();
     }
   }
 
   void _productsScrollListener() {
-    if (productsScrollController.position.pixels >= productsScrollController.position.maxScrollExtent - 200) {
+    if (productsScrollController.position.pixels >=
+        productsScrollController.position.maxScrollExtent - 200) {
       if (isSearch) {
         if (moreSearch && !isLoadingMoreSearch) getMoreSearch();
       } else {
@@ -208,7 +210,8 @@ class SpecialOffersController extends GetxController {
         List resList = data['data'];
         if (offersIndex <= data['pagination']['last_page']) {
           moreOffers = offersIndex < data['pagination']['last_page'];
-          offers.addAll(resList.map((item) => OffersModel.fromJson(item)).toList());
+          offers.addAll(
+              resList.map((item) => OffersModel.fromJson(item)).toList());
           offersIndex++;
         } else {
           moreOffers = false;
@@ -218,7 +221,8 @@ class SpecialOffersController extends GetxController {
     update();
   }
 
-  Future<List<OfferProductsModel>> getOfferProducts({bool isLoadMore = false}) async {
+  Future<List<OfferProductsModel>> getOfferProducts(
+      {bool isLoadMore = false}) async {
     if (!isLoadMore) {
       index = 1;
       offerProducts.clear();
@@ -242,7 +246,8 @@ class SpecialOffersController extends GetxController {
         List resList = data['data'];
         if (index <= data['pagination']['last_page']) {
           more = index < data['pagination']['last_page'];
-          offerProducts.addAll(resList.map((item) => OfferProductsModel.fromJson(item)));
+          offerProducts
+              .addAll(resList.map((item) => OfferProductsModel.fromJson(item)));
           favouriteController.favProductsId.addAll(resList
               .where((item) => item['is_favourite'] == true)
               .map((e) => e['id']));

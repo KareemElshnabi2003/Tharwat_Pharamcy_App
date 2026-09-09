@@ -26,7 +26,10 @@ void bottomSheetMessage({
     builder: (context) => Container(
       height: field ? 40.h : 32.h,
       padding: EdgeInsets.only(
-          top: 5.w, bottom: MediaQuery.of(context).viewInsets.bottom, right: 5.w, left: 5.w),
+          top: 5.w,
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          right: 5.w,
+          left: 5.w),
       child: Form(
         key: field ? key : null,
         child: SingleChildScrollView(
@@ -42,7 +45,9 @@ void bottomSheetMessage({
                       onTap: () => Get.back(),
                       child: Icon(
                         Icons.close,
-                        color: ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor,
+                        color: ThemeService.isDark
+                            ? LightMode.mainColor
+                            : LightMode.blackColor,
                         size: 5.w,
                       ),
                     ),
@@ -50,7 +55,11 @@ void bottomSheetMessage({
                   SizedBox(
                     width: 70.w,
                     child: TextNormalWidget(
-                        text: title, color: LightMode.mainColor, size: 4.5.w, weight: FontWeight.w700, center: true),
+                        text: title,
+                        color: LightMode.mainColor,
+                        size: 4.5.w,
+                        weight: FontWeight.w700,
+                        center: true),
                   ),
                   SizedBox(width: 10.w)
                 ],
@@ -61,7 +70,9 @@ void bottomSheetMessage({
                   child: TextNormalWidget(
                       text: body,
                       center: true,
-                      color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+                      color: ThemeService.isDark
+                          ? LightMode.whiteBlueColor
+                          : LightMode.blackColor,
                       size: 4.w,
                       weight: FontWeight.w600)),
               const SizedBox(height: 20),

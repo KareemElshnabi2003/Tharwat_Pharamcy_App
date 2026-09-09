@@ -16,9 +16,9 @@ class CategoriesRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  getSubCategories({token, catId,page}) async {
-    var response =
-        await api.getData("${AppApi.subCategoriestUrl}?category=$catId&page=$page", {
+  getSubCategories({token, catId, page}) async {
+    var response = await api
+        .getData("${AppApi.subCategoriestUrl}?category=$catId&page=$page", {
       "Accept": "application/json",
       'authorization': 'Bearer $token',
       "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",

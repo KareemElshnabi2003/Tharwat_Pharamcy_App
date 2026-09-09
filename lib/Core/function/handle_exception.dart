@@ -1,10 +1,8 @@
-
-
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
 
 import 'custom_exception.dart';
 
- handleException(dynamic e) {
+handleException(dynamic e) {
   if (e is BadRequestException) {
     return StatuesRequest.badRequestException;
   } else if (e is UnauthorizedException) {

@@ -88,13 +88,14 @@ class LoginController extends GetxController {
         onSuccess: (data) {
           if (data['status'] == "error") {
             data["message"] == "messages.login.email_not_verify"
-                ? messageErrorVerify("Error", "The Email not verified", () async {
-              Get.back();
-              await sendOTP();
-            })
+                ? messageErrorVerify("Error", "The Email not verified",
+                    () async {
+                    Get.back();
+                    await sendOTP();
+                  })
                 : data["message"] == "messages.login.invalid_credentials"
-                ? messageError("Error", "Email or pass is invalid")
-                : messageError("Error", "${data['message']}");
+                    ? messageError("Error", "Email or pass is invalid")
+                    : messageError("Error", "${data['message']}");
           } else {
             Map<String, dynamic> responseBody = data['data'];
             print("response :: $responseBody");
@@ -106,22 +107,33 @@ class LoginController extends GetxController {
               sharedPreferences!.setString("token", "${userAuthModel!.token}");
               sharedPreferences!.setString("name", "${userAuthModel!.name}");
               sharedPreferences!.setString("role", "${userAuthModel!.role}");
-              sharedPreferences!.setString("cityId", "${userAuthModel!.district!.city!.id}");
-              sharedPreferences!.setString("countryId", "${userAuthModel!.district!.city!.country!.id}");
-              sharedPreferences!.setString("districtId", "${userAuthModel!.district!.id}");
-              sharedPreferences!.setString("cityName", "${userAuthModel!.district!.city!.name}");
-              sharedPreferences!.setString("countryName", "${userAuthModel!.district!.city!.country!.name}");
-              sharedPreferences!.setString("districtName", "${userAuthModel!.district!.name}");
+              sharedPreferences!
+                  .setString("cityId", "${userAuthModel!.district!.city!.id}");
+              sharedPreferences!.setString(
+                  "countryId", "${userAuthModel!.district!.city!.country!.id}");
+              sharedPreferences!
+                  .setString("districtId", "${userAuthModel!.district!.id}");
+              sharedPreferences!.setString(
+                  "cityName", "${userAuthModel!.district!.city!.name}");
+              sharedPreferences!.setString("countryName",
+                  "${userAuthModel!.district!.city!.country!.name}");
+              sharedPreferences!.setString(
+                  "districtName", "${userAuthModel!.district!.name}");
               sharedPreferences!.setString("pageStart", "Home");
 
               Get.offAll(() => const SuccsessLogin());
             } else {
-              sharedPreferences!.setString("roleDelivery", "${userAuthModel!.role}");
+              sharedPreferences!
+                  .setString("roleDelivery", "${userAuthModel!.role}");
               sharedPreferences!.setString("pageStart", "HomeDelivery");
-              sharedPreferences!.setString("tokenDelivery", "${userAuthModel!.token}");
-              sharedPreferences!.setString("emailDelivery", "${userAuthModel!.email}");
-              sharedPreferences!.setString("nameDelivery", "${userAuthModel!.name}");
-              sharedPreferences!.setString("idDelivery", "${userAuthModel!.id}");
+              sharedPreferences!
+                  .setString("tokenDelivery", "${userAuthModel!.token}");
+              sharedPreferences!
+                  .setString("emailDelivery", "${userAuthModel!.email}");
+              sharedPreferences!
+                  .setString("nameDelivery", "${userAuthModel!.name}");
+              sharedPreferences!
+                  .setString("idDelivery", "${userAuthModel!.id}");
 
               Get.offAll(() => const SuccsessLogin());
             }
@@ -130,5 +142,12 @@ class LoginController extends GetxController {
       );
     }
     update();
+  }
+
+  @override
+  void onClose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.onClose();
   }
 }

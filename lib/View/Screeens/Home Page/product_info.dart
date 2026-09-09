@@ -75,14 +75,15 @@ class ProductInfo extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     TextNormalWidget(
-
-                                       text:  controller.productModel!.itmNameEn,
-                                      color:  sharedPreferences!.getString("Mood") ==
+                                        text:
+                                            controller.productModel!.itmNameEn,
+                                        color: sharedPreferences!
+                                                    .getString("Mood") ==
                                                 "Dark"
                                             ? LightMode.whiteColor
                                             : LightMode.blackColor,
-                                       size:  4.5.w,
-                                        weight:FontWeight.bold),
+                                        size: 4.5.w,
+                                        weight: FontWeight.bold),
                                   ],
                                 ),
                               ],
@@ -197,7 +198,7 @@ class ProductInfo extends StatelessWidget {
                     onTap: () {
                       controller.addToCart();
                     },
-                    price: controller.productModel!.itmSellPrice??"")),
+                    price: controller.productModel!.itmSellPrice ?? "")),
           ],
         ),
       ),

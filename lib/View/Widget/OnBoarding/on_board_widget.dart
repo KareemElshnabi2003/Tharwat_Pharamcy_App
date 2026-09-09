@@ -27,22 +27,22 @@ class OnBoardWidget extends StatelessWidget {
       children: [
         back
             ? Container(
-          margin: EdgeInsets.only(right: 5.w, left: 5.w, top: 5.h),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              InkWell(
-                  onTap: onPress,
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    color: ThemeService.isDark
-                        ? LightMode.orangeColor
-                        : LightMode.mainColor,
-                    size: 7.w,
-                  )),
-            ],
-          ),
-        )
+                margin: EdgeInsets.only(right: 5.w, left: 5.w, top: 5.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    InkWell(
+                        onTap: onPress,
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          color: ThemeService.isDark
+                              ? LightMode.orangeColor
+                              : LightMode.mainColor,
+                          size: 7.w,
+                        )),
+                  ],
+                ),
+              )
             : SizedBox(height: 10.h),
         SizedBox(height: 3.w),
         Image.asset(

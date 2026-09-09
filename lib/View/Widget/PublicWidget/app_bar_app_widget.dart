@@ -28,8 +28,8 @@ class AppBarWidget extends StatelessWidget {
     Color elementsColor = colorBlue
         ? LightMode.mainColor
         : colorWhite
-        ? LightMode.whiteColor
-        : ThemeService.primaryColor;
+            ? LightMode.whiteColor
+            : ThemeService.primaryColor;
 
     return Container(
       margin: EdgeInsets.only(right: 5.w, left: 5.w, top: 7.h),
@@ -59,18 +59,18 @@ class AppBarWidget extends StatelessWidget {
           ),
           !notify
               ? SizedBox(
-            width: 10.w,
-          )
+                  width: 10.w,
+                )
               : SizedBox(
-            width: 10.w,
-            child: InkWell(
-              onTap: onPressNotify,
-              child: Icon(
-                Icons.notifications_none,
-                color: elementsColor,
-              ),
-            ),
-          ),
+                  width: 10.w,
+                  child: InkWell(
+                    onTap: onPressNotify,
+                    child: Icon(
+                      Icons.notifications_none,
+                      color: elementsColor,
+                    ),
+                  ),
+                ),
         ],
       ),
     );

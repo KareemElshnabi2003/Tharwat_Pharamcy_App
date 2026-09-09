@@ -53,31 +53,41 @@ class TextFieldWidget extends StatelessWidget {
           ),
           suffixIcon: iconic
               ? InkWell(
-            onTap: onPress,
-            child: Icon(
-              obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-              color: LightMode.mainColor,
-              size: 6.w,
-            ),
-          )
+                  onTap: onPress,
+                  child: Icon(
+                    obscure
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    color: LightMode.mainColor,
+                    size: 6.w,
+                  ),
+                )
               : null,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(3.w),
-              borderSide: const BorderSide(color: LightMode.mainColor, width: 1.5)),
+              borderSide:
+                  const BorderSide(color: LightMode.mainColor, width: 1.5)),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(3.w),
-              borderSide: const BorderSide(color: LightMode.mainColor, width: 1.5)),
+              borderSide:
+                  const BorderSide(color: LightMode.mainColor, width: 1.5)),
           disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(3.w),
-              borderSide: const BorderSide(color: LightMode.mainColor, width: 1.5)),
+              borderSide:
+                  const BorderSide(color: LightMode.mainColor, width: 1.5)),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(3.w),
-              borderSide: const BorderSide(color: LightMode.mainColor, width: 1.5)),
+              borderSide:
+                  const BorderSide(color: LightMode.mainColor, width: 1.5)),
           contentPadding: EdgeInsets.all(4.w),
           errorStyle: GoogleFonts.poppins(
-              color: LightMode.redColor, fontSize: 4.w, fontWeight: FontWeight.w500),
+              color: LightMode.redColor,
+              fontSize: 4.w,
+              fontWeight: FontWeight.w500),
           hintStyle: GoogleFonts.poppins(
-              color: LightMode.mainColor, fontSize: 4.w, fontWeight: FontWeight.w500),
+              color: LightMode.mainColor,
+              fontSize: 4.w,
+              fontWeight: FontWeight.w500),
           hintText: hintText,
         ),
       ),

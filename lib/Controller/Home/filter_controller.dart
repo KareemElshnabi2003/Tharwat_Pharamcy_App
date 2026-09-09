@@ -67,7 +67,7 @@ class FilterController extends GetxController {
     specialOfferes = "no";
     chooseCat.clear();
     chooseAvailabel.clear();
-      sharedPreferences!.setString('maxPrice', '');
+    sharedPreferences!.setString('maxPrice', '');
     sharedPreferences!.setString('minPrice', '');
     sharedPreferences!.setString('stock', '');
     update();

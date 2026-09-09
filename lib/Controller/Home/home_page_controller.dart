@@ -35,7 +35,8 @@ class HomePageController extends GetxController {
   }
 
   void _scrollListener() {
-    if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 200) {
       if (isSearch && more && !isLoadingMore) {
         getMore();
       }
@@ -77,7 +78,8 @@ class HomePageController extends GetxController {
     statuesRequest = StatuesRequest.loading;
     update();
 
-    var response = await homeRemoteData.getHomeData(token: sharedPreferences!.getString("token"));
+    var response = await homeRemoteData.getHomeData(
+        token: sharedPreferences!.getString("token"));
     statuesRequest = handlingData(response);
 
     handleApiResponse(
@@ -86,15 +88,15 @@ class HomePageController extends GetxController {
       onSuccess: (data) {
         homeModel = HomeModel.fromJson(data);
 
-        favouriteController.favProductsId.addAll(
-            data['data']['trending_products']['data']
-                .where((item) => item['is_favourite'] == true)
-                .map((e) => e['id']));
+        favouriteController.favProductsId.addAll(data['data']
+                ['trending_products']['data']
+            .where((item) => item['is_favourite'] == true)
+            .map((e) => e['id']));
 
-        favouriteController.favProductsId.addAll(
-            data['data']['most_ordered_products']['data']
-                .where((item) => item['is_favourite'] == true)
-                .map((e) => e['id']));
+        favouriteController.favProductsId.addAll(data['data']
+                ['most_ordered_products']['data']
+            .where((item) => item['is_favourite'] == true)
+            .map((e) => e['id']));
       },
     );
     return homeModel!;

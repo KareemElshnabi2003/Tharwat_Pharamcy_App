@@ -18,11 +18,14 @@ class OrdersDelivery extends StatelessWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
         homeController.changePage(0);
         homeController.choose_1 = true;
         homeController.choose_2 = false;
-      },
+      });
+        },
       child: Scaffold(
         backgroundColor: LightMode.whiteColor,
         body: Column(
@@ -40,7 +43,8 @@ class OrdersDelivery extends StatelessWidget {
             ),
             Expanded(
               child: GetBuilder<OrdersDeliveryController>(
-                builder: (controller) => FutureBuilder<List<OrdersDeliveryModel>>(
+                builder: (controller) =>
+                    FutureBuilder<List<OrdersDeliveryModel>>(
                   future: controller.availableOrdersFuture,
                   builder: (context, snapshot) {
                     return RefreshIndicator(
@@ -88,9 +92,15 @@ class OrdersDelivery extends StatelessWidget {
               children: [
                 Icon(Icons.error_outline, size: 80, color: Colors.red[400]),
                 const SizedBox(height: 16),
-                Text("Error loading orders", style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+                Text("Error loading orders",
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
-                Text(snapshot.error.toString(), style: TextStyle(fontSize: 14, color: Colors.grey[500]), textAlign: TextAlign.center),
+                Text(snapshot.error.toString(),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                    textAlign: TextAlign.center),
               ],
             ),
           ),
@@ -107,7 +117,11 @@ class OrdersDelivery extends StatelessWidget {
               children: [
                 Icon(emptyIcon, size: 80, color: Colors.grey[400]),
                 const SizedBox(height: 16),
-                Text(emptyMessage, style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+                Text(emptyMessage,
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500)),
               ],
             ),
           ),
@@ -128,7 +142,11 @@ class OrdersDelivery extends StatelessWidget {
                 controller.acceptOrder(id: order.id);
                 Get.back();
               },
-              status: orderType == 0 ? "active" : orderType == 1 ? "finsh" : "none",
+              status: orderType == 0
+                  ? "active"
+                  : orderType == 1
+                      ? "finsh"
+                      : "none",
               date: controller.editDate(order.createdAt!),
               index: orderType,
               delivery: true,
@@ -139,7 +157,11 @@ class OrdersDelivery extends StatelessWidget {
               price: "${order.total} EGP",
             );
           } else {
-            return isLoadingMore ? const Padding(padding: EdgeInsets.all(16.0), child: Center(child: CircularProgressIndicator())) : const SizedBox.shrink();
+            return isLoadingMore
+                ? const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()))
+                : const SizedBox.shrink();
           }
         },
         separatorBuilder: (context, index) => const SizedBox(height: 20),

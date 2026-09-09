@@ -5,7 +5,10 @@ import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/text_normal_widget.dart';
 
 void bottomSheetUpdateImage(
-    {VoidCallback? onPressGellery, VoidCallback? onPressCamera, VoidCallback? onPressDelete, required BuildContext context}) {
+    {VoidCallback? onPressGellery,
+    VoidCallback? onPressCamera,
+    VoidCallback? onPressDelete,
+    required BuildContext context}) {
   showModalBottomSheet(
     backgroundColor: LightMode.whiteColor,
     context: context,
@@ -20,9 +23,14 @@ void bottomSheetUpdateImage(
             children: [
               InkWell(
                 onTap: () => Get.back(),
-                child: Icon(Icons.close, color: LightMode.blackColor, size: 5.w),
+                child:
+                    Icon(Icons.close, color: LightMode.blackColor, size: 5.w),
               ),
-              TextNormalWidget(text: "Personal Image", color: LightMode.blackColor, size: 4.5.w, weight: FontWeight.w700),
+              TextNormalWidget(
+                  text: "Personal Image",
+                  color: LightMode.blackColor,
+                  size: 4.5.w,
+                  weight: FontWeight.w700),
               const SizedBox()
             ],
           ),
@@ -48,11 +56,17 @@ Widget _buildIconOption(IconData icon, String text, VoidCallback? onTap) {
       children: [
         Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: LightMode.mainColor)),
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: LightMode.mainColor)),
           child: Icon(icon, color: LightMode.mainColor, size: 6.w),
         ),
         const SizedBox(height: 10),
-        TextNormalWidget(text: text, color: LightMode.blackColor, size: 4.w, weight: FontWeight.w700),
+        TextNormalWidget(
+            text: text,
+            color: LightMode.blackColor,
+            size: 4.w,
+            weight: FontWeight.w700),
       ],
     ),
   );

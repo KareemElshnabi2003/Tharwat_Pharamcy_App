@@ -129,12 +129,20 @@ class ContactUsController extends GetxController {
         ScaffoldMessenger.of(Get.context!).showSnackBar(
             snackBarWidget(message: "Your message sent successfully !"));
         update();
-      }else if (statuesRequest == StatuesRequest.socketException) {
+      } else if (statuesRequest == StatuesRequest.socketException) {
         messageError("Error", "please, check your internet");
       } else {
         messageError("Error", "There is a problem. Please,  try again later");
       }
     }
     update();
+  }
+
+  @override
+  void onClose() {
+    userNameController.dispose();
+    emailController.dispose();
+    messageController.dispose();
+    super.onClose();
   }
 }

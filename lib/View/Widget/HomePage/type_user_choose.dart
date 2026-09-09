@@ -32,17 +32,19 @@ class TypeUserChooseWidget extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: lang ? null : EdgeInsets.only(bottom: 4.w),
-        padding: lang ? null : EdgeInsets.only(right: 3.w, left: 3.w, top: 4.w, bottom: 4.w),
+        padding: lang
+            ? null
+            : EdgeInsets.only(right: 3.w, left: 3.w, top: 4.w, bottom: 4.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           border: lang
               ? null
               : Border.all(
-              color: choose
-                  ? LightMode.mainColor
-                  : ThemeService.isDark
-                  ? LightMode.whiteBlueColor
-                  : LightMode.greyColor),
+                  color: choose
+                      ? LightMode.mainColor
+                      : ThemeService.isDark
+                          ? LightMode.whiteBlueColor
+                          : LightMode.greyColor),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -56,14 +58,16 @@ class TypeUserChooseWidget extends StatelessWidget {
                     color: choose
                         ? LightMode.mainColor
                         : ThemeService.isDark
-                        ? LightMode.greyColor
-                        : LightMode.blackColor.withOpacity(.5),
+                            ? LightMode.greyColor
+                            : LightMode.blackColor.withValues(alpha: .5),
                     size: 4.w,
                     weight: FontWeight.w600),
               ],
             ),
             Radio(
-                focusColor: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.mainColor,
+                focusColor: ThemeService.isDark
+                    ? LightMode.whiteBlueColor
+                    : LightMode.mainColor,
                 activeColor: LightMode.mainColor,
                 value: typeUser,
                 groupValue: groubVal,

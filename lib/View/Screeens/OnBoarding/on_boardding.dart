@@ -61,7 +61,8 @@ class OnBoardding extends StatelessWidget {
                             } else if (controller.indexList == 1) {
                               controller.changIndex(2);
                             } else {
-                              sharedPreferences!.setString("pageStart", "Login");
+                              sharedPreferences!
+                                  .setString("pageStart", "Login");
                               Get.offAll(() => const LoginPage());
                             }
                           },

@@ -23,16 +23,34 @@ class DeleteAccount extends StatelessWidget {
           key: controller.deleteKey,
           child: Column(
             children: [
-              AppBarWidget(colorBlue: true, notify: false, colorWhite: false, onPressBack: () => Get.back(), title: "Delete My Account"),
+              AppBarWidget(
+                  colorBlue: true,
+                  notify: false,
+                  colorWhite: false,
+                  onPressBack: () => Get.back(),
+                  title: "Delete My Account"),
               const SizedBox(height: 15),
               SizedBox(
                 width: 80.w,
-                child: TextNormalWidget(text: "Please, Enter your password to confirm deleting your account", color: ThemeService.textColor, size: 3.5.w, weight: FontWeight.w600, center: true),
+                child: TextNormalWidget(
+                    text:
+                        "Please, Enter your password to confirm deleting your account",
+                    color: ThemeService.textColor,
+                    size: 3.5.w,
+                    weight: FontWeight.w600,
+                    center: true),
               ),
               const SizedBox(height: 20),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 5.w),
-                child: TextFieldWidget(controller: controller.passOldController, hintText: "Password", obscure: controller.show, onPress: () => controller.changeShow(), iconic: true, validator: (val) => controller.passwordOldValidtor(val!), icon: Icons.lock),
+                child: TextFieldWidget(
+                    controller: controller.passOldController,
+                    hintText: "Password",
+                    obscure: controller.show,
+                    onPress: () => controller.changeShow(),
+                    iconic: true,
+                    validator: (val) => controller.passwordOldValidtor(val!),
+                    icon: Icons.lock),
               ),
               const SizedBox(height: 50),
               ButtonWidget(
@@ -41,9 +59,16 @@ class DeleteAccount extends StatelessWidget {
                   colorText: LightMode.whiteColor,
                   margin: true,
                   onPress: () {
-                    bottomSheetMessage(body: "Are you sure you want to delete your account?", context: context, onPressNo: () => Get.back(), onPressYes: () => controller.deleteAcc(), title: "Delete My Account");
+                    bottomSheetMessage(
+                        body: "Are you sure you want to delete your account?",
+                        context: context,
+                        onPressNo: () => Get.back(),
+                        onPressYes: () => controller.deleteAcc(),
+                        title: "Delete My Account");
                   },
-                  size: 5.w, text: "Confirm", width: 90.w)
+                  size: 5.w,
+                  text: "Confirm",
+                  width: 90.w)
             ],
           ),
         ),

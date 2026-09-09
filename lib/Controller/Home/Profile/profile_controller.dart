@@ -609,4 +609,14 @@ class ProfileController extends GetxController {
     getCountry();
     super.onInit();
   }
+
+  @override
+  void onClose() {
+    userNameController.dispose();
+    phoneController.dispose();
+    passOldController.dispose();
+    passNewController.dispose();
+    passNewConfirmController.dispose();
+    super.onClose();
+  }
 }

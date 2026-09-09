@@ -23,7 +23,9 @@ class CategoryCardWidget extends StatelessWidget {
       child: Column(
         children: [
           CircleAvatar(
-            backgroundColor: ThemeService.isDark ? LightMode.darkMainColor : LightMode.lightMainColor,
+            backgroundColor: ThemeService.isDark
+                ? LightMode.darkMainColor
+                : LightMode.lightMainColor,
             radius: 9.w,
             child: image,
           ),

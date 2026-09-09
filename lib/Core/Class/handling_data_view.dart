@@ -10,11 +10,10 @@ class HandlingDataRequest extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return statuesRequest == StatuesRequest.loading
         ? const Center(
-      child: CircularProgressIndicator(),
-    )
+            child: CircularProgressIndicator(),
+          )
         // : statuesRequest == StatuesRequest.badRequestException
         // ? Container()
         // : statuesRequest == StatuesRequest.conflictException
@@ -27,20 +26,18 @@ class HandlingDataRequest extends StatelessWidget {
         // ?Container()
         // :statuesRequest == StatuesRequest.serverException
         // ?Container()
-        :statuesRequest == StatuesRequest.socketException
-        ?const Center(
-      child: Text("no internet ....."),
-    )
-        // :statuesRequest == StatuesRequest.unauthorizedException
-        // ?Container()
-        // :statuesRequest == StatuesRequest.unExpectedException
-        // ?Container()
-        // :statuesRequest == StatuesRequest.timeoutException
-        // ?Container()
-        :statuesRequest == StatuesRequest.none
-        ?widget
-        :widget;
+        : statuesRequest == StatuesRequest.socketException
+            ? const Center(
+                child: Text("no internet ....."),
+              )
+            // :statuesRequest == StatuesRequest.unauthorizedException
+            // ?Container()
+            // :statuesRequest == StatuesRequest.unExpectedException
+            // ?Container()
+            // :statuesRequest == StatuesRequest.timeoutException
+            // ?Container()
+            : statuesRequest == StatuesRequest.none
+                ? widget
+                : widget;
   }
 }
-
-

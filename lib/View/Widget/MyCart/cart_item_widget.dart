@@ -41,7 +41,8 @@ class ItemCartWidget extends StatelessWidget {
                 height: 15.w,
                 width: 15.w,
                 decoration: BoxDecoration(
-                    image: DecorationImage(image: decorationImage, fit: BoxFit.fill),
+                    image: DecorationImage(
+                        image: decorationImage, fit: BoxFit.fill),
                     borderRadius: BorderRadius.circular(2.w)),
               ),
               SizedBox(width: 2.w),
@@ -52,13 +53,26 @@ class ItemCartWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextNormalWidget(
-                        text: name, color: LightMode.mainColor, size: 3.w, weight: FontWeight.w700, multi: true, numOfRow: 2),
+                        text: name,
+                        color: LightMode.mainColor,
+                        size: 3.w,
+                        weight: FontWeight.w700,
+                        multi: true,
+                        numOfRow: 2),
                     const SizedBox(height: 10),
                     TextNormalWidget(
-                        text: body, color: LightMode.greyColor, size: 2.5.w, weight: FontWeight.w700, multi: true, numOfRow: 2),
+                        text: body,
+                        color: LightMode.greyColor,
+                        size: 2.5.w,
+                        weight: FontWeight.w700,
+                        multi: true,
+                        numOfRow: 2),
                     const SizedBox(height: 10),
                     TextNormalWidget(
-                        text: "\$ $price", color: LightMode.mainColor, size: 3.w, weight: FontWeight.w700),
+                        text: "\$ $price",
+                        color: LightMode.mainColor,
+                        size: 3.w,
+                        weight: FontWeight.w700),
                   ],
                 ),
               ),
@@ -72,7 +86,8 @@ class ItemCartWidget extends StatelessWidget {
                 Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.w),
-                      border: Border.all(color: LightMode.mainColor, width: 1.5),
+                      border:
+                          Border.all(color: LightMode.mainColor, width: 1.5),
                     ),
                     child: Row(
                       children: [
@@ -82,7 +97,9 @@ class ItemCartWidget extends StatelessWidget {
                             padding: EdgeInsets.only(right: 1.w, left: 1.w),
                             child: Icon(
                               Icons.remove,
-                              color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.mainColor,
+                              color: ThemeService.isDark
+                                  ? LightMode.whiteBlueColor
+                                  : LightMode.mainColor,
                               size: 5.w,
                             ),
                           ),
@@ -91,13 +108,17 @@ class ItemCartWidget extends StatelessWidget {
                           padding: EdgeInsets.only(right: 2.w, left: 2.w),
                           decoration: const BoxDecoration(
                             border: Border(
-                              left: BorderSide(color: LightMode.mainColor, width: 1.5),
-                              right: BorderSide(color: LightMode.mainColor, width: 1.5),
+                              left: BorderSide(
+                                  color: LightMode.mainColor, width: 1.5),
+                              right: BorderSide(
+                                  color: LightMode.mainColor, width: 1.5),
                             ),
                           ),
                           child: TextNormalWidget(
                               text: "$numOfItems",
-                              color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.mainColor,
+                              color: ThemeService.isDark
+                                  ? LightMode.whiteBlueColor
+                                  : LightMode.mainColor,
                               size: 3.5.w,
                               weight: FontWeight.w700),
                         ),
@@ -107,7 +128,9 @@ class ItemCartWidget extends StatelessWidget {
                             padding: EdgeInsets.only(right: 1.w, left: 1.w),
                             child: Icon(
                               Icons.add,
-                              color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.mainColor,
+                              color: ThemeService.isDark
+                                  ? LightMode.whiteBlueColor
+                                  : LightMode.mainColor,
                               size: 5.w,
                             ),
                           ),

@@ -5,7 +5,8 @@ import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/bottom_widget.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/text_normal_widget.dart';
 
-void bottomSheetLogOut({required VoidCallback onPressYes, required BuildContext context}) {
+void bottomSheetLogOut(
+    {required VoidCallback onPressYes, required BuildContext context}) {
   showModalBottomSheet(
     backgroundColor: LightMode.whiteColor,
     context: context,
@@ -19,9 +20,14 @@ void bottomSheetLogOut({required VoidCallback onPressYes, required BuildContext 
             children: [
               InkWell(
                 onTap: () => Get.back(),
-                child: Icon(Icons.close, color: LightMode.blackColor, size: 5.w),
+                child:
+                    Icon(Icons.close, color: LightMode.blackColor, size: 5.w),
               ),
-              TextNormalWidget(text: "هل تريد تسجيل الخروج؟", color: LightMode.blackColor, size: 4.5.w, weight: FontWeight.w700),
+              TextNormalWidget(
+                  text: "هل تريد تسجيل الخروج؟",
+                  color: LightMode.blackColor,
+                  size: 4.5.w,
+                  weight: FontWeight.w700),
               const SizedBox()
             ],
           ),

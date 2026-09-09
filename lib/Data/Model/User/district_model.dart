@@ -22,5 +22,3 @@ class DistrictModel {
     return data;
   }
 }
-
- 

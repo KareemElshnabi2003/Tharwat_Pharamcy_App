@@ -39,8 +39,11 @@ class MyOrdersController extends GetxController {
   }
 
   void _scrollListener() {
-    if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
-      if (!isLoadingMore && hasMoreData && statuesRequest == StatuesRequest.success) {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 200) {
+      if (!isLoadingMore &&
+          hasMoreData &&
+          statuesRequest == StatuesRequest.success) {
         loadMoreOrders();
       }
     }
@@ -62,10 +65,14 @@ class MyOrdersController extends GetxController {
     hasMoreData = true;
     isLoadingMore = false;
 
-    if (index == 0) pendingOrdered.clear();
-    else if (index == 1) activeOrdered.clear();
-    else if (index == 2) completeOrdered.clear();
-    else cancelOrdered.clear();
+    if (index == 0) {
+      pendingOrdered.clear();
+    } else if (index == 1)
+      activeOrdered.clear();
+    else if (index == 2)
+      completeOrdered.clear();
+    else
+      cancelOrdered.clear();
   }
 
   Future<void> loadInitialOrders() async {
@@ -97,10 +104,18 @@ class MyOrdersController extends GetxController {
     String token = sharedPreferences!.getString("token") ?? "";
     dynamic response;
 
-    if (index == 0) response = await orderRemoteData.getPendingOrder(token: token, page: currentPage);
-    else if (index == 1) response = await orderRemoteData.getActiveOrder(token: token, page: currentPage);
-    else if (index == 2) response = await orderRemoteData.getCompleteOrder(token: token, page: currentPage);
-    else response = await orderRemoteData.getCanceledOrder(token: token, page: currentPage);
+    if (index == 0) {
+      response = await orderRemoteData.getPendingOrder(
+          token: token, page: currentPage);
+    } else if (index == 1)
+      response =
+          await orderRemoteData.getActiveOrder(token: token, page: currentPage);
+    else if (index == 2)
+      response = await orderRemoteData.getCompleteOrder(
+          token: token, page: currentPage);
+    else
+      response = await orderRemoteData.getCanceledOrder(
+          token: token, page: currentPage);
 
     statuesRequest = handlingData(response);
 
@@ -109,16 +124,26 @@ class MyOrdersController extends GetxController {
       response: response,
       onSuccess: (data) {
         lastPage = data['pagination']['last_page'];
-        List<MyOrderModel> newOrders = (data['data'] as List).map((e) => MyOrderModel.fromJson(e)).toList();
+        List<MyOrderModel> newOrders = (data['data'] as List)
+            .map((e) => MyOrderModel.fromJson(e))
+            .toList();
 
         if (index == 0) {
-          currentPage == 1 ? pendingOrdered = newOrders : pendingOrdered.addAll(newOrders);
+          currentPage == 1
+              ? pendingOrdered = newOrders
+              : pendingOrdered.addAll(newOrders);
         } else if (index == 1) {
-          currentPage == 1 ? activeOrdered = newOrders : activeOrdered.addAll(newOrders);
+          currentPage == 1
+              ? activeOrdered = newOrders
+              : activeOrdered.addAll(newOrders);
         } else if (index == 2) {
-          currentPage == 1 ? completeOrdered = newOrders : completeOrdered.addAll(newOrders);
+          currentPage == 1
+              ? completeOrdered = newOrders
+              : completeOrdered.addAll(newOrders);
         } else {
-          currentPage == 1 ? cancelOrdered = newOrders : cancelOrdered.addAll(newOrders);
+          currentPage == 1
+              ? cancelOrdered = newOrders
+              : cancelOrdered.addAll(newOrders);
         }
 
         hasMoreData = currentPage < lastPage;

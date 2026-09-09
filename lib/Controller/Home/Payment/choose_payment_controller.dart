@@ -16,9 +16,7 @@ class ChoosePaymentController extends GetxController {
 
   String? payment;
   choose(type) {
-   
-      payment = type;
-    
+    payment = type;
 
     update();
   }
@@ -27,5 +25,11 @@ class ChoosePaymentController extends GetxController {
   void onInit() {
     totalCost = Get.arguments["totalCost"];
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    addressController.dispose();
+    super.onClose();
   }
 }

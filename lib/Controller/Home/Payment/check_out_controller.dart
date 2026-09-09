@@ -138,4 +138,14 @@ class CheckOutController extends GetxController {
     totalCost = Get.arguments['totalCost'] ?? 0;
     super.onInit();
   }
+
+  @override
+  void onClose() {
+    buildingController.dispose();
+    addressController.dispose();
+    streetController.dispose();
+    additionalInfoController.dispose();
+    phoneController.dispose();
+    super.onClose();
+  }
 }

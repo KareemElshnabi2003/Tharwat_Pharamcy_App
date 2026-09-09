@@ -17,7 +17,12 @@ class AboutUs extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            AppBarPageWidget(back: true, onPress: () => Get.back(), title: "About Us", colorText: LightMode.mainColor, colorIcon: LightMode.mainColor),
+            AppBarPageWidget(
+                back: true,
+                onPress: () => Get.back(),
+                title: "About Us",
+                colorText: LightMode.mainColor,
+                colorIcon: LightMode.mainColor),
             Padding(
               padding: EdgeInsets.all(5.w),
               child: Column(
@@ -33,19 +38,23 @@ class AboutUs extends StatelessWidget {
                   const SizedBox(height: 20),
                   const BodyTermsWidget(
                       body:
-                      '''Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum massa dignissim tortor leo lacus. Sapien felis ultrices fringilla nisi sit nibh. Etiam volutpat nisl ornare lorem mus at a, et pulvinar.'''),
+                          '''Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum massa dignissim tortor leo lacus. Sapien felis ultrices fringilla nisi sit nibh. Etiam volutpat nisl ornare lorem mus at a, et pulvinar.'''),
                   const SizedBox(height: 20),
                   const BodyTermsWidget(
                       body:
-                      '''Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum massa dignissim tortor leo lacus. Sapien felis ultrices fringilla nisi sit nibh. Etiam volutpat nisl ornare lorem mus at a, et pulvinar. '''),
+                          '''Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum massa dignissim tortor leo lacus. Sapien felis ultrices fringilla nisi sit nibh. Etiam volutpat nisl ornare lorem mus at a, et pulvinar. '''),
                   const SizedBox(height: 20),
                   const BodyTermsWidget(
                       body:
-                      '''Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum massa dignissim tortor leo lacus. Sapien felis ultrices fringilla nisi sit nibh. Etiam volutpat nisl ornare lorem mus at a, et pulvinar. \n'''),
+                          '''Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum massa dignissim tortor leo lacus. Sapien felis ultrices fringilla nisi sit nibh. Etiam volutpat nisl ornare lorem mus at a, et pulvinar. \n'''),
                   const SizedBox(height: 20),
-                  const BodyTermsWidget(body: '''Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum massa dignissim tortor leo lacus. Sapien felis ultrices fringilla nisi sit nibh. Etiam volutpat nisl ornare lorem mus at a, et pulvinar. \n'''),
+                  const BodyTermsWidget(
+                      body:
+                          '''Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum massa dignissim tortor leo lacus. Sapien felis ultrices fringilla nisi sit nibh. Etiam volutpat nisl ornare lorem mus at a, et pulvinar. \n'''),
                   const SizedBox(height: 20),
-                  const BodyTermsWidget(body: '''Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum massa dignissim tortor leo lacus. Sapien felis ultrices fringilla nisi sit nibh. Etiam volutpat nisl ornare lorem mus at a, et pulvinar. \n'''),
+                  const BodyTermsWidget(
+                      body:
+                          '''Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum massa dignissim tortor leo lacus. Sapien felis ultrices fringilla nisi sit nibh. Etiam volutpat nisl ornare lorem mus at a, et pulvinar. \n'''),
                 ],
               ),
             )

@@ -7,12 +7,14 @@ import 'package:tharwat_pharmacy/Core/Constant/theme_service.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/bottom_widget.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/text_normal_widget.dart';
 
-void messageError(String title, String body, {bool back = false, VoidCallback? onPressBack}) {
+void messageError(String title, String body,
+    {bool back = false, VoidCallback? onPressBack}) {
   Get.defaultDialog(
     backgroundColor: ThemeService.backgroundColor,
     title: title,
     titlePadding: EdgeInsets.all(2.w),
-    titleStyle: GoogleFonts.poppins(color: LightMode.mainColor, fontSize: 6.w, fontWeight: FontWeight.w500),
+    titleStyle: GoogleFonts.poppins(
+        color: LightMode.mainColor, fontSize: 6.w, fontWeight: FontWeight.w500),
     content: Column(
       children: [
         SizedBox(
@@ -20,7 +22,9 @@ void messageError(String title, String body, {bool back = false, VoidCallback? o
           child: TextNormalWidget(
               text: body,
               center: true,
-              color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+              color: ThemeService.isDark
+                  ? LightMode.whiteBlueColor
+                  : LightMode.blackColor,
               size: 3.5.w,
               weight: FontWeight.w400),
         ),
@@ -34,9 +38,9 @@ void messageError(String title, String body, {bool back = false, VoidCallback? o
             onPress: back
                 ? onPressBack
                 : () {
-              Get.appUpdate();
-              Get.back();
-            },
+                    Get.appUpdate();
+                    Get.back();
+                  },
             size: 3.w),
         SizedBox(height: 2.w),
       ],
@@ -49,7 +53,8 @@ void messageErrorVerify(String title, String body, VoidCallback onPress) {
     backgroundColor: ThemeService.backgroundColor,
     title: title,
     titlePadding: EdgeInsets.all(2.w),
-    titleStyle: GoogleFonts.poppins(color: LightMode.mainColor, fontSize: 6.w, fontWeight: FontWeight.w500),
+    titleStyle: GoogleFonts.poppins(
+        color: LightMode.mainColor, fontSize: 6.w, fontWeight: FontWeight.w500),
     content: Column(
       children: [
         SizedBox(
@@ -57,7 +62,9 @@ void messageErrorVerify(String title, String body, VoidCallback onPress) {
           child: TextNormalWidget(
               text: body,
               center: true,
-              color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+              color: ThemeService.isDark
+                  ? LightMode.whiteBlueColor
+                  : LightMode.blackColor,
               size: 3.5.w,
               weight: FontWeight.w400),
         ),
@@ -90,12 +97,14 @@ void messageErrorVerify(String title, String body, VoidCallback onPress) {
   );
 }
 
-void messageErrorWithButton(String title, String body, VoidCallback onPress, String btnTitle) {
+void messageErrorWithButton(
+    String title, String body, VoidCallback onPress, String btnTitle) {
   Get.defaultDialog(
     backgroundColor: ThemeService.backgroundColor,
     title: title,
     titlePadding: EdgeInsets.all(2.w),
-    titleStyle: GoogleFonts.poppins(color: LightMode.mainColor, fontSize: 6.w, fontWeight: FontWeight.w500),
+    titleStyle: GoogleFonts.poppins(
+        color: LightMode.mainColor, fontSize: 6.w, fontWeight: FontWeight.w500),
     content: Column(
       children: [
         SizedBox(
@@ -103,7 +112,9 @@ void messageErrorWithButton(String title, String body, VoidCallback onPress, Str
           child: TextNormalWidget(
               text: body,
               center: true,
-              color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+              color: ThemeService.isDark
+                  ? LightMode.whiteBlueColor
+                  : LightMode.blackColor,
               size: 3.5.w,
               weight: FontWeight.w400),
         ),
@@ -141,7 +152,8 @@ void messageChooseVerify(VoidCallback onPressWats, VoidCallback onPressEmail) {
     backgroundColor: ThemeService.backgroundColor,
     title: "OTP",
     titlePadding: EdgeInsets.only(right: 2.w, left: 2.w, bottom: 2.w, top: 8.w),
-    titleStyle: GoogleFonts.poppins(color: LightMode.mainColor, fontSize: 6.w, fontWeight: FontWeight.w500),
+    titleStyle: GoogleFonts.poppins(
+        color: LightMode.mainColor, fontSize: 6.w, fontWeight: FontWeight.w500),
     content: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -151,7 +163,9 @@ void messageChooseVerify(VoidCallback onPressWats, VoidCallback onPressEmail) {
           child: TextNormalWidget(
               text: "Choose where to send your OTP code",
               center: true,
-              color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor,
+              color: ThemeService.isDark
+                  ? LightMode.whiteBlueColor
+                  : LightMode.blackColor,
               size: 4.w,
               weight: FontWeight.w400),
         ),

@@ -26,9 +26,14 @@ void bottomSheetChangeLang({
             children: [
               InkWell(
                 onTap: () => Get.back(),
-                child: Icon(Icons.close, color: LightMode.blackColor, size: 5.w),
+                child:
+                    Icon(Icons.close, color: LightMode.blackColor, size: 5.w),
               ),
-              TextNormalWidget(text: "اللغة", color: LightMode.blackColor, size: 4.5.w, weight: FontWeight.w700),
+              TextNormalWidget(
+                  text: "اللغة",
+                  color: LightMode.blackColor,
+                  size: 4.5.w,
+                  weight: FontWeight.w700),
               const SizedBox()
             ],
           ),

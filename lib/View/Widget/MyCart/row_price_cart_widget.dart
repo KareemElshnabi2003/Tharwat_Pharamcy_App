@@ -24,15 +24,23 @@ class RowPriceWidget extends StatelessWidget {
         TextNormalWidget(
             text: title,
             color: total
-                ? (ThemeService.isDark ? LightMode.orangeColor : LightMode.redColor)
-                : (ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor),
+                ? (ThemeService.isDark
+                    ? LightMode.orangeColor
+                    : LightMode.redColor)
+                : (ThemeService.isDark
+                    ? LightMode.whiteBlueColor
+                    : LightMode.blackColor),
             size: 3.w,
             weight: FontWeight.w700),
         TextNormalWidget(
             text: "\$$price",
             color: total
-                ? (ThemeService.isDark ? LightMode.orangeColor : LightMode.redColor)
-                : (ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.blackColor),
+                ? (ThemeService.isDark
+                    ? LightMode.orangeColor
+                    : LightMode.redColor)
+                : (ThemeService.isDark
+                    ? LightMode.whiteBlueColor
+                    : LightMode.blackColor),
             size: 3.w,
             weight: FontWeight.w700),
       ],

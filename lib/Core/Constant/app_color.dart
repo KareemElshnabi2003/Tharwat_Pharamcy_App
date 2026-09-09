@@ -13,5 +13,4 @@ class LightMode {
   static const Color yellowColor = Color(0xffFFDD00);
   static const Color nightColor = Color(0xff01093F);
   static const Color darkMainColor = Color(0xff041461);
-
 }

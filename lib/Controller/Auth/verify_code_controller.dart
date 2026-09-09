@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Controller/Auth/forget_pass_controller.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
@@ -65,7 +64,8 @@ class VerifyCodeController extends GetxController {
     if (verifyCodeSign != '') {
       statuesRequest = StatuesRequest.loading;
       update();
-      var response = await authRemoteData.verifyOTP(email: email, otp: verifyCodeSign);
+      var response =
+          await authRemoteData.verifyOTP(email: email, otp: verifyCodeSign);
       statuesRequest = handlingData(response);
 
       handleApiResponse(
@@ -82,12 +82,18 @@ class VerifyCodeController extends GetxController {
             sharedPreferences!.setString("token", "${userAuthModel!.token}");
             sharedPreferences!.setString("name", "${userAuthModel!.name}");
             sharedPreferences!.setString("role", "${userAuthModel!.role}");
-            sharedPreferences!.setString("cityName", userAuthModel!.district!.city!.name ?? "");
-            sharedPreferences!.setString("countryName", "${userAuthModel!.district!.city!.country!.name}");
-            sharedPreferences!.setString("districtName", "${userAuthModel!.district!.name}");
-            sharedPreferences!.setString("cityId", "${userAuthModel!.district!.city!.id}");
-            sharedPreferences!.setString("countryId", "${userAuthModel!.district!.city!.country!.id}");
-            sharedPreferences!.setString("districtId", "${userAuthModel!.district!.id}");
+            sharedPreferences!.setString(
+                "cityName", userAuthModel!.district!.city!.name ?? "");
+            sharedPreferences!.setString("countryName",
+                "${userAuthModel!.district!.city!.country!.name}");
+            sharedPreferences!
+                .setString("districtName", "${userAuthModel!.district!.name}");
+            sharedPreferences!
+                .setString("cityId", "${userAuthModel!.district!.city!.id}");
+            sharedPreferences!.setString(
+                "countryId", "${userAuthModel!.district!.city!.country!.id}");
+            sharedPreferences!
+                .setString("districtId", "${userAuthModel!.district!.id}");
             sharedPreferences!.setString("pageStart", "Home");
             Get.offAll(() => const SuccsessSign());
           }
@@ -101,7 +107,8 @@ class VerifyCodeController extends GetxController {
     if (verifyCodeForget != '') {
       statuesRequest = StatuesRequest.loading;
       update();
-      var response = await authRemoteData.verifyOTP(email: email, otp: verifyCodeForget);
+      var response =
+          await authRemoteData.verifyOTP(email: email, otp: verifyCodeForget);
       statuesRequest = handlingData(response);
 
       handleApiResponse(

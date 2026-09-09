@@ -82,7 +82,7 @@ class CategoryProducts extends StatelessWidget {
   Widget _buildSearchResults(CategoryProductsController controller) {
     if (controller.statuesRequest == StatuesRequest.loading &&
         controller.searchList.isEmpty) {
-      return LoadingWidget(height:  63.h);
+      return LoadingWidget(height: 63.h);
     }
 
     if (controller.searchList.isEmpty) {
@@ -115,15 +115,14 @@ class CategoryProducts extends StatelessWidget {
                 crossAxisSpacing: 4.w,
                 mainAxisSpacing: 4.w,
               ),
-              itemBuilder: (context, index) =>
-                  GetBuilder<FavouriteController>(
+              itemBuilder: (context, index) => GetBuilder<FavouriteController>(
                 builder: (favController) => ProductWidget(
-                  body: controller.searchList[index].itmNameEn??"",
-                  decorationImage:
-                      controller.searchList[index].primaryImage == null
-                          ? AssetImage(AppImages.noImage)
-                          : CachedNetworkImageProvider(
-                              "${AppApi.imgUrl}/${controller.searchList[index].primaryImage}"),
+                  body: controller.searchList[index].itmNameEn ?? "",
+                  decorationImage: controller.searchList[index].primaryImage ==
+                          null
+                      ? AssetImage(AppImages.noImage)
+                      : CachedNetworkImageProvider(
+                          "${AppApi.imgUrl}/${controller.searchList[index].primaryImage}"),
                   fav: favController.favProductsId
                           .contains(controller.searchList[index].id)
                       ? true
@@ -141,14 +140,13 @@ class CategoryProducts extends StatelessWidget {
                       () => const ProductInfo(),
                       arguments: {
                         "id": controller.searchList[index].id.toString(),
-                                                "product":controller.searchList[index]
-
+                        "product": controller.searchList[index]
                       },
                     );
                   },
-                  price: controller.searchList[index].itmSellPrice??"",
+                  price: controller.searchList[index].itmSellPrice ?? "",
                   rate: 5,
-                  title: controller.searchList[index].itmNameEn??"",
+                  title: controller.searchList[index].itmNameEn ?? "",
                 ),
               ),
             ),
@@ -184,7 +182,7 @@ class CategoryProducts extends StatelessWidget {
   Widget _buildProducts(CategoryProductsController controller) {
     if (controller.statuesRequest == StatuesRequest.loading &&
         controller.products.isEmpty) {
-      return LoadingWidget(height:  63.h);
+      return LoadingWidget(height: 63.h);
     }
 
     if (controller.products.isEmpty) {
@@ -217,15 +215,14 @@ class CategoryProducts extends StatelessWidget {
                 crossAxisSpacing: 4.w,
                 mainAxisSpacing: 4.w,
               ),
-              itemBuilder: (context, index) =>
-                  GetBuilder<FavouriteController>(
+              itemBuilder: (context, index) => GetBuilder<FavouriteController>(
                 builder: (favController) => ProductWidget(
-                  body: controller.products[index].itmNameEn??"",
-                  decorationImage:
-                      controller.products[index].primaryImage == null
-                          ? AssetImage(AppImages.noImage)
-                          : CachedNetworkImageProvider(
-                              "${AppApi.imgUrl}/${controller.products[index].primaryImage}"),
+                  body: controller.products[index].itmNameEn ?? "",
+                  decorationImage: controller.products[index].primaryImage ==
+                          null
+                      ? AssetImage(AppImages.noImage)
+                      : CachedNetworkImageProvider(
+                          "${AppApi.imgUrl}/${controller.products[index].primaryImage}"),
                   fav: favController.favProductsId
                           .contains(controller.products[index].id)
                       ? true
@@ -243,14 +240,13 @@ class CategoryProducts extends StatelessWidget {
                       () => const ProductInfo(),
                       arguments: {
                         "id": controller.products[index].id.toString(),
-                                                "product":controller.products[index]
-
+                        "product": controller.products[index]
                       },
                     );
                   },
-                  price: controller.products[index].itmSellPrice??"",
+                  price: controller.products[index].itmSellPrice ?? "",
                   rate: 5,
-                  title: controller.products[index].itmNameEn??"",
+                  title: controller.products[index].itmNameEn ?? "",
                 ),
               ),
             ),

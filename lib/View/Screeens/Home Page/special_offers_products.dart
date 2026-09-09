@@ -43,11 +43,11 @@ class SpecialOffersProducts extends StatelessWidget {
                 Get.back();
               },
             ),
-    
+
             // Search Bar
             Padding(
               padding: EdgeInsets.only(right: 7.w, left: 7.w, top: 3.h),
-              child:SearchFilterWidget(
+              child: SearchFilterWidget(
                 onPressFilter: () {
                   Get.to(() => const Filter());
                 },
@@ -64,7 +64,7 @@ class SpecialOffersProducts extends StatelessWidget {
                 colorText: LightMode.whiteColor,
               ),
             ),
-    
+
             // Products Grid
             Expanded(
               child: RefreshIndicator(
@@ -86,7 +86,7 @@ class SpecialOffersProducts extends StatelessWidget {
   Widget _buildSearchResults(SpecialOffersController controller) {
     if (controller.statuesRequest == StatuesRequest.loading &&
         controller.searchList.isEmpty) {
-      return LoadingWidget(height:63.h);
+      return LoadingWidget(height: 63.h);
     }
 
     if (controller.searchList.isEmpty) {
@@ -94,7 +94,7 @@ class SpecialOffersProducts extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         child: SizedBox(
           height: 60.h,
-          child: Center(
+          child: const Center(
             child: NoDataWidget(text: "No Items ."),
           ),
         ),
@@ -122,7 +122,7 @@ class SpecialOffersProducts extends StatelessWidget {
               ),
               itemBuilder: (context, index) => GetBuilder<FavouriteController>(
                 builder: (favController) => ProductWidget(
-                  body: controller.searchList[index].itmNameEn??"",
+                  body: controller.searchList[index].itmNameEn ?? "",
                   decorationImage: controller.searchList[index].primaryImage ==
                           null
                       ? AssetImage(AppImages.noImage)
@@ -145,13 +145,13 @@ class SpecialOffersProducts extends StatelessWidget {
                       () => const ProductInfo(),
                       arguments: {
                         "id": controller.searchList[index].id.toString(),
-                        "product":controller.searchList[index]
+                        "product": controller.searchList[index]
                       },
                     );
                   },
-                  price: controller.searchList[index].itmSellPrice??"",
+                  price: controller.searchList[index].itmSellPrice ?? "",
                   rate: 5,
-                  title: controller.searchList[index].itmNameEn??"",
+                  title: controller.searchList[index].itmNameEn ?? "",
                 ),
               ),
             ),
@@ -187,7 +187,7 @@ class SpecialOffersProducts extends StatelessWidget {
   Widget _buildOfferProducts(SpecialOffersController controller) {
     if (controller.statuesRequest == StatuesRequest.loading &&
         controller.offerProducts.isEmpty) {
-      return LoadingWidget(height:62.h);
+      return LoadingWidget(height: 62.h);
     }
 
     if (controller.offerProducts.isEmpty) {
@@ -195,7 +195,7 @@ class SpecialOffersProducts extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         child: SizedBox(
           height: 60.h,
-          child: Center(
+          child: const Center(
             child: NoDataWidget(text: "No Products Yet"),
           ),
         ),
@@ -223,7 +223,7 @@ class SpecialOffersProducts extends StatelessWidget {
               ),
               itemBuilder: (context, index) => GetBuilder<FavouriteController>(
                 builder: (favController) => ProductWidget(
-                  body: controller.offerProducts[index].itmNameEn??"",
+                  body: controller.offerProducts[index].itmNameEn ?? "",
                   decorationImage: controller
                               .offerProducts[index].primaryImage ==
                           null
@@ -247,13 +247,13 @@ class SpecialOffersProducts extends StatelessWidget {
                       () => const ProductInfo(),
                       arguments: {
                         "id": controller.offerProducts[index].id.toString(),
-                        "product":controller.offerProducts[index]
+                        "product": controller.offerProducts[index]
                       },
                     );
                   },
-                  price: controller.offerProducts[index].itmSellPrice??"",
+                  price: controller.offerProducts[index].itmSellPrice ?? "",
                   rate: 5,
-                  title: controller.offerProducts[index].itmNameEn??"",
+                  title: controller.offerProducts[index].itmNameEn ?? "",
                 ),
               ),
             ),

@@ -4,7 +4,6 @@ import 'package:screen_go/extensions/responsive_nums.dart';
 import 'package:tharwat_pharmacy/Controller/Home/special_offers_controller.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_api.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
-import 'package:tharwat_pharmacy/Core/Constant/app_images.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home%20Page/special_offers_products.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Notification/notificatio_page.dart';
@@ -44,13 +43,13 @@ class SpecialOffers extends StatelessWidget {
                 },
                 child: controller.statuesRequest == StatuesRequest.loading &&
                         controller.offers.isEmpty
-                    ? LoadingWidget(height:80.h)
+                    ? LoadingWidget(height: 80.h)
                     : controller.offers.isEmpty
                         ? SingleChildScrollView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             child: SizedBox(
                               height: 80.h,
-                              child: Center(
+                              child: const Center(
                                 child: NoDataWidget(text: "No Offers"),
                               ),
                             ),
@@ -104,7 +103,7 @@ class SpecialOffers extends StatelessWidget {
                               return SpecialCardWidget(
                                 decorationImage:
                                     "${AppApi.imgUrl}/${controller.offers[index].image}",
-                                titleBTN_1: controller.offers[index].name??"",
+                                titleBTN_1: controller.offers[index].name ?? "",
                                 onPressBTN_2: () async {
                                   await controller.getOfferProducts();
                                   Get.to(() => const SpecialOffersProducts(),
@@ -113,8 +112,9 @@ class SpecialOffers extends StatelessWidget {
                                             .toString()
                                       });
                                 },
-                                descripe: controller.offers[index].description??'',
-                                offer: controller.offers[index].type??"",
+                                descripe:
+                                    controller.offers[index].description ?? '',
+                                offer: controller.offers[index].type ?? "",
                               );
                             },
                           ),

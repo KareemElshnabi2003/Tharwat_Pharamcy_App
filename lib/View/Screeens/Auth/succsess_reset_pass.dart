@@ -34,14 +34,20 @@ class _SuccsessResetPassState extends State<SuccsessResetPass> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(AppImages.succsessImage, width: 25.w, height: 25.w, fit: BoxFit.fill),
+            Image.asset(AppImages.succsessImage,
+                width: 25.w, height: 25.w, fit: BoxFit.fill),
             SizedBox(height: 5.w),
-            TextNormalWidget(text: "Welcome Back!", color: LightMode.whiteColor, size: 7.w, weight: FontWeight.bold),
+            TextNormalWidget(
+                text: "Welcome Back!",
+                color: LightMode.whiteColor,
+                size: 7.w,
+                weight: FontWeight.bold),
             SizedBox(height: 5.w),
             SizedBox(
               width: 80.w,
               child: TextNormalWidget(
-                  text: "You have successfully reset and created a new password. You will be redirected to the Login Page within moments.",
+                  text:
+                      "You have successfully reset and created a new password. You will be redirected to the Login Page within moments.",
                   color: LightMode.whiteColor,
                   size: 4.w,
                   center: true,

@@ -34,14 +34,20 @@ class _SuccsessSignState extends State<SuccsessSign> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(AppImages.succsessImage, width: 25.w, height: 25.w, fit: BoxFit.fill),
+            Image.asset(AppImages.succsessImage,
+                width: 25.w, height: 25.w, fit: BoxFit.fill),
             SizedBox(height: 5.w),
-            TextNormalWidget(text: "Welcome Back!", color: LightMode.whiteColor, size: 7.w, weight: FontWeight.bold),
+            TextNormalWidget(
+                text: "Welcome Back!",
+                color: LightMode.whiteColor,
+                size: 7.w,
+                weight: FontWeight.bold),
             SizedBox(height: 5.w),
             SizedBox(
               width: 80.w,
               child: TextNormalWidget(
-                  text: "Your Account has been created Successfully. You will be redirected to the homepage within moments.",
+                  text:
+                      "Your Account has been created Successfully. You will be redirected to the homepage within moments.",
                   color: LightMode.whiteColor,
                   center: true,
                   multi: true,

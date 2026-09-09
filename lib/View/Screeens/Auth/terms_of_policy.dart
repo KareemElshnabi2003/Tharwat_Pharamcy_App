@@ -20,18 +20,23 @@ class TermsOfPolicy extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-           AppBarPageWidget(back: true,onPress:  () {
-              Get.back();
-            },title:  "Privacy Policy",colorText: LightMode.mainColor,colorIcon:  LightMode.mainColor),
+            AppBarPageWidget(
+                back: true,
+                onPress: () {
+                  Get.back();
+                },
+                title: "Privacy Policy",
+                colorText: LightMode.mainColor,
+                colorIcon: LightMode.mainColor),
             Padding(
               padding: EdgeInsets.all(5.w),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BodyTermsWidget(
                       body:
                           '''[Tharwat Pharmacy] we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and protect your personal information when you use our services.'''),
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                   TitleTermsWidget(text: "1. Information We Collect:"),
@@ -41,7 +46,7 @@ class TermsOfPolicy extends StatelessWidget {
 - Personal Information: Name, email address, phone number, and other details you provide when registering or using our services.
 - Usage Data: Information about how you interact with our services, including IP address, device information, and browsing activity.
 - Cookies and Tracking Technologies: We may use cookies and similar technologies to enhance user experience and analyze usage trends.'''),
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                   TitleTermsWidget(text: "2. How We Use Your Information:"),
@@ -51,7 +56,7 @@ We use the information we collect to:
 - Personalize user experience.
 - Send updates, promotions, and other communications (with your consent).
 - Protect against fraudulent or unauthorized activities.'''),
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                   TitleTermsWidget(text: "3. How We Share Your Information:"),
@@ -61,14 +66,14 @@ We use the information we collect to:
 - Service Providers: Third-party vendors who help us operate our services.
 - Legal Authorities: If required by law or to protect our rights and users.
 - Business Transfers: In case of a merger, acquisition, or sale of assets.'''),
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                   TitleTermsWidget(text: "4. Data Security:"),
                   BodyTermsWidget(
                       body:
                           '''We implement appropriate security measures to protect your information, but no method of transmission over the Internet is 100% secure. We encourage you to take precautions when sharing personal data.'''),
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                   TitleTermsWidget(text: "5. Your Rights and Choices:"),
@@ -76,21 +81,21 @@ We use the information we collect to:
 - Access, update, or delete your personal information.
 - Opt-out of marketing communications.
 - Disable cookies through browser settings.'''),
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                   TitleTermsWidget(text: "6. Third-Party Links:"),
                   BodyTermsWidget(
                       body:
                           '''Our services may contain links to third-party websites. We are not responsible for their privacy practices, and we encourage you to review their policies.'''),
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                   TitleTermsWidget(text: "7. Changes to This Privacy Policy:"),
                   BodyTermsWidget(
                       body:
                           '''We may update this Privacy Policy from time to time. Continued use of our services after changes take effect constitutes your acceptance of the revised policy.'''),
-                  const SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                 ],

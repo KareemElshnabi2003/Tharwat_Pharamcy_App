@@ -26,16 +26,28 @@ class CuponWidget extends StatelessWidget {
           child: TextFormField(
             controller: couponController,
             style: GoogleFonts.poppins(
-                color: ThemeService.isDark ? LightMode.whiteBlueColor : LightMode.mainColor,
+                color: ThemeService.isDark
+                    ? LightMode.whiteBlueColor
+                    : LightMode.mainColor,
                 fontSize: 3.w,
                 fontWeight: FontWeight.w500),
             decoration: InputDecoration(
-              fillColor: ThemeService.isDark ? LightMode.darkMainColor : LightMode.whiteBlueColor,
+              fillColor: ThemeService.isDark
+                  ? LightMode.darkMainColor
+                  : LightMode.whiteBlueColor,
               filled: true,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(2.w), borderSide: BorderSide.none),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(2.w), borderSide: BorderSide.none),
-              disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(2.w), borderSide: BorderSide.none),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(2.w), borderSide: BorderSide.none),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(2.w),
+                  borderSide: BorderSide.none),
+              enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(2.w),
+                  borderSide: BorderSide.none),
+              disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(2.w),
+                  borderSide: BorderSide.none),
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(2.w),
+                  borderSide: BorderSide.none),
               contentPadding: EdgeInsets.only(right: 3.w, left: 3.w, top: 2.w),
               hintStyle: GoogleFonts.poppins(
                   color: LightMode.mainColor,
@@ -49,7 +61,9 @@ class CuponWidget extends StatelessWidget {
             text: "Confirm",
             decoration: false,
             onPress: onPressConfirm,
-            color: ThemeService.isDark ? LightMode.orangeColor : LightMode.redColor,
+            color: ThemeService.isDark
+                ? LightMode.orangeColor
+                : LightMode.redColor,
             size: 3.w),
         SizedBox(width: 2.w),
       ],

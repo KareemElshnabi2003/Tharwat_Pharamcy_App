@@ -44,10 +44,26 @@ class OrderCardWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextNormalWidget(text: orderNum, color: LightMode.mainColor, size: 4.w, weight: FontWeight.w600),
               TextNormalWidget(
-                  text: index == 0 ? "Pending" : index == 1 ? "Active" : index == 2 ? "Completed" : "Canceled",
-                  color: index == 0 ? LightMode.greyColor : index == 1 ? LightMode.orangeColor : index == 2 ? LightMode.greenColor : LightMode.redColor,
+                  text: orderNum,
+                  color: LightMode.mainColor,
+                  size: 4.w,
+                  weight: FontWeight.w600),
+              TextNormalWidget(
+                  text: index == 0
+                      ? "Pending"
+                      : index == 1
+                          ? "Active"
+                          : index == 2
+                              ? "Completed"
+                              : "Canceled",
+                  color: index == 0
+                      ? LightMode.greyColor
+                      : index == 1
+                          ? LightMode.orangeColor
+                          : index == 2
+                              ? LightMode.greenColor
+                              : LightMode.redColor,
                   size: 3.5.w,
                   weight: FontWeight.w700),
             ],
@@ -59,22 +75,39 @@ class OrderCardWidget extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextNormalWidget(text: "Total Price", color: ThemeService.unselectedColor, size: 3.w, weight: FontWeight.w600),
-                  TextNormalWidget(text: price, color: LightMode.mainColor, size: 3.w, weight: FontWeight.w500),
+                  TextNormalWidget(
+                      text: "Total Price",
+                      color: ThemeService.unselectedColor,
+                      size: 3.w,
+                      weight: FontWeight.w600),
+                  TextNormalWidget(
+                      text: price,
+                      color: LightMode.mainColor,
+                      size: 3.w,
+                      weight: FontWeight.w500),
                 ],
               ),
               Row(
                 children: [
                   SizedBox(
                     height: 5.h,
-                    child: VerticalDivider(thickness: 2, color: ThemeService.unselectedColor),
+                    child: VerticalDivider(
+                        thickness: 2, color: ThemeService.unselectedColor),
                   ),
                   const SizedBox(width: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextNormalWidget(text: "Date & Time", color: ThemeService.unselectedColor, size: 3.w, weight: FontWeight.w600),
-                      TextNormalWidget(text: date, color: LightMode.mainColor, size: 3.w, weight: FontWeight.w500),
+                      TextNormalWidget(
+                          text: "Date & Time",
+                          color: ThemeService.unselectedColor,
+                          size: 3.w,
+                          weight: FontWeight.w600),
+                      TextNormalWidget(
+                          text: date,
+                          color: LightMode.mainColor,
+                          size: 3.w,
+                          weight: FontWeight.w500),
                     ],
                   ),
                   const SizedBox(width: 50)
@@ -103,7 +136,8 @@ class OrderCardWidget extends StatelessWidget {
                     margin: false,
                     onPress: () {
                       bottomSheetMessage(
-                          body: "Are you sure you finished delivering the order?",
+                          body:
+                              "Are you sure you finished delivering the order?",
                           context: context,
                           onPressNo: () => Get.back(),
                           onPressYes: onPressYes,

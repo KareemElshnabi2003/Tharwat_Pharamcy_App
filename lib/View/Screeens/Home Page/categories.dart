@@ -28,7 +28,7 @@ class CategoriesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     HomeController homeController = Get.put(HomeController());
     Get.put(CategoriesController());
-    
+
     return Scaffold(
       backgroundColor: sharedPreferences!.getString("Mood") == "Dark"
           ? LightMode.nightColor
@@ -47,7 +47,7 @@ class CategoriesPage extends StatelessWidget {
                 Get.to(() => const NotificatioPage());
               },
             ),
-            
+
             SizedBox(height: 3.h),
 
             // Categories Horizontal List
@@ -60,18 +60,20 @@ class CategoriesPage extends StatelessWidget {
                 shrinkWrap: true,
                 itemBuilder: (context, index) => ButtonWidget(
                   colorBorder: LightMode.mainColor,
-                  colorFill: controller.indexCat == controller.categories[index].id
-                      ? sharedPreferences!.getString("Mood") == "Dark"
-                          ? LightMode.darkMainColor
-                          : LightMode.mainColor
-                      : sharedPreferences!.getString("Mood") == "Dark"
-                          ? LightMode.nightColor
-                          : LightMode.whiteColor,
-                  colorText: controller.indexCat == controller.categories[index].id
-                      ? LightMode.whiteColor
-                      : LightMode.mainColor,
+                  colorFill:
+                      controller.indexCat == controller.categories[index].id
+                          ? sharedPreferences!.getString("Mood") == "Dark"
+                              ? LightMode.darkMainColor
+                              : LightMode.mainColor
+                          : sharedPreferences!.getString("Mood") == "Dark"
+                              ? LightMode.nightColor
+                              : LightMode.whiteColor,
+                  colorText:
+                      controller.indexCat == controller.categories[index].id
+                          ? LightMode.whiteColor
+                          : LightMode.mainColor,
                   width: 30.w,
-                  text: controller.categories[index].name??"",
+                  text: controller.categories[index].name ?? "",
                   onPress: () {
                     controller.changeIndex(controller.categories[index].id);
                   },
@@ -96,7 +98,7 @@ class CategoriesPage extends StatelessWidget {
   Widget _buildSubCategories(CategoriesController controller) {
     if (controller.statuesRequest == StatuesRequest.loading &&
         controller.subCategories.isEmpty) {
-      return LoadingWidget( height:  80.h);
+      return LoadingWidget(height: 80.h);
     }
 
     if (controller.subCategories.isEmpty) {
@@ -137,7 +139,7 @@ class CategoriesPage extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-               CategoryCardWidget(
+                CategoryCardWidget(
                   onPress: () {
                     Get.to(() => const CategoryProducts(), arguments: {
                       "name": controller.subCategories[index].name,
@@ -145,7 +147,7 @@ class CategoriesPage extends StatelessWidget {
                     });
                   },
                   image: _buildCategoryImage(controller.subCategories[index]),
-                  text: controller.subCategories[index].name??"",
+                  text: controller.subCategories[index].name ?? "",
                 ),
               ],
             );
@@ -159,7 +161,7 @@ class CategoriesPage extends StatelessWidget {
               });
             },
             image: _buildCategoryImage(controller.subCategories[index]),
-            text: controller.subCategories[index].name??"",
+            text: controller.subCategories[index].name ?? "",
           );
         },
       ),

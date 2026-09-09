@@ -19,7 +19,7 @@ class RateWidget extends StatelessWidget {
       children: [
         ...List.generate(
           numOfStar > 5 ? 5 : numOfStar,
-              (index) => Padding(
+          (index) => Padding(
             padding: EdgeInsets.only(right: 1.w),
             child: Icon(
               Icons.star,
@@ -29,7 +29,11 @@ class RateWidget extends StatelessWidget {
           ),
         ),
         SizedBox(width: 1.w),
-        TextNormalWidget(text: "$rate", color: LightMode.blackColor, size: 3.w, weight: FontWeight.w600),
+        TextNormalWidget(
+            text: "$rate",
+            color: LightMode.blackColor,
+            size: 3.w,
+            weight: FontWeight.w600),
       ],
     );
   }

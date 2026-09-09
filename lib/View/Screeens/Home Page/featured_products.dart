@@ -67,8 +67,10 @@ class FeaturedProducts extends StatelessWidget {
   }
 
   Widget _buildSearchResults(FeaturedProductsController controller) {
-    if (controller.statuesRequest == StatuesRequest.loading && controller.searchList.isEmpty) return LoadingWidget(height: 60.h);
-    if (controller.searchList.isEmpty) return Center(child: const NoDataWidget(text: "No Items."));
+    if (controller.statuesRequest == StatuesRequest.loading &&
+        controller.searchList.isEmpty) return LoadingWidget(height: 60.h);
+    if (controller.searchList.isEmpty)
+      return const Center(child: NoDataWidget(text: "No Items."));
     return ListView(
       controller: controller.scrollController,
       children: [
@@ -76,16 +78,27 @@ class FeaturedProducts extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: controller.searchList.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: .72, crossAxisSpacing: 4.w, mainAxisSpacing: 4.w),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: .72,
+              crossAxisSpacing: 4.w,
+              mainAxisSpacing: 4.w),
           itemBuilder: (context, index) => GetBuilder<FavouriteController>(
             builder: (fav) => ProductWidget(
               body: controller.searchList[index].itmNameEn ?? "",
               decorationImage: controller.searchList[index].primaryImage == null
-                  ? AssetImage(AppImages.noImage) : CachedNetworkImageProvider("${AppApi.imgUrl}/${controller.searchList[index].primaryImage}"),
+                  ? AssetImage(AppImages.noImage)
+                  : CachedNetworkImageProvider(
+                      "${AppApi.imgUrl}/${controller.searchList[index].primaryImage}"),
               fav: fav.favProductsId.contains(controller.searchList[index].id),
-              onPressFav: () => fav.favProductsId.contains(controller.searchList[index].id)
-                  ? fav.notFavProducts(controller.searchList[index].id) : fav.favProducts(controller.searchList[index].id),
-              onPressShop: () => Get.to(() => const ProductInfo(), arguments: {"id": controller.searchList[index].id.toString(), "product": controller.searchList[index]}),
+              onPressFav: () =>
+                  fav.favProductsId.contains(controller.searchList[index].id)
+                      ? fav.notFavProducts(controller.searchList[index].id)
+                      : fav.favProducts(controller.searchList[index].id),
+              onPressShop: () => Get.to(() => const ProductInfo(), arguments: {
+                "id": controller.searchList[index].id.toString(),
+                "product": controller.searchList[index]
+              }),
               price: controller.searchList[index].itmSellPrice ?? "0",
               title: controller.searchList[index].itmNameEn ?? "",
             ),
@@ -96,27 +109,41 @@ class FeaturedProducts extends StatelessWidget {
   }
 
   Widget _buildFeaturedProducts(FeaturedProductsController controller) {
-    if (controller.statuesRequest == StatuesRequest.loading && controller.trendProducts.isEmpty) return LoadingWidget(height: 60.h);
-    if (controller.trendProducts.isEmpty) return Center(child: const NoDataWidget(text: "No Products Yet"));
+    if (controller.statuesRequest == StatuesRequest.loading &&
+        controller.trendProducts.isEmpty) return LoadingWidget(height: 60.h);
+    if (controller.trendProducts.isEmpty)
+      return const Center(child: NoDataWidget(text: "No Products Yet"));
     return ListView(
       padding: EdgeInsets.only(right: 7.w, left: 7.w),
-
       controller: controller.scrollController,
       children: [
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: controller.trendProducts.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: .72, crossAxisSpacing: 4.w, mainAxisSpacing: 4.w),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: .72,
+              crossAxisSpacing: 4.w,
+              mainAxisSpacing: 4.w),
           itemBuilder: (context, index) => GetBuilder<FavouriteController>(
             builder: (fav) => ProductWidget(
               body: controller.trendProducts[index].itmNameEn ?? "",
-              decorationImage: controller.trendProducts[index].primaryImage == null
-                  ? AssetImage(AppImages.noImage) : CachedNetworkImageProvider("${AppApi.imgUrl}/${controller.trendProducts[index].primaryImage}"),
-              fav: fav.favProductsId.contains(controller.trendProducts[index].id),
-              onPressFav: () => fav.favProductsId.contains(controller.trendProducts[index].id)
-                  ? fav.notFavProducts(controller.trendProducts[index].id) : fav.favProducts(controller.trendProducts[index].id),
-              onPressShop: () => Get.to(() => const ProductInfo(), arguments: {"id": controller.trendProducts[index].id.toString(), "product": controller.trendProducts[index]}),
+              decorationImage: controller.trendProducts[index].primaryImage ==
+                      null
+                  ? AssetImage(AppImages.noImage)
+                  : CachedNetworkImageProvider(
+                      "${AppApi.imgUrl}/${controller.trendProducts[index].primaryImage}"),
+              fav: fav.favProductsId
+                  .contains(controller.trendProducts[index].id),
+              onPressFav: () =>
+                  fav.favProductsId.contains(controller.trendProducts[index].id)
+                      ? fav.notFavProducts(controller.trendProducts[index].id)
+                      : fav.favProducts(controller.trendProducts[index].id),
+              onPressShop: () => Get.to(() => const ProductInfo(), arguments: {
+                "id": controller.trendProducts[index].id.toString(),
+                "product": controller.trendProducts[index]
+              }),
               price: controller.trendProducts[index].itmSellPrice ?? "0",
               title: controller.trendProducts[index].itmNameEn ?? "",
             ),

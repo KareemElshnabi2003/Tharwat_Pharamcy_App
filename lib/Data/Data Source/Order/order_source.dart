@@ -118,14 +118,15 @@ class OrderRemoteData {
   }
 
   updateOrder({required id}) async {
-    var response = await api
-        .updatePatchData("${AppApi.updateOrderDeliveryUrl}/$id", {
+    var response =
+        await api.updatePatchData("${AppApi.updateOrderDeliveryUrl}/$id", {
       "Accept": "application/json",
-      'authorization': 'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
+      'authorization':
+          'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
       "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
       'Content-Type': 'application/json; charset=UTF-8'
-    },{
-      "status":2
+    }, {
+      "status": 2
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -134,29 +135,32 @@ class OrderRemoteData {
     var response = await api
         .getData("${AppApi.getMyOrderDeliveryUrl}?page=$page&per_page=10", {
       "Accept": "application/json",
-      'authorization': 'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
+      'authorization':
+          'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
       "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
       'Content-Type': 'application/json; charset=UTF-8'
     });
     return response.fold((l) => l, (r) => r);
   }
 
-  getPendingDeliveryOrders({ page}) async {
-    var response = await api
-        .getData("${AppApi.getPendingOrderDeliveryUrl}?page=$page&per_page=10", {
+  getPendingDeliveryOrders({page}) async {
+    var response = await api.getData(
+        "${AppApi.getPendingOrderDeliveryUrl}?page=$page&per_page=10", {
       "Accept": "application/json",
-      'authorization': 'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
+      'authorization':
+          'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
       "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
       'Content-Type': 'application/json; charset=UTF-8'
     });
     return response.fold((l) => l, (r) => r);
   }
-  
-  getCompletedDeliveryOrders({ page}) async {
-    var response = await api
-        .getData("${AppApi.getCompleteOrderDeliveryUrl}?page=$page&per_page=10", {
+
+  getCompletedDeliveryOrders({page}) async {
+    var response = await api.getData(
+        "${AppApi.getCompleteOrderDeliveryUrl}?page=$page&per_page=10", {
       "Accept": "application/json",
-      'authorization': 'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
+      'authorization':
+          'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
       "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
       'Content-Type': 'application/json; charset=UTF-8'
     });

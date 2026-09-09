@@ -39,11 +39,13 @@ class AppBarFavWidget extends StatelessWidget {
         ],
         color: ThemeService.isDark ? LightMode.nightColor : LightMode.mainColor,
         borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(5.w), bottomRight: Radius.circular(5.w)),
+            bottomLeft: Radius.circular(5.w),
+            bottomRight: Radius.circular(5.w)),
       ),
       child: Column(
         children: [
-          AppBarWidget( // تم استخدام الكلاس الجديد هنا
+          AppBarWidget(
+              // تم استخدام الكلاس الجديد هنا
               title: "Favourite",
               colorWhite: true,
               onPressBack: onPressBack,

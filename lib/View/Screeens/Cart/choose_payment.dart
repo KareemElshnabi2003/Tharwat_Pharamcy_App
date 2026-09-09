@@ -27,8 +27,12 @@ class ChoosePayment extends StatelessWidget {
                 back: true,
                 onPress: () => Get.back(),
                 title: "Payment Methods",
-                colorText: ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor,
-                colorIcon: ThemeService.isDark ? LightMode.mainColor : LightMode.blackColor,
+                colorText: ThemeService.isDark
+                    ? LightMode.mainColor
+                    : LightMode.blackColor,
+                colorIcon: ThemeService.isDark
+                    ? LightMode.mainColor
+                    : LightMode.blackColor,
               ),
               const SizedBox(height: 20),
               Padding(
@@ -42,7 +46,13 @@ class ChoosePayment extends StatelessWidget {
                         children: [
                           TypeUserChooseWidget(
                               groubVal: controller.payment,
-                              img: Image.asset(AppImages.cashImage, width: 7.w, height: 7.w, color: controller.payment == "cash" && ThemeService.isDark ? LightMode.whiteColor : null),
+                              img: Image.asset(AppImages.cashImage,
+                                  width: 7.w,
+                                  height: 7.w,
+                                  color: controller.payment == "cash" &&
+                                          ThemeService.isDark
+                                      ? LightMode.whiteColor
+                                      : null),
                               payment: true,
                               onChanged: (val) => controller.choose(val),
                               onTap: () => controller.choose("cash"),
@@ -50,15 +60,31 @@ class ChoosePayment extends StatelessWidget {
                               choose: controller.payment == "cash"),
                           TypeUserChooseWidget(
                               groubVal: controller.payment,
-                              img: Image.asset(AppImages.cardImage, width: 7.w, height: 7.w, color: controller.payment == "credit / debit card" && ThemeService.isDark ? LightMode.whiteBlueColor : null),
+                              img: Image.asset(AppImages.cardImage,
+                                  width: 7.w,
+                                  height: 7.w,
+                                  color: controller.payment ==
+                                              "credit / debit card" &&
+                                          ThemeService.isDark
+                                      ? LightMode.whiteBlueColor
+                                      : null),
                               payment: true,
                               onChanged: (val) => controller.choose(val),
-                              onTap: () => controller.choose("credit / debit card"),
+                              onTap: () =>
+                                  controller.choose("credit / debit card"),
                               typeUser: "credit / debit card",
-                              choose: controller.payment == "credit / debit card"),
+                              choose:
+                                  controller.payment == "credit / debit card"),
                           TypeUserChooseWidget(
                               groubVal: controller.payment,
-                              img: Image.asset(AppImages.vodafoneImage, width: 7.w, height: 7.w, color: controller.payment == "vodafone cash" && ThemeService.isDark ? LightMode.whiteBlueColor : null),
+                              img: Image.asset(AppImages.vodafoneImage,
+                                  width: 7.w,
+                                  height: 7.w,
+                                  color:
+                                      controller.payment == "vodafone cash" &&
+                                              ThemeService.isDark
+                                          ? LightMode.whiteBlueColor
+                                          : null),
                               payment: true,
                               onChanged: (val) => controller.choose(val),
                               onTap: () => controller.choose("vodafone cash"),
@@ -66,12 +92,21 @@ class ChoosePayment extends StatelessWidget {
                               choose: controller.payment == "vodafone cash"),
                           TypeUserChooseWidget(
                               groubVal: controller.payment,
-                              img: Image.asset(AppImages.instapayImage, width: 30.w, height: 7.w, color: (controller.payment == "" || controller.payment == "instapay") && ThemeService.isDark ? LightMode.whiteBlueColor : null),
+                              img: Image.asset(AppImages.instapayImage,
+                                  width: 30.w,
+                                  height: 7.w,
+                                  color: (controller.payment == "" ||
+                                              controller.payment ==
+                                                  "instapay") &&
+                                          ThemeService.isDark
+                                      ? LightMode.whiteBlueColor
+                                      : null),
                               payment: true,
                               onChanged: (val) => controller.choose(val),
                               onTap: () => controller.choose("instapay"),
                               typeUser: "instapay",
-                              choose: controller.payment == "" || controller.payment == "instapay"),
+                              choose: controller.payment == "" ||
+                                  controller.payment == "instapay"),
                         ],
                       ),
                       ButtonWidget(
@@ -80,12 +115,21 @@ class ChoosePayment extends StatelessWidget {
                           colorText: LightMode.whiteColor,
                           margin: false,
                           onPress: () {
-                            if (controller.payment != null && controller.payment != "") {
-                              Get.to(() => const CheckOutPage(), arguments: {"totalCost": controller.totalCost, "payment": controller.payment});
-                            } else if (controller.payment == "" || controller.payment == "instapay") {
-                              Get.to(() => const CheckOutPage(), arguments: {"totalCost": controller.totalCost, "payment": "instapay"});
+                            if (controller.payment != null &&
+                                controller.payment != "") {
+                              Get.to(() => const CheckOutPage(), arguments: {
+                                "totalCost": controller.totalCost,
+                                "payment": controller.payment
+                              });
+                            } else if (controller.payment == "" ||
+                                controller.payment == "instapay") {
+                              Get.to(() => const CheckOutPage(), arguments: {
+                                "totalCost": controller.totalCost,
+                                "payment": "instapay"
+                              });
                             } else {
-                              messageError("Warning", "Please Choose Payment Method.");
+                              messageError(
+                                  "Warning", "Please Choose Payment Method.");
                             }
                           },
                           size: 3.5.w,

@@ -19,26 +19,28 @@ class MyOrdersDelivery extends StatelessWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
         homeController.changePage(0);
         homeController.choose_1 = true;
         homeController.choose_2 = false;
-      },
+      });
+        },
       child: Scaffold(
         backgroundColor: LightMode.whiteColor,
         body: Column(
           children: [
-           AppBarPageWidget(
-             back:
-              true,
-              onPress:() {
+            AppBarPageWidget(
+              back: true,
+              onPress: () {
                 homeController.changePage(0);
                 homeController.choose_1 = true;
                 homeController.choose_2 = false;
               },
               title: "My Orders",
-              colorText:LightMode.mainColor,
-             colorIcon:  LightMode.mainColor,
+              colorText: LightMode.mainColor,
+              colorIcon: LightMode.mainColor,
             ),
             Expanded(
               child: GetBuilder<OrdersDeliveryController>(

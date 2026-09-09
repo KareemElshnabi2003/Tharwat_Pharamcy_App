@@ -84,4 +84,10 @@ class MyCartController extends GetxController {
     );
     update();
   }
+
+  @override
+  void onClose() {
+    couponController.dispose();
+    super.onClose();
+  }
 }

@@ -31,7 +31,9 @@ class ProductWidget extends StatelessWidget {
     return Container(
       width: 42.w,
       decoration: BoxDecoration(
-        color: ThemeService.isDark ? LightMode.darkMainColor : LightMode.whiteColor,
+        color: ThemeService.isDark
+            ? LightMode.darkMainColor
+            : LightMode.whiteColor,
         border: Border.all(color: LightMode.mainColor, width: 2),
         borderRadius: BorderRadius.circular(5.w),
       ),
@@ -44,7 +46,8 @@ class ProductWidget extends StatelessWidget {
                     topLeft: Radius.circular(5.w),
                     bottomRight: Radius.circular(7.w),
                     topRight: Radius.circular(5.w)),
-                image: DecorationImage(image: decorationImage, fit: BoxFit.cover)),
+                image:
+                    DecorationImage(image: decorationImage, fit: BoxFit.cover)),
           ),
           Positioned(
             top: 14.h,
@@ -53,7 +56,8 @@ class ProductWidget extends StatelessWidget {
             child: InkWell(
               onTap: onPressShop,
               child: Container(
-                  padding: EdgeInsets.only(right: 3.w, left: 3.w, top: 3.w, bottom: 1.w),
+                  padding: EdgeInsets.only(
+                      right: 3.w, left: 3.w, top: 3.w, bottom: 1.w),
                   width: 42.w,
                   decoration: BoxDecoration(
                     color: ThemeService.backgroundColor,
@@ -90,7 +94,11 @@ class ProductWidget extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          TextNormalWidget(text: "\$ $price", color: LightMode.mainColor, size: 3.w, weight: FontWeight.w700),
+                          TextNormalWidget(
+                              text: "\$ $price",
+                              color: LightMode.mainColor,
+                              size: 3.w,
+                              weight: FontWeight.w700),
                           InkWell(
                             onTap: onPressShop,
                             child: CircleAvatar(

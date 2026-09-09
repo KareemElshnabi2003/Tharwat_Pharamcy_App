@@ -34,7 +34,8 @@ class DropDownListWidget extends StatelessWidget {
         children: [
           SizedBox(
             width: 7.w,
-            child: Icon(Icons.location_on_outlined, size: 7.w, color: LightMode.mainColor),
+            child: Icon(Icons.location_on_outlined,
+                size: 7.w, color: LightMode.mainColor),
           ),
           SizedBox(
             width: edit ? 67.3.w : 79.w,
@@ -43,7 +44,10 @@ class DropDownListWidget extends StatelessWidget {
                 alignedDropdown: true,
                 child: DropdownButton<String>(
                   padding: EdgeInsets.zero,
-                  style: GoogleFonts.poppins(fontSize: 3.5.w, fontWeight: FontWeight.w600, color: LightMode.mainColor),
+                  style: GoogleFonts.poppins(
+                      fontSize: 3.5.w,
+                      fontWeight: FontWeight.w600,
+                      color: LightMode.mainColor),
                   icon: const Icon(Icons.arrow_drop_down_sharp),
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                   iconDisabledColor: LightMode.mainColor,
@@ -52,9 +56,16 @@ class DropDownListWidget extends StatelessWidget {
                   hint: Text(
                     title,
                     textAlign: TextAlign.end,
-                    style: GoogleFonts.poppins(fontSize: 4.w, fontWeight: FontWeight.w600, color: LightMode.mainColor),
+                    style: GoogleFonts.poppins(
+                        fontSize: 4.w,
+                        fontWeight: FontWeight.w600,
+                        color: LightMode.mainColor),
                   ),
-                  dropdownColor: edit ? LightMode.whiteBlueColor : ThemeService.isDark ? LightMode.darkMainColor : LightMode.whiteColor,
+                  dropdownColor: edit
+                      ? LightMode.whiteBlueColor
+                      : ThemeService.isDark
+                          ? LightMode.darkMainColor
+                          : LightMode.whiteColor,
                   value: value,
                   items: itemes,
                   onChanged: onChanged,
@@ -98,7 +109,8 @@ class DropDownListGenderWidget extends StatelessWidget {
         children: [
           SizedBox(
             width: 7.w,
-            child: Icon(Icons.location_on_outlined, size: 7.w, color: LightMode.mainColor),
+            child: Icon(Icons.location_on_outlined,
+                size: 7.w, color: LightMode.mainColor),
           ),
           SizedBox(
             width: edit ? 65.w : 79.w,
@@ -107,7 +119,10 @@ class DropDownListGenderWidget extends StatelessWidget {
                 alignedDropdown: true,
                 child: DropdownButton(
                   padding: EdgeInsets.zero,
-                  style: GoogleFonts.poppins(fontSize: 3.5.w, fontWeight: FontWeight.w600, color: LightMode.mainColor),
+                  style: GoogleFonts.poppins(
+                      fontSize: 3.5.w,
+                      fontWeight: FontWeight.w600,
+                      color: LightMode.mainColor),
                   icon: const Icon(Icons.arrow_drop_down_sharp),
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                   iconDisabledColor: LightMode.mainColor,
@@ -116,15 +131,26 @@ class DropDownListGenderWidget extends StatelessWidget {
                   hint: Text(
                     title,
                     textAlign: TextAlign.end,
-                    style: GoogleFonts.poppins(fontSize: 3.5.w, fontWeight: FontWeight.w600, color: LightMode.mainColor),
+                    style: GoogleFonts.poppins(
+                        fontSize: 3.5.w,
+                        fontWeight: FontWeight.w600,
+                        color: LightMode.mainColor),
                   ),
                   value: value,
-                  dropdownColor: edit ? LightMode.whiteBlueColor : ThemeService.isDark ? LightMode.darkMainColor : LightMode.whiteColor,
+                  dropdownColor: edit
+                      ? LightMode.whiteBlueColor
+                      : ThemeService.isDark
+                          ? LightMode.darkMainColor
+                          : LightMode.whiteColor,
                   items: List.generate(
                     valueList.length,
-                        (index) => DropdownMenuItem(
+                    (index) => DropdownMenuItem(
                         value: valueList[index],
-                        child: Text(valueList[index], style: GoogleFonts.poppins(fontSize: 3.5.w, fontWeight: FontWeight.w600, color: LightMode.mainColor))),
+                        child: Text(valueList[index],
+                            style: GoogleFonts.poppins(
+                                fontSize: 3.5.w,
+                                fontWeight: FontWeight.w600,
+                                color: LightMode.mainColor))),
                   ),
                   onChanged: onChange,
                 ),

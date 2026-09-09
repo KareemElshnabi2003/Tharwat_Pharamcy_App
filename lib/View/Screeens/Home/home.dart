@@ -24,7 +24,9 @@ class Home extends StatelessWidget {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                    color: ThemeService.isDark ? LightMode.darkMainColor : LightMode.whiteColor,
+                    color: ThemeService.isDark
+                        ? LightMode.darkMainColor
+                        : LightMode.whiteColor,
                     spreadRadius: 2,
                     blurStyle: BlurStyle.solid,
                     blurRadius: 3,
@@ -33,39 +35,53 @@ class Home extends StatelessWidget {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(5.w),
                   topRight: Radius.circular(5.w)),
-              color: ThemeService.isDark ? LightMode.nightColor : LightMode.mainColor,
+              color: ThemeService.isDark
+                  ? LightMode.nightColor
+                  : LightMode.mainColor,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                itemNavigationBar(
-                    "Home",
-                        () { controller.change_1(); controller.changePage(0); },
-                    Icons.home_filled, 22.w,
-                    controller.currentIndex == 0 ? LightMode.whiteColor : LightMode.whiteColor.withOpacity(.5),
-                    controller.choose_1
-                ),
-                itemNavigationBar(
-                    "Favorites",
-                        () { controller.change_2(); controller.changePage(1); },
-                    Icons.favorite, 18.w,
-                    controller.currentIndex == 1 ? LightMode.whiteColor : LightMode.whiteColor.withOpacity(.5),
-                    controller.choose_2
-                ),
-                itemNavigationBar(
-                    "Scan",
-                        () { controller.change_3(); controller.changePage(2); },
-                    Icons.qr_code_scanner, 20.w,
-                    controller.currentIndex == 2 ? LightMode.whiteColor : LightMode.whiteColor.withOpacity(.5),
-                    controller.choose_3
-                ),
-                itemNavigationBar(
-                    "Profile",
-                        () { controller.change_4(); controller.changePage(3); },
-                    Icons.person, 20.w,
-                    controller.currentIndex == 3 ? LightMode.whiteColor : LightMode.whiteColor.withOpacity(.5),
-                    controller.choose_4
-                ),
+                itemNavigationBar("Home", () {
+                  controller.change_1();
+                  controller.changePage(0);
+                },
+                    Icons.home_filled,
+                    22.w,
+                    controller.currentIndex == 0
+                        ? LightMode.whiteColor
+                        : LightMode.whiteColor.withValues(alpha: .5),
+                    controller.choose_1),
+                itemNavigationBar("Favorites", () {
+                  controller.change_2();
+                  controller.changePage(1);
+                },
+                    Icons.favorite,
+                    18.w,
+                    controller.currentIndex == 1
+                        ? LightMode.whiteColor
+                        : LightMode.whiteColor.withValues(alpha: .5),
+                    controller.choose_2),
+                itemNavigationBar("Scan", () {
+                  controller.change_3();
+                  controller.changePage(2);
+                },
+                    Icons.qr_code_scanner,
+                    20.w,
+                    controller.currentIndex == 2
+                        ? LightMode.whiteColor
+                        : LightMode.whiteColor.withValues(alpha: .5),
+                    controller.choose_3),
+                itemNavigationBar("Profile", () {
+                  controller.change_4();
+                  controller.changePage(3);
+                },
+                    Icons.person,
+                    20.w,
+                    controller.currentIndex == 3
+                        ? LightMode.whiteColor
+                        : LightMode.whiteColor.withValues(alpha: .5),
+                    controller.choose_4),
               ],
             ),
           ),
@@ -75,7 +91,8 @@ class Home extends StatelessWidget {
     );
   }
 
-  Widget itemNavigationBar(String text, VoidCallback onTap, IconData icon, double width, Color color, bool choose) {
+  Widget itemNavigationBar(String text, VoidCallback onTap, IconData icon,
+      double width, Color color, bool choose) {
     return InkWell(
       onTap: onTap,
       child: SizedBox(

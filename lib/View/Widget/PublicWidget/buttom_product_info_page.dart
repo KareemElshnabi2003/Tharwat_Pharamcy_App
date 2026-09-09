@@ -35,7 +35,9 @@ class BottomProductInfoWidget extends StatelessWidget {
             children: [
               TextNormalWidget(
                   text: "Price",
-                  color: ThemeService.isDark ? LightMode.whiteColor : LightMode.blackColor.withOpacity(.5),
+                  color: ThemeService.isDark
+                      ? LightMode.whiteColor
+                      : LightMode.blackColor.withValues(alpha: .5),
                   size: 3.5.w,
                   weight: FontWeight.w700),
               SizedBox(height: 1.w),

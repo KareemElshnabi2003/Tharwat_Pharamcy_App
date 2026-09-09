@@ -39,14 +39,24 @@ class SearchFilterWidget extends StatelessWidget {
               fillColor: colorFill,
               filled: true,
               hintText: "Search",
-              hintStyle: GoogleFonts.poppins(color: colorText, fontSize: 3.5.w, fontWeight: FontWeight.w400),
+              hintStyle: GoogleFonts.poppins(
+                  color: colorText,
+                  fontSize: 3.5.w,
+                  fontWeight: FontWeight.w400),
               prefixIcon: Icon(Icons.search, color: colorIconSearch, size: 5.w),
-              border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(3.w)),
-              enabledBorder: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(3.w)),
-              disabledBorder: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(3.w)),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(3.w)),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(3.w)),
+              disabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(3.w)),
             ),
             onChanged: onChange,
-            style: GoogleFonts.poppins(color: colorText, fontSize: 3.5.w, fontWeight: FontWeight.w400),
+            style: GoogleFonts.poppins(
+                color: colorText, fontSize: 3.5.w, fontWeight: FontWeight.w400),
           ),
         ),
         SizedBox(width: 2.w),
@@ -57,7 +67,9 @@ class SearchFilterWidget extends StatelessWidget {
             width: 10.w,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(3.w),
-              color: ThemeService.isDark ? ThemeService.primaryColor : colorBorderIconFilter,
+              color: ThemeService.isDark
+                  ? ThemeService.primaryColor
+                  : colorBorderIconFilter,
             ),
             child: Icon(Icons.settings, color: colorIconFilter, size: 5.w),
           ),

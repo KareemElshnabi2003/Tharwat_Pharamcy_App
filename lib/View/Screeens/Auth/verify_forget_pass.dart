@@ -21,9 +21,14 @@ class VerifyForgetPass extends StatelessWidget {
     Get.put(VerifyCodeController());
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
-        Navigator.canPop(context) ? Get.back() : Get.off(() => const ForgetPass());
-      },
+      onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.canPop(context)
+            ? Get.back()
+            : Get.off(() => const ForgetPass());
+      });
+        },
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<VerifyCodeController>(
@@ -33,27 +38,28 @@ class VerifyForgetPass extends StatelessWidget {
                 AppBarPageWidget(
                     back: true,
                     onPress: () {
-                      Navigator.canPop(context) ? Get.back() : Get.off(() => const ForgetPass());
+                      Navigator.canPop(context)
+                          ? Get.back()
+                          : Get.off(() => const ForgetPass());
                     },
                     title: "Enter OTP Code",
                     colorText: LightMode.mainColor,
-                    colorIcon: LightMode.mainColor
-                ),
+                    colorIcon: LightMode.mainColor),
                 SizedBox(height: 5.w),
-                Image.asset(AppImages.otpImage, width: 70.w, height: 30.h, fit: BoxFit.fill),
+                Image.asset(AppImages.otpImage,
+                    width: 70.w, height: 30.h, fit: BoxFit.fill),
                 SizedBox(height: 3.w),
                 TextNormalWidget(
                     text: "We have sent OTP code to your whatsapp",
                     color: ThemeService.textColor,
                     size: 3.w,
-                    weight: FontWeight.w400
-                ),
+                    weight: FontWeight.w400),
                 SizedBox(height: 3.w),
                 controller.statuesRequest == StatuesRequest.loading
                     ? LoadingWidget(height: 7.h)
                     : otpWidget(controller.verifyCodeForget, (val) {
-                  controller.setValForgetPass(val);
-                }),
+                        controller.setValForgetPass(val);
+                      }),
                 SizedBox(height: 3.w),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -62,11 +68,17 @@ class VerifyForgetPass extends StatelessWidget {
                         text: "Didn't receive the code ?",
                         color: ThemeService.textColor,
                         size: 3.5.w,
-                        weight: FontWeight.w500
-                    ),
-                    TextClickWidget(text: "Resend OTP",decoration:  true,onPress:  () {
-                      controller.click ? null : controller.change();
-                    },color:  controller.click ? LightMode.blackColor.withOpacity(.5) : LightMode.mainColor,size:  4.w),
+                        weight: FontWeight.w500),
+                    TextClickWidget(
+                        text: "Resend OTP",
+                        decoration: true,
+                        onPress: () {
+                          controller.click ? null : controller.change();
+                        },
+                        color: controller.click
+                            ? LightMode.blackColor.withValues(alpha: .5)
+                            : LightMode.mainColor,
+                        size: 4.w),
                   ],
                 ),
               ],
