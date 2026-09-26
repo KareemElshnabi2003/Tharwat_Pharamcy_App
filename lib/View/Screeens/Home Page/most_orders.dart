@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,7 +15,6 @@ import 'package:tharwat_pharmacy/View/Screeens/Home%20Page/product_info.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Notification/notificatio_page.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/app_bar_app_widget.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/loading.dart';
-import 'package:tharwat_pharmacy/View/Widget/PublicWidget/message_error.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/no_data.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/product_widget.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/search_filter_widget.dart';
@@ -33,12 +31,22 @@ class MostOrders extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (didPop) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          homeController.goToHome(0, {});
+          homeController.change_1();
+        });
+      },
+      child: Scaffold(
+        backgroundColor: ThemeService.backgroundColor,
+        body: GetBuilder<MostOrdersController>(
+          builder: (controller) => Column(
+            children: [
+              AppBarWidget(
+                onPressBack: () {
                   homeController.goToHome(0, {});
                   homeController.change_1();
-                });
-        },
+                },
                 onPressNotify: () => Get.to(() => const NotificatioPage()),
                 title: "Most Orders",
               ),
@@ -71,14 +79,16 @@ class MostOrders extends StatelessWidget {
   }
 
   Widget _buildList(List list, MostOrdersController controller) {
-    if (controller.statuesRequest == StatuesRequest.loading && list.isEmpty)
+    if (controller.statuesRequest == StatuesRequest.loading && list.isEmpty) {
       return LoadingWidget(height: 60.h);
-    if (list.isEmpty)
+    }
+    if (list.isEmpty) {
       return SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: SizedBox(
               height: 60.h,
               child: const Center(child: NoDataWidget(text: "No Items."))));
+    }
 
     return GridView.builder(
       controller: controller.scrollController,
