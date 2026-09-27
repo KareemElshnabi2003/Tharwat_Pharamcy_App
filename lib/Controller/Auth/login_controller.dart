@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
@@ -52,7 +50,6 @@ class LoginController extends GetxController {
     var response = await authRemoteData.sendOTP(
       email: emailController.text,
     );
-    print(" response ??? $response");
 
     statuesRequest = handlingData(response);
 
@@ -76,11 +73,8 @@ class LoginController extends GetxController {
         email: emailController.text,
         password: passwordController.text,
       );
-      print(" response ??? $response");
 
       statuesRequest = handlingData(response);
-      log(emailController.text);
-      log(passwordController.text);
 
       handleApiResponse(
         status: statuesRequest,
@@ -98,7 +92,6 @@ class LoginController extends GetxController {
                     : messageError("Error", "${data['message']}");
           } else {
             Map<String, dynamic> responseBody = data['data'];
-            print("response :: $responseBody");
             userAuthModel = UserAuthModel.fromJson(responseBody);
 
             if (userAuthModel!.role == "User") {

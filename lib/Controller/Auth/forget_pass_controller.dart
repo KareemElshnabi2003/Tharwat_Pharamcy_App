@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
@@ -51,7 +50,6 @@ class ForgetPassController extends GetxController {
   }
 
   sendOTP() async {
-    log(emailController.text);
     statuesRequest = StatuesRequest.loading;
     update();
     var response = await authRemoteData.sendOTP(

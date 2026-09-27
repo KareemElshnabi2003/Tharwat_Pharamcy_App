@@ -70,8 +70,6 @@ class ProfileController extends GetxController {
     districtController = null;
     governorateController = val;
 
-    log(governorateController!);
-    log(countryId!);
     getCity();
     update();
   }
@@ -178,7 +176,6 @@ class ProfileController extends GetxController {
 
   bool darkMood = false;
   changeDark() {
-    print(sharedPreferences!.getString("Mood"));
     if (sharedPreferences!.getString("Mood") != "Dark") {
       sharedPreferences!.setString("Mood", "Dark");
       darkMood = true;
@@ -192,7 +189,6 @@ class ProfileController extends GetxController {
   }
 
   changLang() {
-    print(sharedPreferences!.getString("Lang-"));
     if (sharedPreferences!.getString("Lang") != "Ar") {
       sharedPreferences!.setString("Lang", "Ar");
       update();
@@ -302,17 +298,14 @@ class ProfileController extends GetxController {
     governorateList.clear();
 
     var response = await locationRemoteData.getCountries();
-    print(" response ??? $response");
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       Map<String, dynamic> responseBody = response;
-      print("responseData :: ${responseBody['data']}");
       governorateList = (responseBody['data'] as List)
           .map((item) => CountryModel.fromJson(item))
           .toList();
-      log("$governorateList");
     } else if (statuesRequest == StatuesRequest.unprocessableException) {
       messageError("Error", "${response["error"]["message"]}");
     } else if (statuesRequest == StatuesRequest.socketException) {
@@ -349,21 +342,17 @@ class ProfileController extends GetxController {
 
   getCity() async {
     if (countryId == null) {
-      log("null");
       countryId = sharedPreferences!.getString("countryId");
-      print("id==== $countryId");
       await getCity();
     } else {
       cityList.clear();
 
       var response = await locationRemoteData.getCities(countryId: countryId);
-      print(" response ??? $response");
 
       statuesRequest = handlingData(response);
 
       if (statuesRequest == StatuesRequest.success) {
         Map<String, dynamic> responseBody = response;
-        print("response :: $responseBody");
         cityList = (responseBody['data'] as List)
             .map((item) => CityModel.fromJson(item))
             .toList();
@@ -380,19 +369,15 @@ class ProfileController extends GetxController {
   }
 
   getDistrict() async {
-    if (cityId == null) {
-      log("nulllllllllllllllllll");
-    } else {
+    if (cityId != null) {
       districtList.clear();
 
       var response = await locationRemoteData.getDistrict(cityId: cityId);
-      print(" response ??? $response");
 
       statuesRequest = handlingData(response);
 
       if (statuesRequest == StatuesRequest.success) {
         Map<String, dynamic> responseBody = response;
-        print("response :: $responseBody");
         districtList = (responseBody['data'] as List)
             .map((item) => DistrictModel.fromJson(item))
             .toList();
@@ -409,12 +394,6 @@ class ProfileController extends GetxController {
   }
 
   updateProfile() async {
-    log('''    $cityId =
-                                  ${sharedPreferences!.getString("cityId")}
-                              $countryId =
-                                 ${sharedPreferences!.getString("countrydId")}
-                              $districtId =
-                                 ${sharedPreferences!.getString("districtId")}''');
     if (editKey.currentState!.validate()) {
       Get.back();
 
@@ -432,14 +411,10 @@ class ProfileController extends GetxController {
           phone: phoneController.text == ""
               ? sharedPreferences!.getString("phone")
               : phoneController.text);
-      print(" $cityId  $countryId $districtId ");
-      print(" response ??? $response");
 
       statuesRequest = handlingData(response);
 
       if (statuesRequest == StatuesRequest.success) {
-        Map<String, dynamic> responseBody = response;
-        print("response :: $responseBody");
         getProfile();
         ScaffoldMessenger.of(Get.context!).showSnackBar(
             snackBarWidget(message: "Your new data save successfully !"));
@@ -461,13 +436,11 @@ class ProfileController extends GetxController {
     var response = await profileRemoteData.getDataProfile(
       token: sharedPreferences!.getString("token"),
     );
-    print(" response ??? $response");
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       Map<String, dynamic> responseBody = response['data'];
-      print("response :: $responseBody");
       userInfoModel = UserAuthModel.fromJson(responseBody);
 
       sharedPreferences!.setString("phone", "${userInfoModel!.phone}");
@@ -488,7 +461,6 @@ class ProfileController extends GetxController {
           .setString("districtName", userInfoModel!.district!.name ?? "}");
       sharedPreferences!.setString("name", "${userInfoModel!.name}");
       sharedPreferences!.setString("image", "${userInfoModel!.image}");
-      print(userInfoModel!.image);
     } else if (statuesRequest == StatuesRequest.unprocessableException) {
       messageError("Error", "${response["error"]["message"]}");
     } else if (statuesRequest == StatuesRequest.unauthorizedException) {
@@ -509,14 +481,10 @@ class ProfileController extends GetxController {
     var response = await profileRemoteData.logOut(
       token: sharedPreferences!.getString("token"),
     );
-    print(" response ??? $response");
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
-      Map<String, dynamic> responseBody = response;
-      print("response :: $responseBody");
-
       sharedPreferences!.setString("pageStart", "Login");
       Get.offAll(() => const LoginPage());
     } else if (statuesRequest == StatuesRequest.unprocessableException) {
@@ -536,8 +504,6 @@ class ProfileController extends GetxController {
     var response = await profileRemoteData.deleteAcc(
         token: sharedPreferences!.getString("token"),
         password: passOldController.text);
-    print(" response ??? $response");
-    print(" statuesRequest ??? $statuesRequest");
 
     statuesRequest = handlingData(response);
 
@@ -545,8 +511,6 @@ class ProfileController extends GetxController {
       if (response['status'] == 'error') {
         messageError("Error", "${response["message"]}");
       } else {
-        Map<String, dynamic> responseBody = response;
-        print("response :: $responseBody");
         if (sharedPreferences!.getString("Mood") == "Dark") {
           sharedPreferences!.clear();
           sharedPreferences!.setString("pageStart", "Login");
@@ -576,13 +540,11 @@ class ProfileController extends GetxController {
           newPass: passNewController.text,
           newConfirmPass: passNewConfirmController.text,
           oldPass: passOldController.text);
-      print(" response ??? $response");
 
       statuesRequest = handlingData(response);
 
       if (statuesRequest == StatuesRequest.success) {
         final responseBody = response;
-        print("response :: $responseBody");
         if (responseBody['status'] == "error") {
           Get.back();
           messageError("Error", "The old password is wrong");

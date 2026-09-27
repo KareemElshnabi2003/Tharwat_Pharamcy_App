@@ -68,7 +68,6 @@ class CheckOutController extends GetxController {
 
   craeteOrder() async {
     if (checkKey.currentState!.validate()) {
-      print(paymentMethod);
       statuesRequest = StatuesRequest.loading;
       update();
 
@@ -91,17 +90,12 @@ class CheckOutController extends GetxController {
           total: totalCost,
           token: sharedPreferences!.getString("token"));
 
-      print(" response ??? $response");
-
       statuesRequest = handlingData(response);
 
       if (statuesRequest == StatuesRequest.success) {
         final responseBody = response["data"];
-        print("response :: $responseBody");
 
         orderModel = OrderModel.fromJson(responseBody);
-
-        print("succses order");
 
         Get.to(() => SuccessOrder(
               orderModel: orderModel!,

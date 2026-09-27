@@ -13,7 +13,6 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
-  cupertino_icons: ^1.0.6
   image_picker:
   cached_network_image:
   path:
@@ -22,17 +21,13 @@ dependencies:
   google_fonts:
   flutter_otp_text_field:
   intl:
-  jiffy:
   device_preview:
   http:
-  jwt_decoder:
-  flutter_offline: ^3.0.1
   shared_preferences:
   dartz:
   dotted_border: 
   screen_go: ^1.1.7
   carousel_slider: ^5.0.0
-  flutter_launcher_icons: ^0.14.3
   flutter_svg:
   flutter_image_compress: ^2.4.0
   mobile_scanner:
@@ -41,6 +36,7 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.14.3
 flutter_launcher_icons:
   android: true
   ios: true

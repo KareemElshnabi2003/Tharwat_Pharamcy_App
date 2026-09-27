@@ -117,13 +117,11 @@ class ContactUsController extends GetxController {
         userName: userNameController.text,
         token: sharedPreferences!.getString("token"),
       );
-      print(" response ??? $response");
 
       statuesRequest = handlingData(response);
 
       if (statuesRequest == StatuesRequest.success) {
         Map<String, dynamic> responseBody = response;
-        print("response :: $responseBody");
         status = responseBody['status'];
         Get.back();
         ScaffoldMessenger.of(Get.context!).showSnackBar(

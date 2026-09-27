@@ -147,14 +147,11 @@ class MostOrdersController extends GetxController {
         query: searchController.text,
         token: sharedPreferences!.getString("token"));
 
-    print(" response ??? $response");
-
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       final responseBody = response;
       List resList = responseBody['data']['data'];
-      print("response :: $responseBody");
 
       if (indexSearch <= responseBody['data']['pagination']['last_page']) {
         if (indexSearch == 1) {
@@ -166,17 +163,11 @@ class MostOrdersController extends GetxController {
             indexSearch < responseBody['data']['pagination']['last_page'];
         indexSearch++;
 
-        print(
-            "current :: ${responseBody['data']['pagination']['current_page'].toString()}");
-        print("current :: ${indexSearch.toString()}");
         searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
         favouriteController.favProductsId.addAll(resList
             .where((item) => item['is_favourite'] == true)
             .map((e) => e['id']));
-        print("items :: ${searchList.length}");
       } else {
-        print(
-            "current :: ${responseBody['data']['pagination']['current_page'].toString()}");
         moreSearch = false;
       }
     } else if (statuesRequest == StatuesRequest.socketException) {
@@ -201,27 +192,21 @@ class MostOrdersController extends GetxController {
 
     var response = await homeRemoteData.getMostOrderdProduct(
         page: index, token: sharedPreferences!.getString("token"));
-    print(" response ??? $response");
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       final responseBody = response;
       List resList = responseBody['data']['data'];
-      print("response :: $responseBody");
 
       int lastPage = responseBody['data']['pagination']['last_page'];
       more = index < lastPage;
-
-      print(
-          "current :: ${responseBody['data']['pagination']['current_page'].toString()}");
 
       mostOrderProducts
           .addAll(resList.map((item) => ProductModel.fromJson(item)));
       favouriteController.favProductsId.addAll(resList
           .where((item) => item['is_favourite'] == true)
           .map((e) => e['id']));
-      print("items :: ${mostOrderProducts.length}");
     } else if (statuesRequest == StatuesRequest.socketException) {
       if (index > 1) index--; // Rollback on error
       messageError("Error", "please, check your internet");

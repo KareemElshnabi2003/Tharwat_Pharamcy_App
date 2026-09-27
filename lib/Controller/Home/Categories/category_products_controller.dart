@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -152,14 +151,11 @@ class CategoryProductsController extends GetxController {
         page: indexSearch,
         token: sharedPreferences!.getString("token"));
 
-    print(" response ??? $response");
-
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       final responseBody = response;
       List resList = responseBody['data'];
-      print("response :: $responseBody");
 
       if (indexSearch <= responseBody['pagination']['last_page']) {
         if (indexSearch == 1) {
@@ -170,16 +166,11 @@ class CategoryProductsController extends GetxController {
         moreSearch = indexSearch < responseBody['pagination']['last_page'];
         indexSearch++;
 
-        print(
-            "current :: ${responseBody['pagination']['current_page'].toString()}");
         searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
         favouriteController.favProductsId.addAll(resList
             .where((item) => item['is_favourite'] == true)
             .map((e) => e['id']));
-        print("items :: ${searchList.length}");
       } else {
-        print(
-            "current :: ${responseBody['pagination']['current_page'].toString()}");
         moreSearch = false;
       }
     } else if (statuesRequest == StatuesRequest.socketException) {
@@ -200,32 +191,25 @@ class CategoryProductsController extends GetxController {
     statuesRequest = StatuesRequest.loading;
     update();
 
-    log("index >>>> $index");
     var response = await categoriesRemoteData.getProductsCategories(
         page: index,
         catId: catId,
         token: sharedPreferences!.getString("token"));
-    print(" response ??? $response");
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       final responseBody = response;
       List resList = responseBody['data'];
-      print("response :: $responseBody");
 
       int lastPage = responseBody['pagination']['last_page'];
 
       more = index < lastPage;
 
-      print(
-          "current :: ${responseBody['pagination']['current_page'].toString()}");
-
       products.addAll(resList.map((item) => ProductModel.fromJson(item)));
       favouriteController.favProductsId.addAll(resList
           .where((item) => item['is_favourite'] == true)
           .map((e) => e['id']));
-      print("items :: ${products.length}");
     } else if (statuesRequest == StatuesRequest.socketException) {
       if (index > 1) index--; // Rollback page increment on error
       messageError("Error", "please, check your internet");

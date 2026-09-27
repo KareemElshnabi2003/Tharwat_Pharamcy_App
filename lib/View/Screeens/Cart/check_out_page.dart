@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:screen_go/extensions/responsive_nums.dart';
@@ -150,7 +149,6 @@ class CheckOutPage extends StatelessWidget {
                                 colorText: LightMode.whiteColor,
                                 margin: false,
                                 onPress: () {
-                                  log("pressssssssss");
                                   controller.craeteOrder();
                                 },
                                 size: 3.5.w,

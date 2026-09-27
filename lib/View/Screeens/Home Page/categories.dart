@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -40,7 +38,6 @@ class CategoriesPage extends StatelessWidget {
             AppBarWidget(
               title: "Categories",
               onPressBack: () {
-                log(homeController.currentIndex.toString());
                 homeController.goToHome(0, {});
               },
               onPressNotify: () {

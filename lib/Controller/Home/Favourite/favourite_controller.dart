@@ -58,14 +58,12 @@ class FavouriteController extends GetxController {
   }
 
   favProducts(id) {
-    print(id);
     favProductsId.add(id);
     addItemToFav(id);
     update();
   }
 
   notFavProducts(id) {
-    print(id);
     favProductsId.remove(id);
     removeItemFromFav(id);
     update();
@@ -96,12 +94,10 @@ class FavouriteController extends GetxController {
       page: currentPage,
     );
 
-    print("response ??? $response");
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       Map<String, dynamic> responseBody = response;
-      print("response :: $responseBody");
 
       List<ProductModel> newItems = (responseBody['data'] as List)
           .map((item) => ProductModel.fromJson(item))
@@ -144,7 +140,6 @@ class FavouriteController extends GetxController {
       page: currentPage,
     );
 
-    print("Load more response ??? $response");
     StatuesRequest loadMoreStatus = handlingData(response);
 
     if (loadMoreStatus == StatuesRequest.success) {
@@ -174,14 +169,11 @@ class FavouriteController extends GetxController {
   addItemToFav(itemId) async {
     var response = await favouriteRemoteData.addToFav(
         id: itemId, token: sharedPreferences!.getString("token"));
-    print("response ??? $response");
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
-      final responseBody = response;
-      print("response :: $responseBody");
+      // Added successfully
     } else if (statuesRequest == StatuesRequest.serverException) {
-      print("error add");
       favProductsId.remove(itemId);
       update();
     } else if (statuesRequest == StatuesRequest.socketException) {
@@ -195,16 +187,12 @@ class FavouriteController extends GetxController {
   removeItemFromFav(itemId) async {
     var response = await favouriteRemoteData.removeFromFav(
         id: itemId, token: sharedPreferences!.getString("token"));
-    print("response ??? $response");
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
-      final responseBody = response;
-      print("response :: $responseBody");
       // Remove from local list
       favItems.removeWhere((item) => item.id.toString() == itemId);
     } else if (statuesRequest == StatuesRequest.serverException) {
-      print("error remove");
       favProductsId.add(itemId);
       update();
     } else if (statuesRequest == StatuesRequest.socketException) {

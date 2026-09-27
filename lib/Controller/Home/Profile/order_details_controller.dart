@@ -24,12 +24,10 @@ class OrderDetailsController extends GetxController {
     update();
     var response = await orderRemoteData.cancelOrder(
         id: orderId.toString(), token: sharedPreferences!.getString("token"));
-    print(" response ??? $response");
 
     statuesRequest = handlingData(response);
     if (statuesRequest == StatuesRequest.success) {
       final responseBody = response['data'];
-      print("response :: $responseBody");
       orderModel!.status = responseBody['status'];
 
       Get.back();

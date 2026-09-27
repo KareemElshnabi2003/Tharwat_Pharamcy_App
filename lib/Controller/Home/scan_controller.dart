@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
@@ -39,18 +37,15 @@ class ScanController extends GetxController {
     statuesRequest = StatuesRequest.loading;
     update();
 
-    log("item code==== $scannedCode");
     var response = await _homeRemoteData.scanCode(
       itemCode: scannedCode,
     );
-    print(" response ??? $response");
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       final responseBody = response;
       List resList = responseBody['data'];
-      print("response :: $responseBody");
       if (resList.isEmpty) {
         messageError("Result", "This product not available.", back: true,
             onPressBack: () {

@@ -150,26 +150,20 @@ class FeaturedProductsController extends GetxController {
 
     var response = await homeRemoteData.getTrendProduct(
         page: index.toString(), token: sharedPreferences!.getString("token"));
-    print(" response ??? $response");
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       Map<String, dynamic> responseBody = response;
       List resList = responseBody['data'];
-      print("response :: $responseBody");
 
       int lastPage = responseBody['pagination']['last_page'];
       more = index < lastPage;
-
-      print(
-          "current :: ${responseBody['pagination']['current_page'].toString()}");
 
       trendProducts.addAll(resList.map((item) => ProductModel.fromJson(item)));
       favouriteController.favProductsId.addAll(resList
           .where((item) => item['is_favourite'] == true)
           .map((e) => e['id']));
-      print("items :: ${trendProducts.length}");
     } else if (statuesRequest == StatuesRequest.socketException) {
       if (index > 1) index--; // Rollback on error
       messageError("Error", "please, check your internet");
@@ -194,14 +188,11 @@ class FeaturedProductsController extends GetxController {
         page: indexSearch,
         token: sharedPreferences!.getString("token"));
 
-    print(" response ??? $response");
-
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       Map<String, dynamic> responseBody = response;
       List resList = responseBody['data'];
-      print("response :: $responseBody");
 
       if (indexSearch <= responseBody['pagination']['last_page']) {
         if (indexSearch == 1) {
@@ -212,17 +203,11 @@ class FeaturedProductsController extends GetxController {
         moreSearch = indexSearch < responseBody['pagination']['last_page'];
         indexSearch++;
 
-        print(
-            "current :: ${responseBody['pagination']['current_page'].toString()}");
         searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
         favouriteController.favProductsId.addAll(resList
             .where((item) => item['is_favourite'] == true)
             .map((e) => e['id']));
-        print("items :: ${searchList.length}");
-        print("items :: ${favouriteController.favProductsId.length}");
       } else {
-        print(
-            "current :: ${responseBody['pagination']['current_page'].toString()}");
         moreSearch = false;
       }
     } else if (statuesRequest == StatuesRequest.socketException) {
