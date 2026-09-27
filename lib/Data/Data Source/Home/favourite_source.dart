@@ -8,9 +8,7 @@ class FavouriteRemoteData {
   getFavProducts({token, page}) async {
     var response = await api.getData(
       "${AppApi.favProductsUrl}?per_page=15&page=$page",
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
@@ -18,9 +16,7 @@ class FavouriteRemoteData {
   addToFav({token, id}) async {
     var response = await api.postData(
       "${AppApi.addToFavProductsUrl}/$id",
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
       {},
     );
     return response.fold((l) => l, (r) => r);
@@ -29,9 +25,7 @@ class FavouriteRemoteData {
   removeFromFav({token, id}) async {
     var response = await api.postData(
       "${AppApi.addToFavProductsUrl}/$id",
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
       {},
     );
     return response.fold((l) => l, (r) => r);

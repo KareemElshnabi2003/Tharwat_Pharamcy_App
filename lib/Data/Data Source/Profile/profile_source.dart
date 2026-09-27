@@ -9,9 +9,10 @@ class ProfileRemoteData {
   ProfileRemoteData(this.api);
 
   getDataProfile({token}) async {
-    var response = await api.getData(AppApi.profileInfoUrl, {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      AppApi.profileInfoUrl,
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
@@ -40,26 +41,25 @@ class ProfileRemoteData {
   }
 
   logOut({String? token}) async {
-    var response = await api.getData(AppApi.logoutUrl, {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      AppApi.logoutUrl,
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   deleteAcc({String? token, password}) async {
-    var response =
-        await api.deleteData("${AppApi.deleteAccUrl}?password=$password", {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.deleteData(
+      "${AppApi.deleteAccUrl}?password=$password",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   changeOldPass({String? oldPass, newPass, newConfirmPass, token}) async {
     var response = await api.postData(
       AppApi.changeOldPassUrl,
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
       {
         "email": sharedPreferences!.getString("email"),
         "old_password": oldPass,
@@ -73,9 +73,7 @@ class ProfileRemoteData {
   contactUs({email, userName, message, token}) async {
     var response = await api.postData(
       AppApi.contactUsUrl,
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
       {
         "user_name": userName,
         "email": email,

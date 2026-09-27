@@ -7,41 +7,42 @@ class HomeRemoteData {
   HomeRemoteData(this.api);
 
   getHomeData({token}) async {
-    var response = await api.getData(AppApi.homeDataUrl, {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      AppApi.homeDataUrl,
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getOffersData({token, page}) async {
-    var response =
-        await api.getData("${AppApi.offersUrl}?per_page=20&page=$page", {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      "${AppApi.offersUrl}?per_page=20&page=$page",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getOfferProductsData({token, offerId, page}) async {
     var response = await api.getData(
-        "${AppApi.offersProductUrl}?per_page=20&page=$page&offer_id=$offerId", {
-      "Authorization": "Bearer $token",
-    });
+      "${AppApi.offersProductUrl}?per_page=20&page=$page&offer_id=$offerId",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getTrendProduct({token, page}) async {
-    var response = await api
-        .getData("${AppApi.trendingProductUrl}?per_page=20&page=$page", {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      "${AppApi.trendingProductUrl}?per_page=20&page=$page",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getMostOrderdProduct({token, page}) async {
-    var response = await api
-        .getData("${AppApi.mostOrderedProductUrl}?per_page=20&page=$page", {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      "${AppApi.mostOrderedProductUrl}?per_page=20&page=$page",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
@@ -55,18 +56,17 @@ class HomeRemoteData {
       query,
       page}) async {
     var response = await api.getData(
-        "${AppApi.allProductstUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
-        {
-          "Authorization": "Bearer $token",
-        });
+      "${AppApi.allProductstUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   scanCode({itemCode}) async {
-    var response = await api
-        .getData("${AppApi.allProductstUrl}?itnl_code=${int.parse(itemCode)}", {
-      "Authorization": "Bearer ${sharedPreferences!.getString('token')}",
-    });
+    var response = await api.getData(
+      "${AppApi.allProductstUrl}?itnl_code=${int.parse(itemCode)}",
+      Api.authHeaders(sharedPreferences!.getString('token')),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
@@ -80,10 +80,9 @@ class HomeRemoteData {
       query,
       page}) async {
     var response = await api.getData(
-        "${AppApi.offersProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
-        {
-          "Authorization": "Bearer $token",
-        });
+      "${AppApi.offersProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
@@ -97,10 +96,9 @@ class HomeRemoteData {
       query,
       page}) async {
     var response = await api.getData(
-        "${AppApi.mostOrderedProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
-        {
-          "Authorization": "Bearer $token",
-        });
+      "${AppApi.mostOrderedProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
@@ -114,10 +112,9 @@ class HomeRemoteData {
       query,
       page}) async {
     var response = await api.getData(
-        "${AppApi.trendingProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
-        {
-          "Authorization": "Bearer $token",
-        });
+      "${AppApi.trendingProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 }

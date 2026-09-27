@@ -20,9 +20,7 @@ class OrderRemoteData {
       buildingNum}) async {
     var response = await api.postData(
       AppApi.createOrderUrl,
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
       {
         "address": address,
         "city_id": cityId,
@@ -40,50 +38,49 @@ class OrderRemoteData {
   }
 
   checkPaymentStatus({token, orderId}) async {
-    var response = await api.getData("${AppApi.checkPaymentUrl}/$orderId", {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      "${AppApi.checkPaymentUrl}/$orderId",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getActiveOrder({token, page}) async {
-    var response = await api
-        .getData("${AppApi.getActivedOrderUrl}?page=$page&per_page=10", {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      "${AppApi.getActivedOrderUrl}?page=$page&per_page=10",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getPendingOrder({token, page}) async {
-    var response = await api
-        .getData("${AppApi.getPendingOrderUrl}?page=$page&per_page=10", {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      "${AppApi.getPendingOrderUrl}?page=$page&per_page=10",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getCompleteOrder({token, page}) async {
-    var response = await api
-        .getData("${AppApi.getCompleteOrderUrl}?page=$page&per_page=10", {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      "${AppApi.getCompleteOrderUrl}?page=$page&per_page=10",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getCanceledOrder({token, page}) async {
-    var response = await api
-        .getData("${AppApi.getCanceledOrderUrl}?page=$page&per_page=10", {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      "${AppApi.getCanceledOrderUrl}?page=$page&per_page=10",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   cancelOrder({token, id}) async {
     var response = await api.updatePatchData(
       "${AppApi.cancelOrderUrl}/$id",
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
       {
         "status": "cancelled",
       },
@@ -94,48 +91,45 @@ class OrderRemoteData {
   //deliveryData
 
   acceptOrder({required id}) async {
-    var response = await api.getData("${AppApi.acceptOrderDeliveryUrl}/$id", {
-      "Authorization":
-          "Bearer ${sharedPreferences!.getString("tokenDelivery")}",
-    });
+    var response = await api.getData(
+      "${AppApi.acceptOrderDeliveryUrl}/$id",
+      Api.authHeaders(sharedPreferences!.getString("tokenDelivery")),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   updateOrder({required id}) async {
-    var response =
-        await api.updatePatchData("${AppApi.updateOrderDeliveryUrl}/$id", {
-      "Authorization":
-          "Bearer ${sharedPreferences!.getString("tokenDelivery")}",
-    }, {
-      "status": 2
-    });
+    var response = await api.updatePatchData(
+      "${AppApi.updateOrderDeliveryUrl}/$id",
+      Api.authHeaders(sharedPreferences!.getString("tokenDelivery")),
+      {
+        "status": 2,
+      },
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getMyOrderDelivery({page}) async {
-    var response = await api
-        .getData("${AppApi.getMyOrderDeliveryUrl}?page=$page&per_page=10", {
-      "Authorization":
-          "Bearer ${sharedPreferences!.getString("tokenDelivery")}",
-    });
+    var response = await api.getData(
+      "${AppApi.getMyOrderDeliveryUrl}?page=$page&per_page=10",
+      Api.authHeaders(sharedPreferences!.getString("tokenDelivery")),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getPendingDeliveryOrders({page}) async {
     var response = await api.getData(
-        "${AppApi.getPendingOrderDeliveryUrl}?page=$page&per_page=10", {
-      "Authorization":
-          "Bearer ${sharedPreferences!.getString("tokenDelivery")}",
-    });
+      "${AppApi.getPendingOrderDeliveryUrl}?page=$page&per_page=10",
+      Api.authHeaders(sharedPreferences!.getString("tokenDelivery")),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getCompletedDeliveryOrders({page}) async {
     var response = await api.getData(
-        "${AppApi.getCompleteOrderDeliveryUrl}?page=$page&per_page=10", {
-      "Authorization":
-          "Bearer ${sharedPreferences!.getString("tokenDelivery")}",
-    });
+      "${AppApi.getCompleteOrderDeliveryUrl}?page=$page&per_page=10",
+      Api.authHeaders(sharedPreferences!.getString("tokenDelivery")),
+    );
     return response.fold((l) => l, (r) => r);
   }
 }

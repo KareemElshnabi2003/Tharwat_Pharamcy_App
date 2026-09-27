@@ -6,18 +6,17 @@ class CartRemoteData {
   CartRemoteData(this.api);
 
   getCartItem({token}) async {
-    var response = await api.getData(AppApi.cartUrl, {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      AppApi.cartUrl,
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   addToCart({token, qti, id}) async {
     var response = await api.postData(
       AppApi.addToCartUrl,
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
       {
         "product_id": id,
         "quantity": qti,
@@ -27,18 +26,17 @@ class CartRemoteData {
   }
 
   removeFromCart({token, id}) async {
-    var response = await api.deleteData("${AppApi.deleteFromCartUrl}/$id", {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.deleteData(
+      "${AppApi.deleteFromCartUrl}/$id",
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   increaseCart({token, id, qtv}) async {
     var response = await api.updatePatchData(
       "${AppApi.updateCartUrl}/$id",
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
       {
         "quantity": qtv,
       },
@@ -49,9 +47,7 @@ class CartRemoteData {
   decreaseCart({token, id, qtv}) async {
     var response = await api.updatePatchData(
       "${AppApi.updateCartUrl}/$id",
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
       {
         "quantity": qtv,
       },

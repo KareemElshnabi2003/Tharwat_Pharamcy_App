@@ -1,30 +1,23 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({'local': 'ar'});
+    sharedPreferences = await SharedPreferences.getInstance();
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  test('Api defaultHeaders and authHeaders return expected headers', () {
+    final defaultH = Api.defaultHeaders();
+    expect(defaultH['Accept'], 'application/json');
+    expect(defaultH['Lang'], 'ar');
+    expect(defaultH.containsKey('Authorization'), isFalse);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    final authH = Api.authHeaders('sample_token_xyz');
+    expect(authH['Authorization'], 'Bearer sample_token_xyz');
+    expect(authH['Accept'], 'application/json');
+    expect(authH['Lang'], 'ar');
   });
 }

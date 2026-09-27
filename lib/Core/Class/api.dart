@@ -38,6 +38,11 @@ class Api {
     return headers;
   }
 
+  /// Helper to generate authenticated headers with a Bearer token.
+  static Map<String, String> authHeaders([dynamic token]) {
+    return defaultHeaders(token: token?.toString());
+  }
+
   /// Internal helper to merge default headers with caller-provided headers.
   Map<String, String> _buildHeaders(
     Map<String, String>? customHeaders, {
@@ -178,9 +183,7 @@ class Api {
     return _executeRequest(() async {
       final request = http.MultipartRequest("POST", Uri.parse(url));
 
-      final headers = _buildHeaders({
-        'Authorization': 'Bearer $token',
-      });
+      final headers = authHeaders(token);
       request.headers.addAll(headers);
 
       if (image != null) {

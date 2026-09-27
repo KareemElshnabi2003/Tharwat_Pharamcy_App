@@ -273,7 +273,6 @@ class ProfileController extends GetxController {
   //   } else {
   //     image = File(returnImage.path);
   //     imagerequest = image!.path;
-  //     print(imagerequest);
 
   //     update();
   //     Get.back();

@@ -7,18 +7,17 @@ class CategoriesRemoteData {
   CategoriesRemoteData(this.api);
 
   getCategories({token}) async {
-    var response = await api.getData(AppApi.categoriestUrl, {
-      "Authorization": "Bearer $token",
-    });
+    var response = await api.getData(
+      AppApi.categoriestUrl,
+      Api.authHeaders(token),
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   getSubCategories({token, catId, page}) async {
     var response = await api.getData(
       "${AppApi.subCategoriestUrl}?category=$catId&page=$page",
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
@@ -26,9 +25,7 @@ class CategoriesRemoteData {
   getProductsCategories({token, catId, page}) async {
     var response = await api.getData(
       "${AppApi.allProductstUrl}?category_id=$catId&per_page=20&page=$page",
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
@@ -44,9 +41,7 @@ class CategoriesRemoteData {
       page}) async {
     var response = await api.getData(
       "${AppApi.allProductstUrl}?category_id=$catId&per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
-      {
-        "Authorization": "Bearer $token",
-      },
+      Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
