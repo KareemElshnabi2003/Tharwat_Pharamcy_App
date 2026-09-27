@@ -5,12 +5,10 @@ import 'package:tharwat_pharmacy/main.dart';
 class HomeRemoteData {
   Api api;
   HomeRemoteData(this.api);
+
   getHomeData({token}) async {
     var response = await api.getData(AppApi.homeDataUrl, {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -18,10 +16,7 @@ class HomeRemoteData {
   getOffersData({token, page}) async {
     var response =
         await api.getData("${AppApi.offersUrl}?per_page=20&page=$page", {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -29,10 +24,7 @@ class HomeRemoteData {
   getOfferProductsData({token, offerId, page}) async {
     var response = await api.getData(
         "${AppApi.offersProductUrl}?per_page=20&page=$page&offer_id=$offerId", {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -40,10 +32,7 @@ class HomeRemoteData {
   getTrendProduct({token, page}) async {
     var response = await api
         .getData("${AppApi.trendingProductUrl}?per_page=20&page=$page", {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -51,10 +40,7 @@ class HomeRemoteData {
   getMostOrderdProduct({token, page}) async {
     var response = await api
         .getData("${AppApi.mostOrderedProductUrl}?per_page=20&page=$page", {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -71,10 +57,7 @@ class HomeRemoteData {
     var response = await api.getData(
         "${AppApi.allProductstUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
         {
-          "Accept": "application/json",
-          'authorization': 'Bearer $token',
-          "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-          'Content-Type': 'application/json; charset=UTF-8'
+          "Authorization": "Bearer $token",
         });
     return response.fold((l) => l, (r) => r);
   }
@@ -82,10 +65,7 @@ class HomeRemoteData {
   scanCode({itemCode}) async {
     var response = await api
         .getData("${AppApi.allProductstUrl}?itnl_code=${int.parse(itemCode)}", {
-      "Accept": "application/json",
-      'authorization': 'Bearer ${sharedPreferences!.getString('token')}',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer ${sharedPreferences!.getString('token')}",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -102,10 +82,7 @@ class HomeRemoteData {
     var response = await api.getData(
         "${AppApi.offersProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
         {
-          "Accept": "application/json",
-          'authorization': 'Bearer $token',
-          "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-          'Content-Type': 'application/json; charset=UTF-8'
+          "Authorization": "Bearer $token",
         });
     return response.fold((l) => l, (r) => r);
   }
@@ -122,10 +99,7 @@ class HomeRemoteData {
     var response = await api.getData(
         "${AppApi.mostOrderedProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
         {
-          "Accept": "application/json",
-          'authorization': 'Bearer $token',
-          "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-          'Content-Type': 'application/json; charset=UTF-8'
+          "Authorization": "Bearer $token",
         });
     return response.fold((l) => l, (r) => r);
   }
@@ -142,10 +116,7 @@ class HomeRemoteData {
     var response = await api.getData(
         "${AppApi.trendingProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
         {
-          "Accept": "application/json",
-          'authorization': 'Bearer $token',
-          "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-          'Content-Type': 'application/json; charset=UTF-8'
+          "Authorization": "Bearer $token",
         });
     return response.fold((l) => l, (r) => r);
   }

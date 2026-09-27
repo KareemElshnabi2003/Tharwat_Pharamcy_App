@@ -1,37 +1,30 @@
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_api.dart';
-import 'package:tharwat_pharmacy/main.dart';
 
 class AuthRemoteData {
   Api api;
   AuthRemoteData(this.api);
+
   login({String? email, String? password}) async {
-    var response = await api.postData(AppApi.loginUrl, {
-      "Accept": "application/json",
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json'
-    }, {
+    var response = await api.postData(AppApi.loginUrl, null, {
       "email": email,
-      "password": password
+      "password": password,
     });
     return response.fold((l) => l, (r) => r);
   }
 
-  register(
-      {String? email,
-      String? password,
-      String? name,
-      String? gender,
-      String? passwordConfirmation,
-      String? phone,
-      String? cityId,
-      String? districtId,
-      String? countryId}) async {
-    var response = await api.postData(AppApi.registerUrl, {
-      "Accept": "application/json",
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
-    }, {
+  register({
+    String? email,
+    String? password,
+    String? name,
+    String? gender,
+    String? passwordConfirmation,
+    String? phone,
+    String? cityId,
+    String? districtId,
+    String? countryId,
+  }) async {
+    var response = await api.postData(AppApi.registerUrl, null, {
       "name": name,
       "gender": gender!.toLowerCase(),
       "password": password,
@@ -40,7 +33,7 @@ class AuthRemoteData {
       "phone": phone,
       "city_id": cityId,
       "country_id": countryId,
-      "district_id": districtId
+      "district_id": districtId,
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -48,37 +41,25 @@ class AuthRemoteData {
   sendOTP({
     String? email,
   }) async {
-    var response = await api.postData(AppApi.sendOTPUrl, {
-      "Accept": "application/json",
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
-    }, {
+    var response = await api.postData(AppApi.sendOTPUrl, null, {
       "email": email,
     });
     return response.fold((l) => l, (r) => r);
   }
 
   resetPAss({String? email, password, passwordConfirmation}) async {
-    var response = await api.postData(AppApi.resetPassUrl, {
-      "Accept": "application/json",
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
-    }, {
+    var response = await api.postData(AppApi.resetPassUrl, null, {
       "email": email,
       "password": password,
-      "password_confirmation": passwordConfirmation
+      "password_confirmation": passwordConfirmation,
     });
     return response.fold((l) => l, (r) => r);
   }
 
   verifyOTP({String? email, String? otp}) async {
-    var response = await api.postData(AppApi.verifyCodeUrl, {
-      "Accept": "application/json",
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
-    }, {
+    var response = await api.postData(AppApi.verifyCodeUrl, null, {
       "email": email,
-      "token": otp
+      "token": otp,
     });
     return response.fold((l) => l, (r) => r);
   }

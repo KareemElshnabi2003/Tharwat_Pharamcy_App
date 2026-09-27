@@ -18,32 +18,30 @@ class OrderRemoteData {
       street,
       total,
       buildingNum}) async {
-    var response = await api.postData(AppApi.createOrderUrl, {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
-    }, {
-      "address": address,
-      "city_id": cityId,
-      "country_id": countryId,
-      "district_id": districtId,
-      "phone": phone,
-      "payment_method": payment,
-      "building_num": buildingNum,
-      "street": street,
-      "additional_info": additionalInfo,
-      "total": total
-    });
+    var response = await api.postData(
+      AppApi.createOrderUrl,
+      {
+        "Authorization": "Bearer $token",
+      },
+      {
+        "address": address,
+        "city_id": cityId,
+        "country_id": countryId,
+        "district_id": districtId,
+        "phone": phone,
+        "payment_method": payment,
+        "building_num": buildingNum,
+        "street": street,
+        "additional_info": additionalInfo,
+        "total": total
+      },
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   checkPaymentStatus({token, orderId}) async {
     var response = await api.getData("${AppApi.checkPaymentUrl}/$orderId", {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -51,10 +49,7 @@ class OrderRemoteData {
   getActiveOrder({token, page}) async {
     var response = await api
         .getData("${AppApi.getActivedOrderUrl}?page=$page&per_page=10", {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -62,10 +57,7 @@ class OrderRemoteData {
   getPendingOrder({token, page}) async {
     var response = await api
         .getData("${AppApi.getPendingOrderUrl}?page=$page&per_page=10", {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -73,10 +65,7 @@ class OrderRemoteData {
   getCompleteOrder({token, page}) async {
     var response = await api
         .getData("${AppApi.getCompleteOrderUrl}?page=$page&per_page=10", {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -84,35 +73,30 @@ class OrderRemoteData {
   getCanceledOrder({token, page}) async {
     var response = await api
         .getData("${AppApi.getCanceledOrderUrl}?page=$page&per_page=10", {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
 
   cancelOrder({token, id}) async {
-    var response = await api.updatePatchData("${AppApi.cancelOrderUrl}/$id", {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
-    }, {
-      "status": "cancelled"
-    });
+    var response = await api.updatePatchData(
+      "${AppApi.cancelOrderUrl}/$id",
+      {
+        "Authorization": "Bearer $token",
+      },
+      {
+        "status": "cancelled",
+      },
+    );
     return response.fold((l) => l, (r) => r);
   }
 
-  //deliveryDAta
+  //deliveryData
 
   acceptOrder({required id}) async {
     var response = await api.getData("${AppApi.acceptOrderDeliveryUrl}/$id", {
-      "Accept": "application/json",
-      'authorization':
-          'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization":
+          "Bearer ${sharedPreferences!.getString("tokenDelivery")}",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -120,11 +104,8 @@ class OrderRemoteData {
   updateOrder({required id}) async {
     var response =
         await api.updatePatchData("${AppApi.updateOrderDeliveryUrl}/$id", {
-      "Accept": "application/json",
-      'authorization':
-          'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization":
+          "Bearer ${sharedPreferences!.getString("tokenDelivery")}",
     }, {
       "status": 2
     });
@@ -134,11 +115,8 @@ class OrderRemoteData {
   getMyOrderDelivery({page}) async {
     var response = await api
         .getData("${AppApi.getMyOrderDeliveryUrl}?page=$page&per_page=10", {
-      "Accept": "application/json",
-      'authorization':
-          'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization":
+          "Bearer ${sharedPreferences!.getString("tokenDelivery")}",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -146,11 +124,8 @@ class OrderRemoteData {
   getPendingDeliveryOrders({page}) async {
     var response = await api.getData(
         "${AppApi.getPendingOrderDeliveryUrl}?page=$page&per_page=10", {
-      "Accept": "application/json",
-      'authorization':
-          'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization":
+          "Bearer ${sharedPreferences!.getString("tokenDelivery")}",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -158,11 +133,8 @@ class OrderRemoteData {
   getCompletedDeliveryOrders({page}) async {
     var response = await api.getData(
         "${AppApi.getCompleteOrderDeliveryUrl}?page=$page&per_page=10", {
-      "Accept": "application/json",
-      'authorization':
-          'Bearer ${sharedPreferences!.getString("tokenDelivery")}',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization":
+          "Bearer ${sharedPreferences!.getString("tokenDelivery")}",
     });
     return response.fold((l) => l, (r) => r);
   }

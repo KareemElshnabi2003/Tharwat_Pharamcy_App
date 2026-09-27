@@ -10,10 +10,7 @@ class ProfileRemoteData {
 
   getDataProfile({token}) async {
     var response = await api.getData(AppApi.profileInfoUrl, {
-      "Accept": "application/json",
-      'authorization': 'Bearer $token',
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -44,10 +41,7 @@ class ProfileRemoteData {
 
   logOut({String? token}) async {
     var response = await api.getData(AppApi.logoutUrl, {
-      "Accept": "application/json",
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'authorization': 'Bearer $token',
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
@@ -55,40 +49,39 @@ class ProfileRemoteData {
   deleteAcc({String? token, password}) async {
     var response =
         await api.deleteData("${AppApi.deleteAccUrl}?password=$password", {
-      "Accept": "application/json",
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'authorization': 'Bearer $token',
-      'Content-Type': 'application/json; charset=UTF-8'
+      "Authorization": "Bearer $token",
     });
     return response.fold((l) => l, (r) => r);
   }
 
   changeOldPass({String? oldPass, newPass, newConfirmPass, token}) async {
-    var response = await api.postData(AppApi.changeOldPassUrl, {
-      "Accept": "application/json",
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'authorization': 'Bearer $token',
-      'Content-Type': 'application/json; charset=UTF-8'
-    }, {
-      "email": sharedPreferences!.getString("email"),
-      "old_password": oldPass,
-      "password": newPass,
-      "password_confirmation": newConfirmPass
-    });
+    var response = await api.postData(
+      AppApi.changeOldPassUrl,
+      {
+        "Authorization": "Bearer $token",
+      },
+      {
+        "email": sharedPreferences!.getString("email"),
+        "old_password": oldPass,
+        "password": newPass,
+        "password_confirmation": newConfirmPass
+      },
+    );
     return response.fold((l) => l, (r) => r);
   }
 
   contactUs({email, userName, message, token}) async {
-    var response = await api.postData(AppApi.contactUsUrl, {
-      "Accept": "application/json",
-      "Lang": sharedPreferences!.getString("local") == "en" ? "en" : "ar",
-      'authorization': 'Bearer $token',
-      'Content-Type': 'application/json; charset=UTF-8'
-    }, {
-      "user_name": userName,
-      "email": email,
-      "message": message
-    });
+    var response = await api.postData(
+      AppApi.contactUsUrl,
+      {
+        "Authorization": "Bearer $token",
+      },
+      {
+        "user_name": userName,
+        "email": email,
+        "message": message,
+      },
+    );
     return response.fold((l) => l, (r) => r);
   }
 }
