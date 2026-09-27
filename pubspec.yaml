@@ -15,7 +15,6 @@ dependencies:
     sdk: flutter
   image_picker:
   cached_network_image:
-  path:
   url_launcher: ^6.3.0
   get:
   google_fonts:

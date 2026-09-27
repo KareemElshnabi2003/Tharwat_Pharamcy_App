@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -207,22 +206,16 @@ class ProfileController extends GetxController {
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         fileImg = File(image.path);
-        log("Original image size: ${fileImg!.lengthSync()} bytes");
         final compressedFile = await FlutterImageCompress.compressAndGetFile(
           fileImg!.path,
           "${fileImg!.path}_compressed.jpg",
           quality: 60,
         );
         if (compressedFile != null) {
-          final compressedSize = await compressedFile.length();
           fileImg = File(compressedFile.path);
-          log("Compressed image size: $compressedSize bytes");
-        } else {
-          log("Compression failed: compressedFile is null");
         }
       }
-    } catch (e) {
-      log("Error during image picking or compression: $e");
+    } catch (_) {
       Get.snackbar(
         "Error",
         "Failed to load image ",
@@ -237,22 +230,16 @@ class ProfileController extends GetxController {
       final XFile? image = await picker.pickImage(source: ImageSource.camera);
       if (image != null) {
         fileImg = File(image.path);
-        log("Original image size: ${fileImg!.lengthSync()} bytes");
         final compressedFile = await FlutterImageCompress.compressAndGetFile(
           fileImg!.path,
           "${fileImg!.path}_compressed.jpg",
           quality: 60,
         );
         if (compressedFile != null) {
-          final compressedSize = await compressedFile.length();
           fileImg = File(compressedFile.path);
-          log("Compressed image size: $compressedSize bytes");
-        } else {
-          log("Compression failed: compressedFile is null");
         }
       }
-    } catch (e) {
-      log("Error during image picking or compression: $e");
+    } catch (_) {
       Get.snackbar(
         "Error",
         "Failed to load image ",
