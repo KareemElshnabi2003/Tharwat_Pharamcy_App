@@ -37,8 +37,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(FavouriteController());
-    HomeController homeController = Get.put(HomeController());
+    final homeController = Get.find<HomeController>();
 
     return PopScope(
       canPop: false,
@@ -61,7 +60,7 @@ class HomePage extends StatelessWidget {
           init: HomePageController(),
           builder: (controller) => RefreshIndicator(
             onRefresh: () async {
-              controller.refreshPage();
+              await controller.refreshPage();
             },
             child: SingleChildScrollView(
               controller: controller.scrollController,

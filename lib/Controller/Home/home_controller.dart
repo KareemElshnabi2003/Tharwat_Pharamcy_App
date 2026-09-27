@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home/favourite.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home/home.dart';
@@ -46,7 +47,7 @@ class HomeController extends GetxController {
   }
 
   // 🔥 التعديل هنا: إزالة الشاشات الفرعية والاكتفاء بـ 4 شاشات للبار السفلي فقط
-  List pages = [
+  final List<Widget> pages = [
     const HomePage(),
     const Favourite(),
     const MedicineScannerScreen(),
