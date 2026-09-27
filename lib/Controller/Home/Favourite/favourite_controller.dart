@@ -23,6 +23,8 @@ class FavouriteController extends GetxController {
   int currentPage = 1;
   bool hasMoreData = true;
   bool isLoadingMore = false;
+  bool isLoadingFav = false;
+  Future<List<ProductModel>>? favItemsFuture;
 
   ScrollController scrollController = ScrollController();
 
@@ -30,7 +32,7 @@ class FavouriteController extends GetxController {
   void onInit() {
     super.onInit();
     scrollController.addListener(_scrollListener);
-    getFavItems();
+    favItemsFuture = getFavItems();
   }
 
   @override
@@ -83,47 +85,54 @@ class FavouriteController extends GetxController {
 
   // Initial load
   Future<List<ProductModel>> getFavItems() async {
-    if (currentPage == 1) {
-      favItems.clear();
-      statuesRequest = StatuesRequest.loading;
+    if (isLoadingFav) return favItems;
+    isLoadingFav = true;
+    try {
+      if (currentPage == 1) {
+        favItems.clear();
+        statuesRequest = StatuesRequest.loading;
+        update();
+      }
+
+      var response = await favouriteRemoteData.getFavProducts(
+        token: sharedPreferences?.getString("token"),
+        page: currentPage,
+      );
+
+      statuesRequest = handlingData(response);
+
+      if (statuesRequest == StatuesRequest.success) {
+        Map<String, dynamic> responseBody = response;
+
+        List<ProductModel> newItems = (responseBody['data'] as List)
+            .map((item) => ProductModel.fromJson(item))
+            .toList();
+
+        if (currentPage == 1) {
+          favItems = newItems;
+        } else {
+          favItems.addAll(newItems);
+        }
+
+        // Check if there's more data (assuming less than 20 items means no more data)
+        if (newItems.isEmpty || newItems.length < 20) {
+          hasMoreData = false;
+        }
+      } else if (statuesRequest == StatuesRequest.unauthorizedException) {
+        messageErrorWithButton("Error", "You need to login ", () {
+          Get.offAll(() => const LoginPage());
+        }, "LogIn");
+      } else if (statuesRequest == StatuesRequest.socketException) {
+        messageError("Error", "please, check your internet");
+      } else {
+        messageError("Error", "There is a problem. Please, try again later");
+      }
+
+      return favItems;
+    } finally {
+      isLoadingFav = false;
       update();
     }
-
-    var response = await favouriteRemoteData.getFavProducts(
-      token: sharedPreferences!.getString("token"),
-      page: currentPage,
-    );
-
-    statuesRequest = handlingData(response);
-
-    if (statuesRequest == StatuesRequest.success) {
-      Map<String, dynamic> responseBody = response;
-
-      List<ProductModel> newItems = (responseBody['data'] as List)
-          .map((item) => ProductModel.fromJson(item))
-          .toList();
-
-      if (currentPage == 1) {
-        favItems = newItems;
-      } else {
-        favItems.addAll(newItems);
-      }
-
-      // Check if there's more data (assuming less than 20 items means no more data)
-      if (newItems.isEmpty || newItems.length < 20) {
-        hasMoreData = false;
-      }
-    } else if (statuesRequest == StatuesRequest.unauthorizedException) {
-      messageErrorWithButton("Error", "You need to login ", () {
-        Get.offAll(() => const LoginPage());
-      }, "LogIn");
-    } else if (statuesRequest == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
-    } else {
-      messageError("Error", "There is a problem. Please, try again later");
-    }
-
-    return favItems;
   }
 
   // Load more for pagination
@@ -133,42 +142,44 @@ class FavouriteController extends GetxController {
     isLoadingMore = true;
     update();
 
-    currentPage++;
+    try {
+      currentPage++;
 
-    var response = await favouriteRemoteData.getFavProducts(
-      token: sharedPreferences!.getString("token"),
-      page: currentPage,
-    );
+      var response = await favouriteRemoteData.getFavProducts(
+        token: sharedPreferences?.getString("token"),
+        page: currentPage,
+      );
 
-    StatuesRequest loadMoreStatus = handlingData(response);
+      StatuesRequest loadMoreStatus = handlingData(response);
 
-    if (loadMoreStatus == StatuesRequest.success) {
-      Map<String, dynamic> responseBody = response;
+      if (loadMoreStatus == StatuesRequest.success) {
+        Map<String, dynamic> responseBody = response;
 
-      List<ProductModel> newItems = (responseBody['data'] as List)
-          .map((item) => ProductModel.fromJson(item))
-          .toList();
+        List<ProductModel> newItems = (responseBody['data'] as List)
+            .map((item) => ProductModel.fromJson(item))
+            .toList();
 
-      favItems.addAll(newItems);
+        favItems.addAll(newItems);
 
-      // Check if there's more data
-      if (newItems.isEmpty || newItems.length < 20) {
-        hasMoreData = false;
+        // Check if there's more data
+        if (newItems.isEmpty || newItems.length < 20) {
+          hasMoreData = false;
+        }
+      } else if (loadMoreStatus == StatuesRequest.socketException) {
+        messageError("Error", "please, check your internet");
+        currentPage--; // Rollback page number
+      } else {
+        currentPage--; // Rollback page number
       }
-    } else if (loadMoreStatus == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
-      currentPage--; // Rollback page number
-    } else {
-      currentPage--; // Rollback page number
+    } finally {
+      isLoadingMore = false;
+      update();
     }
-
-    isLoadingMore = false;
-    update();
   }
 
   addItemToFav(itemId) async {
     var response = await favouriteRemoteData.addToFav(
-        id: itemId, token: sharedPreferences!.getString("token"));
+        id: itemId, token: sharedPreferences?.getString("token"));
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
@@ -186,7 +197,7 @@ class FavouriteController extends GetxController {
 
   removeItemFromFav(itemId) async {
     var response = await favouriteRemoteData.removeFromFav(
-        id: itemId, token: sharedPreferences!.getString("token"));
+        id: itemId, token: sharedPreferences?.getString("token"));
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
@@ -206,6 +217,8 @@ class FavouriteController extends GetxController {
   // Refresh functionality
   Future<void> refreshFavItems() async {
     resetPagination();
-    await getFavItems();
+    favItemsFuture = getFavItems();
+    await favItemsFuture;
+    update();
   }
 }

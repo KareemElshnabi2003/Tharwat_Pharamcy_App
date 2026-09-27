@@ -115,7 +115,7 @@ class Favourite extends StatelessWidget {
                         );
                       }
                     },
-                    future: controller.getFavItems(),
+                    future: controller.favItemsFuture,
                   ),
                 ),
               ],

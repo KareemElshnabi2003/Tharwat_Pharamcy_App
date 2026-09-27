@@ -24,9 +24,11 @@ class HomePageController extends GetxController {
   bool isSearch = false;
   bool more = false;
   bool isLoadingMore = false;
+  bool isLoadingHome = false;
   int index = 1;
   Timer? _debounce;
   Future<HomeModel?>? homeDataFuture;
+
   @override
   void onInit() {
     super.onInit();
@@ -48,9 +50,10 @@ class HomePageController extends GetxController {
       index = 1;
       await search();
     } else {
+      homeDataFuture = getHomeData();
+      await homeDataFuture;
       update();
     }
-    homeDataFuture = getHomeData();
   }
 
   void checkSearch(String value) {
@@ -73,33 +76,48 @@ class HomePageController extends GetxController {
     });
   }
 
-  Future<HomeModel> getHomeData() async {
-    favouriteController.favProductsId.clear();
-    statuesRequest = StatuesRequest.loading;
-    update();
+  Future<HomeModel?> getHomeData() async {
+    if (isLoadingHome) return homeModel;
+    isLoadingHome = true;
+    try {
+      favouriteController.favProductsId.clear();
+      statuesRequest = StatuesRequest.loading;
+      update();
 
-    var response = await homeRemoteData.getHomeData(
-        token: sharedPreferences!.getString("token"));
-    statuesRequest = handlingData(response);
+      var response = await homeRemoteData.getHomeData(
+          token: sharedPreferences?.getString("token"));
+      statuesRequest = handlingData(response);
 
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        homeModel = HomeModel.fromJson(data);
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {
+          homeModel = HomeModel.fromJson(data);
 
-        favouriteController.favProductsId.addAll(data['data']
-                ['trending_products']['data']
-            .where((item) => item['is_favourite'] == true)
-            .map((e) => e['id']));
+          if (data['data']?['trending_products']?['data'] != null) {
+            favouriteController.favProductsId.addAll(
+              (data['data']['trending_products']['data'] as List)
+                  .where((item) => item['is_favourite'] == true)
+                  .map((e) => e['id']),
+            );
+          }
 
-        favouriteController.favProductsId.addAll(data['data']
-                ['most_ordered_products']['data']
-            .where((item) => item['is_favourite'] == true)
-            .map((e) => e['id']));
-      },
-    );
-    return homeModel!;
+          if (data['data']?['most_ordered_products']?['data'] != null) {
+            favouriteController.favProductsId.addAll(
+              (data['data']['most_ordered_products']['data'] as List)
+                  .where((item) => item['is_favourite'] == true)
+                  .map((e) => e['id']),
+            );
+          }
+        },
+      );
+      return homeModel;
+    } catch (_) {
+      return homeModel;
+    } finally {
+      isLoadingHome = false;
+      update();
+    }
   }
 
   Future<void> getMore() async {
@@ -108,11 +126,13 @@ class HomePageController extends GetxController {
       loadMoreStatus = StatuesRequest.loading;
       update();
 
-      await search(isLoadMore: true);
-
-      isLoadingMore = false;
-      loadMoreStatus = StatuesRequest.none;
-      update();
+      try {
+        await search(isLoadMore: true);
+      } finally {
+        isLoadingMore = false;
+        loadMoreStatus = StatuesRequest.none;
+        update();
+      }
     }
   }
 
@@ -126,7 +146,7 @@ class HomePageController extends GetxController {
     var response = await homeRemoteData.searchHome(
         query: searchController.text,
         page: index,
-        token: sharedPreferences!.getString("token"));
+        token: sharedPreferences?.getString("token"));
 
     statuesRequest = handlingData(response);
 
@@ -134,14 +154,15 @@ class HomePageController extends GetxController {
       status: statuesRequest,
       response: response,
       onSuccess: (data) {
-        List resList = data['data'];
-        if (index <= data['pagination']['last_page']) {
+        List resList = data['data'] ?? [];
+        int lastPage = data['pagination']?['last_page'] ?? 1;
+        if (index <= lastPage) {
           if (index == 1 && !isLoadMore) {
             searchList.clear();
             favouriteController.favProductsId.clear();
           }
 
-          more = index < data['pagination']['last_page'];
+          more = index < lastPage;
           searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
 
           favouriteController.favProductsId.addAll(resList
@@ -161,6 +182,7 @@ class HomePageController extends GetxController {
   void onClose() {
     _debounce?.cancel();
     scrollController.dispose();
+    searchController.dispose();
     super.onClose();
   }
 }

@@ -13,76 +13,125 @@ class MyCartController extends GetxController {
   CartModel? cartModel;
   TextEditingController couponController = TextEditingController();
 
-  decreaseCart({required productId, required qtv}) async {
-    statuesRequest = StatuesRequest.loading;
+  Future<CartModel?>? cartDataFuture;
+  bool isLoadingCart = false;
+  bool isUpdatingCart = false;
+
+  @override
+  void onInit() {
+    super.onInit();
+    cartDataFuture = getCartData();
+  }
+
+  Future<void> refreshCart() async {
+    cartDataFuture = getCartData();
+    await cartDataFuture;
     update();
-    var response = await cartRemoteData.decreaseCart(
-        token: sharedPreferences!.getString("token"),
+  }
+
+  Future<void> decreaseCart({required productId, required qtv}) async {
+    if (isUpdatingCart) return;
+    isUpdatingCart = true;
+    try {
+      statuesRequest = StatuesRequest.loading;
+      update();
+      var response = await cartRemoteData.decreaseCart(
+          token: sharedPreferences?.getString("token"),
+          id: productId.toString(),
+          qtv: qtv);
+
+      statuesRequest = handlingData(response);
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {},
+      );
+      cartDataFuture = getCartData();
+      await cartDataFuture;
+    } finally {
+      isUpdatingCart = false;
+      update();
+    }
+  }
+
+  Future<void> increaseCart({required productId, required qtv}) async {
+    if (isUpdatingCart) return;
+    isUpdatingCart = true;
+    try {
+      statuesRequest = StatuesRequest.loading;
+      update();
+      var response = await cartRemoteData.increaseCart(
+        token: sharedPreferences?.getString("token"),
+        qtv: qtv,
         id: productId.toString(),
-        qtv: qtv);
+      );
 
-    statuesRequest = handlingData(response);
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        // يمكنك هنا عرض رسالة نجاح إذا أردت
-      },
-    );
-    update();
+      statuesRequest = handlingData(response);
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {},
+      );
+      cartDataFuture = getCartData();
+      await cartDataFuture;
+    } finally {
+      isUpdatingCart = false;
+      update();
+    }
   }
 
-  increaseCart({required productId, required qtv}) async {
-    statuesRequest = StatuesRequest.loading;
-    update();
-    var response = await cartRemoteData.increaseCart(
-      token: sharedPreferences!.getString("token"),
-      qtv: qtv,
-      id: productId.toString(),
-    );
+  Future<CartModel?> getCartData() async {
+    if (isLoadingCart) return cartModel;
+    isLoadingCart = true;
+    try {
+      statuesRequest = StatuesRequest.loading;
+      update();
+      var response = await cartRemoteData.getCartItem(
+        token: sharedPreferences?.getString("token"),
+      );
 
-    statuesRequest = handlingData(response);
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {},
-    );
-    update();
+      statuesRequest = handlingData(response);
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {
+          if (data['data'] != null) {
+            cartModel = CartModel.fromJson(data['data']);
+          }
+        },
+      );
+      return cartModel;
+    } catch (_) {
+      return cartModel;
+    } finally {
+      isLoadingCart = false;
+      update();
+    }
   }
 
-  Future<CartModel> getCartData() async {
-    statuesRequest = StatuesRequest.loading;
-    update();
-    var response = await cartRemoteData.getCartItem(
-      token: sharedPreferences!.getString("token"),
-    );
+  Future<void> deleteFromCart({required productId}) async {
+    if (isUpdatingCart) return;
+    isUpdatingCart = true;
+    try {
+      statuesRequest = StatuesRequest.loading;
+      update();
+      var response = await cartRemoteData.removeFromCart(
+        token: sharedPreferences?.getString("token"),
+        id: productId.toString(),
+      );
 
-    statuesRequest = handlingData(response);
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        cartModel = CartModel.fromJson(data['data']);
-      },
-    );
-    return cartModel!;
-  }
-
-  deleteFromCart({required productId}) async {
-    statuesRequest = StatuesRequest.loading;
-    update();
-    var response = await cartRemoteData.removeFromCart(
-      token: sharedPreferences!.getString("token"),
-      id: productId.toString(),
-    );
-
-    statuesRequest = handlingData(response);
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {},
-    );
-    update();
+      statuesRequest = handlingData(response);
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {},
+      );
+      cartDataFuture = getCartData();
+      await cartDataFuture;
+    } finally {
+      isUpdatingCart = false;
+      update();
+    }
   }
 
   @override

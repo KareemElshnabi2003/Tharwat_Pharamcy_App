@@ -104,13 +104,14 @@ class SpecialOffers extends StatelessWidget {
                                 decorationImage:
                                     "${AppApi.imgUrl}/${controller.offers[index].image}",
                                 titleBTN_1: controller.offers[index].name ?? "",
-                                onPressBTN_2: () async {
-                                  await controller.getOfferProducts();
-                                  Get.to(() => const SpecialOffersProducts(),
-                                      arguments: {
-                                        "id": controller.offers[index].id
-                                            .toString()
-                                      });
+                                onPressBTN_2: () {
+                                  final id =
+                                      controller.offers[index].id.toString();
+                                  controller.selectOffer(id);
+                                  Get.to(
+                                    () => const SpecialOffersProducts(),
+                                    arguments: {"id": id},
+                                  );
                                 },
                                 descripe:
                                     controller.offers[index].description ?? '',

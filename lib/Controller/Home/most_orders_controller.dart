@@ -73,10 +73,12 @@ class MostOrdersController extends GetxController {
     isLoadingMoreSearch = true;
     update();
 
-    await search();
-
-    isLoadingMoreSearch = false;
-    update();
+    try {
+      await search(isLoadMore: true);
+    } finally {
+      isLoadingMoreSearch = false;
+      update();
+    }
   }
 
   /// Load more products
@@ -86,81 +88,65 @@ class MostOrdersController extends GetxController {
     isLoadingMore = true;
     update();
 
-    index++;
-    await getMostOrderProducts();
-
-    isLoadingMore = false;
-    update();
-  }
-
-  getMore() async {
-    if (moreSearch == true) {
-      await search();
+    try {
+      index++;
+      await getMostOrderProducts(isLoadMore: true);
+    } finally {
+      isLoadingMore = false;
       update();
     }
   }
 
-  bool click = false;
-  onClickSeeMore() {
-    click = true;
-    index++;
-    update();
-  }
-
-  checkSearchMost(value) {
-    index = 1;
-    click = false;
-
-    indexSearch = 1;
-    mostOrderProducts.clear();
-    searchController.text = value;
-
+  void checkSearchMost(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (value.isNotEmpty) {
         isSearch = true;
         more = false;
-        search();
-        update();
+        indexSearch = 1;
+        search(isLoadMore: false);
       } else {
         moreSearch = false;
+        indexSearch = 1;
+        index = 1;
         searchList.clear();
         favouriteController.favProductsId.clear();
         isSearch = false;
-        getMostOrderProducts();
-        update();
+        getMostOrderProducts(isLoadMore: false);
       }
     });
   }
 
-  search() async {
+  Future<void> search({bool isLoadMore = false}) async {
     // Don't clear favorites if loading more
-    if (indexSearch == 1) {
+    if (indexSearch == 1 && !isLoadMore) {
       favouriteController.favProductsId.clear();
     }
 
-    statuesRequest = StatuesRequest.loading;
-    update();
+    if (!isLoadMore) {
+      statuesRequest = StatuesRequest.loading;
+      update();
+    }
 
     var response = await homeRemoteData.searchMost(
         page: indexSearch,
         query: searchController.text,
-        token: sharedPreferences!.getString("token"));
+        token: sharedPreferences?.getString("token"));
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       final responseBody = response;
-      List resList = responseBody['data']['data'];
+      List resList = responseBody['data']?['data'] ?? [];
+      int lastPage = responseBody['data']?['pagination']?['last_page'] ?? 1;
 
-      if (indexSearch <= responseBody['data']['pagination']['last_page']) {
-        if (indexSearch == 1) {
+      if (indexSearch <= lastPage) {
+        if (indexSearch == 1 && !isLoadMore) {
           searchList.clear();
           favouriteController.favProductsId.clear();
         }
 
-        moreSearch =
-            indexSearch < responseBody['data']['pagination']['last_page'];
+        moreSearch = indexSearch < lastPage;
         indexSearch++;
 
         searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
@@ -180,26 +166,28 @@ class MostOrdersController extends GetxController {
     update();
   }
 
-  Future<void> getMostOrderProducts() async {
+  Future<void> getMostOrderProducts({bool isLoadMore = false}) async {
     // Don't clear favorites if loading more
-    if (index == 1) {
+    if (index == 1 && !isLoadMore) {
       favouriteController.favProductsId.clear();
       mostOrderProducts.clear();
     }
 
-    statuesRequest = StatuesRequest.loading;
-    update();
+    if (!isLoadMore) {
+      statuesRequest = StatuesRequest.loading;
+      update();
+    }
 
     var response = await homeRemoteData.getMostOrderdProduct(
-        page: index, token: sharedPreferences!.getString("token"));
+        page: index, token: sharedPreferences?.getString("token"));
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       final responseBody = response;
-      List resList = responseBody['data']['data'];
+      List resList = responseBody['data']?['data'] ?? [];
 
-      int lastPage = responseBody['data']['pagination']['last_page'];
+      int lastPage = responseBody['data']?['pagination']?['last_page'] ?? 1;
       more = index < lastPage;
 
       mostOrderProducts

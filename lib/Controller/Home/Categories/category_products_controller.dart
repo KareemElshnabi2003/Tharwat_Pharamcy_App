@@ -61,10 +61,12 @@ class CategoryProductsController extends GetxController {
     isLoadingMoreSearch = true;
     update();
 
-    await search();
-
-    isLoadingMoreSearch = false;
-    update();
+    try {
+      await search(isLoadMore: true);
+    } finally {
+      isLoadingMoreSearch = false;
+      update();
+    }
   }
 
   /// Load more products
@@ -74,11 +76,13 @@ class CategoryProductsController extends GetxController {
     isLoadingMore = true;
     update();
 
-    index++;
-    await getProducts();
-
-    isLoadingMore = false;
-    update();
+    try {
+      index++;
+      await getProducts(isLoadMore: true);
+    } finally {
+      isLoadingMore = false;
+      update();
+    }
   }
 
   /// Setup scroll listener for infinite scroll
@@ -86,7 +90,6 @@ class CategoryProductsController extends GetxController {
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
           scrollController.position.maxScrollExtent - 200) {
-        // Load more when user is 200px from bottom
         if (isSearch) {
           loadMoreSearchResults();
         } else {
@@ -96,54 +99,33 @@ class CategoryProductsController extends GetxController {
     });
   }
 
-  getMore() async {
-    if (moreSearch == true) {
-      await search();
-      update();
-    }
-  }
-
-  bool click = false;
-  onClickSeeMore() {
-    click = true;
-    index++;
-    update();
-  }
-
-  checkSearchCAT(value) async {
-    index = 1;
-    indexSearch = 1;
-    click = false;
-
-    products.clear();
-
-    searchController.text = value;
-
+  void checkSearchCAT(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      if (value.isNotEmpty) {
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      if (value.trim().isNotEmpty) {
         isSearch = true;
+        indexSearch = 1;
         more = false;
+        searchList.clear();
         search();
       } else {
         isSearch = false;
         moreSearch = false;
         searchList.clear();
         favouriteController.favProductsId.clear();
-        getProducts();
         update();
       }
     });
   }
 
-  search() async {
-    // Don't clear favorites if loading more
-    if (indexSearch == 1) {
-      favouriteController.favProductsId.clear();
+  Future<void> search({bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      if (indexSearch == 1) {
+        favouriteController.favProductsId.clear();
+      }
+      statuesRequest = StatuesRequest.loading;
+      update();
     }
-
-    statuesRequest = StatuesRequest.loading;
-    update();
 
     var response = await categoriesRemoteData.search(
         catId: catId,
@@ -181,15 +163,15 @@ class CategoryProductsController extends GetxController {
     update();
   }
 
-  Future<void> getProducts() async {
-    // Don't clear favorites if loading more
-    if (index == 1) {
-      favouriteController.favProductsId.clear();
-      products.clear();
+  Future<void> getProducts({bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      if (index == 1) {
+        favouriteController.favProductsId.clear();
+        products.clear();
+      }
+      statuesRequest = StatuesRequest.loading;
+      update();
     }
-
-    statuesRequest = StatuesRequest.loading;
-    update();
 
     var response = await categoriesRemoteData.getProductsCategories(
         page: index,
@@ -222,15 +204,13 @@ class CategoryProductsController extends GetxController {
 
   @override
   void onInit() {
-    catId = Get.arguments['id'] ?? "";
-    categoryTitle = Get.arguments['name'] ?? "";
+    if (Get.arguments != null && Get.arguments is Map) {
+      catId = Get.arguments['id']?.toString() ?? "";
+      categoryTitle = Get.arguments['name']?.toString() ?? "";
+    }
 
-    // Setup scroll listener
     _setupScrollListener();
-
-    // Load initial products
     getProducts();
-
     super.onInit();
   }
 

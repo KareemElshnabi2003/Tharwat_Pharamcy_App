@@ -42,12 +42,27 @@ class SpecialOffersController extends GetxController {
 
   Timer? _debounce;
 
+  void selectOffer(String id) {
+    if (offerId == id && offerProducts.isNotEmpty) return;
+    offerId = id;
+    index = 1;
+    more = true;
+    offerProducts.clear();
+    favouriteController.favProductsId.clear();
+    getOfferProducts();
+  }
+
   @override
   void onInit() {
     super.onInit();
-    offerId = Get.arguments['id'] ?? "";
-    if (offerId != '') getOfferProducts();
-    getOffers();
+    if (Get.arguments != null && Get.arguments is Map) {
+      offerId = Get.arguments['id'] ?? "";
+    }
+    if (offerId.isNotEmpty) {
+      getOfferProducts();
+    } else {
+      getOffers();
+    }
     offersScrollController.addListener(_offersScrollListener);
     productsScrollController.addListener(_productsScrollListener);
   }
@@ -71,11 +86,13 @@ class SpecialOffersController extends GetxController {
   }
 
   Future<void> getMoreOffers() async {
-    if (moreOffers && !isLoadingMoreOffers) {
-      isLoadingMoreOffers = true;
-      loadMoreStatus = StatuesRequest.loading;
-      update();
+    if (!moreOffers || isLoadingMoreOffers) return;
+    isLoadingMoreOffers = true;
+    loadMoreStatus = StatuesRequest.loading;
+    update();
+    try {
       await getOffers(isLoadMore: true);
+    } finally {
       isLoadingMoreOffers = false;
       loadMoreStatus = StatuesRequest.none;
       update();
@@ -83,12 +100,14 @@ class SpecialOffersController extends GetxController {
   }
 
   Future<void> getMoreProducts() async {
-    if (more && !isLoadingMore) {
-      isLoadingMore = true;
-      loadMoreStatus = StatuesRequest.loading;
-      update();
+    if (!more || isLoadingMore) return;
+    isLoadingMore = true;
+    loadMoreStatus = StatuesRequest.loading;
+    update();
+    try {
       index++;
       await getOfferProducts(isLoadMore: true);
+    } finally {
       isLoadingMore = false;
       loadMoreStatus = StatuesRequest.none;
       update();
@@ -96,11 +115,13 @@ class SpecialOffersController extends GetxController {
   }
 
   Future<void> getMoreSearch() async {
-    if (moreSearch && !isLoadingMoreSearch) {
-      isLoadingMoreSearch = true;
-      loadMoreStatus = StatuesRequest.loading;
-      update();
+    if (!moreSearch || isLoadingMoreSearch) return;
+    isLoadingMoreSearch = true;
+    loadMoreStatus = StatuesRequest.loading;
+    update();
+    try {
       await search(isLoadMore: true);
+    } finally {
       isLoadingMoreSearch = false;
       loadMoreStatus = StatuesRequest.none;
       update();
@@ -128,16 +149,13 @@ class SpecialOffersController extends GetxController {
     update();
   }
 
-  checkSearchOffer(value) {
-    indexSearch = 1;
-    offerProducts.clear();
-    searchController.text = value;
-
+  void checkSearchOffer(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      if (value.isNotEmpty) {
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      if (value.trim().isNotEmpty) {
         isSearch = true;
-        more = false;
+        indexSearch = 1;
+        moreSearch = false;
         searchList.clear();
         search();
       } else {

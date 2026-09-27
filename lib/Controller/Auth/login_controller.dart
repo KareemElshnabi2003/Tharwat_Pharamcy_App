@@ -44,34 +44,16 @@ class LoginController extends GetxController {
     }
   }
 
+  bool isLoading = false;
+
   sendOTP() async {
-    statuesRequest = StatuesRequest.loading;
-    update();
-    var response = await authRemoteData.sendOTP(
-      email: emailController.text,
-    );
-
-    statuesRequest = handlingData(response);
-
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        sharedPreferences!.setString("pageStart", "VerifySign");
-        Get.to(() => const VerifySign());
-      },
-    );
-
-    update();
-  }
-
-  login() async {
-    if (loginKey.currentState!.validate()) {
+    if (isLoading) return;
+    isLoading = true;
+    try {
       statuesRequest = StatuesRequest.loading;
       update();
-      var response = await authRemoteData.login(
+      var response = await authRemoteData.sendOTP(
         email: emailController.text,
-        password: passwordController.text,
       );
 
       statuesRequest = handlingData(response);
@@ -80,61 +62,92 @@ class LoginController extends GetxController {
         status: statuesRequest,
         response: response,
         onSuccess: (data) {
-          if (data['status'] == "error") {
-            data["message"] == "messages.login.email_not_verify"
-                ? messageErrorVerify("Error", "The Email not verified",
-                    () async {
-                    Get.back();
-                    await sendOTP();
-                  })
-                : data["message"] == "messages.login.invalid_credentials"
-                    ? messageError("Error", "Email or pass is invalid")
-                    : messageError("Error", "${data['message']}");
-          } else {
-            Map<String, dynamic> responseBody = data['data'];
-            userAuthModel = UserAuthModel.fromJson(responseBody);
-
-            if (userAuthModel!.role == "User") {
-              sharedPreferences!.setString("email", "${userAuthModel!.email}");
-              sharedPreferences!.setString("id", "${userAuthModel!.id}");
-              sharedPreferences!.setString("token", "${userAuthModel!.token}");
-              sharedPreferences!.setString("name", "${userAuthModel!.name}");
-              sharedPreferences!.setString("role", "${userAuthModel!.role}");
-              sharedPreferences!
-                  .setString("cityId", "${userAuthModel!.district!.city!.id}");
-              sharedPreferences!.setString(
-                  "countryId", "${userAuthModel!.district!.city!.country!.id}");
-              sharedPreferences!
-                  .setString("districtId", "${userAuthModel!.district!.id}");
-              sharedPreferences!.setString(
-                  "cityName", "${userAuthModel!.district!.city!.name}");
-              sharedPreferences!.setString("countryName",
-                  "${userAuthModel!.district!.city!.country!.name}");
-              sharedPreferences!.setString(
-                  "districtName", "${userAuthModel!.district!.name}");
-              sharedPreferences!.setString("pageStart", "Home");
-
-              Get.offAll(() => const SuccsessLogin());
-            } else {
-              sharedPreferences!
-                  .setString("roleDelivery", "${userAuthModel!.role}");
-              sharedPreferences!.setString("pageStart", "HomeDelivery");
-              sharedPreferences!
-                  .setString("tokenDelivery", "${userAuthModel!.token}");
-              sharedPreferences!
-                  .setString("emailDelivery", "${userAuthModel!.email}");
-              sharedPreferences!
-                  .setString("nameDelivery", "${userAuthModel!.name}");
-              sharedPreferences!
-                  .setString("idDelivery", "${userAuthModel!.id}");
-
-              Get.offAll(() => const SuccsessLogin());
-            }
-          }
+          sharedPreferences?.setString("pageStart", "VerifySign");
+          Get.to(() => const VerifySign());
         },
       );
+    } finally {
+      isLoading = false;
+      update();
     }
-    update();
+  }
+
+  login() async {
+    if (isLoading) return;
+    if (loginKey.currentState!.validate()) {
+      isLoading = true;
+      try {
+        statuesRequest = StatuesRequest.loading;
+        update();
+        var response = await authRemoteData.login(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+
+        statuesRequest = handlingData(response);
+
+        handleApiResponse(
+          status: statuesRequest,
+          response: response,
+          onSuccess: (data) {
+            if (data['status'] == "error") {
+              data["message"] == "messages.login.email_not_verify"
+                  ? messageErrorVerify("Error", "The Email not verified",
+                      () async {
+                      Get.back();
+                      await sendOTP();
+                    })
+                  : data["message"] == "messages.login.invalid_credentials"
+                      ? messageError("Error", "Email or pass is invalid")
+                      : messageError("Error", "${data['message']}");
+            } else {
+              Map<String, dynamic> responseBody = data['data'];
+              userAuthModel = UserAuthModel.fromJson(responseBody);
+
+              if (userAuthModel!.role == "User") {
+                sharedPreferences?.setString("email", "${userAuthModel!.email}");
+                sharedPreferences?.setString("id", "${userAuthModel!.id}");
+                sharedPreferences?.setString("token", "${userAuthModel!.token}");
+                sharedPreferences?.setString("name", "${userAuthModel!.name}");
+                sharedPreferences?.setString("role", "${userAuthModel!.role}");
+                sharedPreferences?.setString(
+                    "cityId", "${userAuthModel!.district!.city!.id}");
+                sharedPreferences?.setString(
+                    "countryId", "${userAuthModel!.district!.city!.country!.id}");
+                sharedPreferences?.setString(
+                    "districtId", "${userAuthModel!.district!.id}");
+                sharedPreferences?.setString(
+                    "cityName", "${userAuthModel!.district!.city!.name}");
+                sharedPreferences?.setString("countryName",
+                    "${userAuthModel!.district!.city!.country!.name}");
+                sharedPreferences?.setString(
+                    "districtName", "${userAuthModel!.district!.name}");
+                sharedPreferences?.setString("pageStart", "Home");
+
+                Get.offAll(() => const SuccsessLogin());
+              } else {
+                sharedPreferences
+                    ?.setString("roleDelivery", "${userAuthModel!.role}");
+                sharedPreferences?.setString("pageStart", "HomeDelivery");
+                sharedPreferences
+                    ?.setString("tokenDelivery", "${userAuthModel!.token}");
+                sharedPreferences
+                    ?.setString("emailDelivery", "${userAuthModel!.email}");
+                sharedPreferences
+                    ?.setString("nameDelivery", "${userAuthModel!.name}");
+                sharedPreferences
+                    ?.setString("idDelivery", "${userAuthModel!.id}");
+
+                Get.offAll(() => const SuccsessLogin());
+              }
+            }
+          },
+        );
+      } finally {
+        isLoading = false;
+        update();
+      }
+    }
   }
 
   @override

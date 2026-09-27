@@ -124,91 +124,119 @@ class SignUpController extends GetxController {
     return null;
   }
 
+  bool isLoading = false;
+  bool isLoadingCountry = false;
+  bool isLoadingCity = false;
+  bool isLoadingDistrict = false;
+
   getCountry() async {
-    governorateList.clear();
-    var response = await locationRemoteData.getCountries();
-    statuesRequest = handlingData(response);
-
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        governorateList = (data['data'] as List)
-            .map((item) => CountryModel.fromJson(item))
-            .toList();
-      },
-    );
-    update();
-  }
-
-  getCity() async {
-    if (governorateController != null) {
-      cityList.clear();
-      var response = await locationRemoteData.getCities(countryId: countryId);
+    if (isLoadingCountry) return;
+    isLoadingCountry = true;
+    try {
+      governorateList.clear();
+      var response = await locationRemoteData.getCountries();
       statuesRequest = handlingData(response);
 
       handleApiResponse(
         status: statuesRequest,
         response: response,
         onSuccess: (data) {
-          cityList = (data['data'] as List)
-              .map((item) => CityModel.fromJson(item))
+          governorateList = ((data['data'] as List?) ?? [])
+              .map((item) => CountryModel.fromJson(item))
               .toList();
         },
       );
       update();
+    } finally {
+      isLoadingCountry = false;
+    }
+  }
+
+  getCity() async {
+    if (governorateController != null && !isLoadingCity) {
+      isLoadingCity = true;
+      try {
+        cityList.clear();
+        var response = await locationRemoteData.getCities(countryId: countryId);
+        statuesRequest = handlingData(response);
+
+        handleApiResponse(
+          status: statuesRequest,
+          response: response,
+          onSuccess: (data) {
+            cityList = ((data['data'] as List?) ?? [])
+                .map((item) => CityModel.fromJson(item))
+                .toList();
+          },
+        );
+        update();
+      } finally {
+        isLoadingCity = false;
+      }
     }
   }
 
   getDistrict() async {
-    if (cityController != null) {
-      districtList.clear();
-      var response = await locationRemoteData.getDistrict(cityId: cityId);
-      statuesRequest = handlingData(response);
+    if (cityController != null && !isLoadingDistrict) {
+      isLoadingDistrict = true;
+      try {
+        districtList.clear();
+        var response = await locationRemoteData.getDistrict(cityId: cityId);
+        statuesRequest = handlingData(response);
 
-      handleApiResponse(
-        status: statuesRequest,
-        response: response,
-        onSuccess: (data) {
-          districtList = (data['data'] as List)
-              .map((item) => DistrictModel.fromJson(item))
-              .toList();
-        },
-      );
-      update();
+        handleApiResponse(
+          status: statuesRequest,
+          response: response,
+          onSuccess: (data) {
+            districtList = ((data['data'] as List?) ?? [])
+                .map((item) => DistrictModel.fromJson(item))
+                .toList();
+          },
+        );
+        update();
+      } finally {
+        isLoadingDistrict = false;
+      }
     }
   }
 
   signUp() async {
+    if (isLoading) return;
     if (signUpKey.currentState!.validate() &&
         check == true &&
         districtId != null &&
         countryId != null &&
         cityId != null &&
         gender != null) {
-      statuesRequest = StatuesRequest.loading;
-      update();
-      var response = await authRemoteData.register(
-          cityId: cityId,
-          countryId: countryId,
-          districtId: districtId,
-          email: emailController.text,
-          gender: gender,
-          name: userNameController.text,
-          password: passwordController.text,
-          passwordConfirmation: passwordConfirmController.text,
-          phone: phoneController.text);
+      isLoading = true;
+      try {
+        statuesRequest = StatuesRequest.loading;
+        update();
+        var response = await authRemoteData.register(
+            cityId: cityId,
+            countryId: countryId,
+            districtId: districtId,
+            email: emailController.text,
+            gender: gender,
+            name: userNameController.text,
+            password: passwordController.text,
+            passwordConfirmation: passwordConfirmController.text,
+            phone: phoneController.text);
 
-      statuesRequest = handlingData(response);
+        statuesRequest = handlingData(response);
 
-      handleApiResponse(
-        status: statuesRequest,
-        response: response,
-        onSuccess: (data) {
-          Get.to(() => const VerifySign(),
-              arguments: {"email": emailController.text});
-        },
-      );
+        handleApiResponse(
+          status: statuesRequest,
+          response: response,
+          onSuccess: (data) {
+            Get.to(() => const VerifySign(),
+                arguments: {"email": emailController.text});
+          },
+        );
+      } finally {
+        isLoading = false;
+        update();
+      }
     } else if (!check) {
       messageError("Warning", "Please confirm our policy and privacy");
     } else {

@@ -49,24 +49,32 @@ class ForgetPassController extends GetxController {
     return null;
   }
 
-  sendOTP() async {
-    statuesRequest = StatuesRequest.loading;
-    update();
-    var response = await authRemoteData.sendOTP(
-      email: emailController.text,
-    );
-    statuesRequest = handlingData(response);
+  bool isLoading = false;
 
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        sharedPreferences!.setString("pageStart", "VerifyForget");
-        Get.to(() => const VerifyForgetPass(),
-            arguments: {"email": emailController.text});
-      },
-    );
-    update();
+  sendOTP() async {
+    if (isLoading) return;
+    isLoading = true;
+    try {
+      statuesRequest = StatuesRequest.loading;
+      update();
+      var response = await authRemoteData.sendOTP(
+        email: emailController.text,
+      );
+      statuesRequest = handlingData(response);
+
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {
+          sharedPreferences?.setString("pageStart", "VerifyForget");
+          Get.to(() => const VerifyForgetPass(),
+              arguments: {"email": emailController.text});
+        },
+      );
+    } finally {
+      isLoading = false;
+      update();
+    }
   }
 
   forgetPass() async {
@@ -76,25 +84,31 @@ class ForgetPassController extends GetxController {
   }
 
   resetPass() async {
+    if (isLoading) return;
     if (resetPassKey.currentState!.validate()) {
-      statuesRequest = StatuesRequest.loading;
-      update();
-      var response = await authRemoteData.resetPAss(
-          email: emailController.text,
-          password: passwordController.text,
-          passwordConfirmation: passwordConfirmController.text);
+      isLoading = true;
+      try {
+        statuesRequest = StatuesRequest.loading;
+        update();
+        var response = await authRemoteData.resetPAss(
+            email: emailController.text,
+            password: passwordController.text,
+            passwordConfirmation: passwordConfirmController.text);
 
-      statuesRequest = handlingData(response);
+        statuesRequest = handlingData(response);
 
-      handleApiResponse(
-        status: statuesRequest,
-        response: response,
-        onSuccess: (data) {
-          sharedPreferences!.setString("pageStart", "Home");
-          Get.offAll(() => const SuccsessResetPass());
-        },
-      );
-      update();
+        handleApiResponse(
+          status: statuesRequest,
+          response: response,
+          onSuccess: (data) {
+            sharedPreferences?.setString("pageStart", "Home");
+            Get.offAll(() => const SuccsessResetPass());
+          },
+        );
+      } finally {
+        isLoading = false;
+        update();
+      }
     }
   }
 

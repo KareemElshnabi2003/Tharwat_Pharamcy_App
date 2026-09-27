@@ -86,21 +86,29 @@ class ProductInfoController extends GetxController {
     update();
   }
 
-  addToCart() async {
-    statuesRequest = StatuesRequest.loading;
-    update();
-    var response = await cartRemoteData.addToCart(
-        token: sharedPreferences!.getString("token"), id: productId, qti: "1");
-    statuesRequest = handlingData(response);
+  bool isAddingToCart = false;
 
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        Get.to(() => const MyCartPage());
-      },
-    );
-    update();
+  Future<void> addToCart() async {
+    if (isAddingToCart) return;
+    isAddingToCart = true;
+    try {
+      statuesRequest = StatuesRequest.loading;
+      update();
+      var response = await cartRemoteData.addToCart(
+          token: sharedPreferences?.getString("token"), id: productId, qti: "1");
+      statuesRequest = handlingData(response);
+
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {
+          Get.to(() => const MyCartPage());
+        },
+      );
+    } finally {
+      isAddingToCart = false;
+      update();
+    }
   }
 
   change_1() {
@@ -130,11 +138,15 @@ class ProductInfoController extends GetxController {
 
   @override
   void onInit() {
-    productId = Get.arguments['id'];
-    productModel = Get.arguments['product'];
-    if (productModel!.isFavourite == true) {
-      favProductsId.add(productModel!.id);
-    }
     super.onInit();
+    if (Get.arguments is Map) {
+      productId = Get.arguments['id']?.toString();
+      if (Get.arguments['product'] is ProductModel) {
+        productModel = Get.arguments['product'] as ProductModel;
+        if (productModel?.isFavourite == true && productModel?.id != null) {
+          favProductsId.add(productModel!.id);
+        }
+      }
+    }
   }
 }

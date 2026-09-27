@@ -222,7 +222,7 @@ class MyCartPage extends StatelessWidget {
                             );
                           }
                         },
-                        future: myCartController.getCartData(),
+                        future: controller.cartDataFuture,
                       ),
               ],
             ),

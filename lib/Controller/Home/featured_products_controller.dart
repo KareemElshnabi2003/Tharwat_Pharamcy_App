@@ -73,10 +73,12 @@ class FeaturedProductsController extends GetxController {
     isLoadingMoreSearch = true;
     update();
 
-    await search();
-
-    isLoadingMoreSearch = false;
-    update();
+    try {
+      await search(isLoadMore: true);
+    } finally {
+      isLoadingMoreSearch = false;
+      update();
+    }
   }
 
   /// Load more products
@@ -86,78 +88,57 @@ class FeaturedProductsController extends GetxController {
     isLoadingMore = true;
     update();
 
-    index++;
-    await getTrendingProducts();
-
-    isLoadingMore = false;
-    update();
-  }
-
-  getMore() {
-    if (moreSearch == true) {
-      search();
+    try {
+      index++;
+      await getTrendingProducts(isLoadMore: true);
+    } finally {
+      isLoadingMore = false;
       update();
     }
   }
 
-  bool click = false;
-  onClickSeeMore() {
-    click = true;
-    index++;
-    update();
-  }
-
-  checkSearchFeature(value) {
-    indexSearch = 1;
-    trendProducts.clear();
-    index = 1;
-    click = false;
-
-    searchController.text = value;
-
+  void checkSearchFeature(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (value.isNotEmpty) {
         isSearch = true;
         more = false;
-
-        search();
-        update();
+        indexSearch = 1;
+        search(isLoadMore: false);
       } else {
         isSearch = false;
-
         indexSearch = 1;
         index = 1;
         moreSearch = false;
-
         searchList.clear();
         favouriteController.favProductsId.clear();
-        getTrendingProducts();
-        update();
+        getTrendingProducts(isLoadMore: false);
       }
     });
   }
 
-  Future<void> getTrendingProducts() async {
+  Future<void> getTrendingProducts({bool isLoadMore = false}) async {
     // Don't clear favorites if loading more
-    if (index == 1) {
+    if (index == 1 && !isLoadMore) {
       favouriteController.favProductsId.clear();
       trendProducts.clear();
     }
 
-    statuesRequest = StatuesRequest.loading;
-    update();
+    if (!isLoadMore) {
+      statuesRequest = StatuesRequest.loading;
+      update();
+    }
 
     var response = await homeRemoteData.getTrendProduct(
-        page: index.toString(), token: sharedPreferences!.getString("token"));
+        page: index.toString(), token: sharedPreferences?.getString("token"));
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       Map<String, dynamic> responseBody = response;
-      List resList = responseBody['data'];
+      List resList = responseBody['data'] ?? [];
 
-      int lastPage = responseBody['pagination']['last_page'];
+      int lastPage = responseBody['pagination']?['last_page'] ?? 1;
       more = index < lastPage;
 
       trendProducts.addAll(resList.map((item) => ProductModel.fromJson(item)));
@@ -174,33 +155,36 @@ class FeaturedProductsController extends GetxController {
     update();
   }
 
-  search() async {
+  Future<void> search({bool isLoadMore = false}) async {
     // Don't clear favorites if loading more
-    if (indexSearch == 1) {
+    if (indexSearch == 1 && !isLoadMore) {
       favouriteController.favProductsId.clear();
     }
 
-    statuesRequest = StatuesRequest.loading;
-    update();
+    if (!isLoadMore) {
+      statuesRequest = StatuesRequest.loading;
+      update();
+    }
 
     var response = await homeRemoteData.searchFeatures(
         query: searchController.text,
         page: indexSearch,
-        token: sharedPreferences!.getString("token"));
+        token: sharedPreferences?.getString("token"));
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
       Map<String, dynamic> responseBody = response;
-      List resList = responseBody['data'];
+      List resList = responseBody['data'] ?? [];
+      int lastPage = responseBody['pagination']?['last_page'] ?? 1;
 
-      if (indexSearch <= responseBody['pagination']['last_page']) {
-        if (indexSearch == 1) {
+      if (indexSearch <= lastPage) {
+        if (indexSearch == 1 && !isLoadMore) {
           searchList.clear();
           favouriteController.favProductsId.clear();
         }
 
-        moreSearch = indexSearch < responseBody['pagination']['last_page'];
+        moreSearch = indexSearch < lastPage;
         indexSearch++;
 
         searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
