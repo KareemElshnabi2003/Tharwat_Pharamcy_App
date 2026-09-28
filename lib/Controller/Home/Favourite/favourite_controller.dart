@@ -14,7 +14,7 @@ class FavouriteController extends GetxController {
   FavouriteRemoteData favouriteRemoteData = FavouriteRemoteData(Get.put(Api()));
 
   List<ProductModel> favItems = [];
-  List favProductsId = [];
+  final Set<dynamic> favProductsId = <dynamic>{};
 
   bool choose_1 = true;
   bool choose_2 = false;
@@ -59,16 +59,17 @@ class FavouriteController extends GetxController {
     favItems.clear();
   }
 
-  favProducts(id) {
+  Future<void> favProducts(dynamic id) async {
     favProductsId.add(id);
-    addItemToFav(id);
-    update();
+    update(['fav_$id']);
+    await addItemToFav(id);
   }
 
-  notFavProducts(id) {
+  Future<void> notFavProducts(dynamic id) async {
     favProductsId.remove(id);
-    removeItemFromFav(id);
-    update();
+    favItems.removeWhere((item) => item.id.toString() == id.toString());
+    update(['fav_$id']);
+    await removeItemFromFav(id);
   }
 
   change_1() {
@@ -177,41 +178,52 @@ class FavouriteController extends GetxController {
     }
   }
 
-  addItemToFav(itemId) async {
+  Future<void> addItemToFav(dynamic itemId) async {
     var response = await favouriteRemoteData.addToFav(
         id: itemId, token: sharedPreferences?.getString("token"));
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
-      // Added successfully
-    } else if (statuesRequest == StatuesRequest.serverException) {
-      favProductsId.remove(itemId);
-      update();
-    } else if (statuesRequest == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
+      // Kept
     } else {
-      messageError("Error", "There is a problem. Please, try again later");
+      // Rollback on any failure
+      favProductsId.remove(itemId);
+      update(['fav_$itemId']);
+
+      if (statuesRequest == StatuesRequest.socketException) {
+        messageError("Error", "please, check your internet");
+      } else if (statuesRequest == StatuesRequest.unauthorizedException) {
+        messageErrorWithButton("Error", "You need to login ", () {
+          Get.offAll(() => const LoginPage());
+        }, "LogIn");
+      } else {
+        messageError("Error", "There is a problem. Please, try again later");
+      }
     }
-    update();
   }
 
-  removeItemFromFav(itemId) async {
+  Future<void> removeItemFromFav(dynamic itemId) async {
     var response = await favouriteRemoteData.removeFromFav(
         id: itemId, token: sharedPreferences?.getString("token"));
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
-      // Remove from local list
-      favItems.removeWhere((item) => item.id.toString() == itemId);
-    } else if (statuesRequest == StatuesRequest.serverException) {
-      favProductsId.add(itemId);
-      update();
-    } else if (statuesRequest == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
+      // Kept
     } else {
-      messageError("Error", "There is a problem. Please, try again later");
+      // Rollback on any failure
+      favProductsId.add(itemId);
+      update(['fav_$itemId']);
+
+      if (statuesRequest == StatuesRequest.socketException) {
+        messageError("Error", "please, check your internet");
+      } else if (statuesRequest == StatuesRequest.unauthorizedException) {
+        messageErrorWithButton("Error", "You need to login ", () {
+          Get.offAll(() => const LoginPage());
+        }, "LogIn");
+      } else {
+        messageError("Error", "There is a problem. Please, try again later");
+      }
     }
-    update();
   }
 
   // Refresh functionality

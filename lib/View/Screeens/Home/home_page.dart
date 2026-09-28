@@ -104,6 +104,7 @@ class HomePage extends StatelessWidget {
                                         ),
                                         itemBuilder: (context, index) =>
                                             GetBuilder<FavouriteController>(
+                                          id: 'fav_${controller.searchList[index].id}',
                                           builder: (favController) =>
                                               ProductWidget(
                                             // تعديل
@@ -357,6 +358,7 @@ class HomePage extends StatelessWidget {
                                             scrollDirection: Axis.horizontal,
                                             itemBuilder: (context, index) =>
                                                 GetBuilder<FavouriteController>(
+                                              id: 'fav_${snapshot.data!.data!.trendingProducts!.data![index].id}',
                                               builder: (favController) =>
                                                   ProductWidget(
                                                 // تعديل
@@ -475,6 +477,7 @@ class HomePage extends StatelessWidget {
                                             scrollDirection: Axis.horizontal,
                                             itemBuilder: (context, index) =>
                                                 GetBuilder<FavouriteController>(
+                                              id: 'fav_${snapshot.data!.data!.mostOrderedProducts!.data![index].id}',
                                               builder: (favController) =>
                                                   ProductWidget(
                                                 // تعديل

@@ -25,7 +25,7 @@ class ProductInfoController extends GetxController {
 
   FavouriteRemoteData favouriteRemoteData = FavouriteRemoteData(Get.put(Api()));
   List<ProductModel> favItems = [];
-  List favProductsId = [];
+  final Set<dynamic> favProductsId = <dynamic>{};
 
   increseCount() {
     count++;
@@ -37,9 +37,9 @@ class ProductInfoController extends GetxController {
     update();
   }
 
-  addItemToFav(itemId) async {
+  Future<void> addItemToFav(dynamic itemId) async {
     var response = await favouriteRemoteData.addToFav(
-        id: itemId, token: sharedPreferences!.getString("token"));
+        id: itemId, token: sharedPreferences?.getString("token"));
     statuesRequest = handlingData(response);
 
     handleApiResponse(
@@ -55,28 +55,28 @@ class ProductInfoController extends GetxController {
     update();
   }
 
-  favProducts(id) {
+  Future<void> favProducts(dynamic id) async {
     favProductsId.add(id);
-    addItemToFav(id);
     update();
+    await addItemToFav(id);
   }
 
-  notFavProducts(id) {
+  Future<void> notFavProducts(dynamic id) async {
     favProductsId.remove(id);
-    removeItemFromFav(id);
     update();
+    await removeItemFromFav(id);
   }
 
-  removeItemFromFav(itemId) async {
+  Future<void> removeItemFromFav(dynamic itemId) async {
     var response = await favouriteRemoteData.removeFromFav(
-        id: itemId, token: sharedPreferences!.getString("token"));
+        id: itemId, token: sharedPreferences?.getString("token"));
     statuesRequest = handlingData(response);
 
     handleApiResponse(
       status: statuesRequest,
       response: response,
       onSuccess: (data) {
-        favItems.removeWhere((item) => item.id.toString() == itemId);
+        favItems.removeWhere((item) => item.id.toString() == itemId.toString());
       },
     );
 

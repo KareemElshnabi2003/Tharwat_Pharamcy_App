@@ -116,6 +116,7 @@ class CategoryProducts extends StatelessWidget {
                 mainAxisSpacing: 4.w,
               ),
               itemBuilder: (context, index) => GetBuilder<FavouriteController>(
+                id: 'fav_${controller.searchList[index].id}',
                 builder: (favController) => ProductWidget(
                   body: controller.searchList[index].itmNameEn ?? "",
                   decorationImage: controller.searchList[index].primaryImage ==
@@ -216,6 +217,7 @@ class CategoryProducts extends StatelessWidget {
                 mainAxisSpacing: 4.w,
               ),
               itemBuilder: (context, index) => GetBuilder<FavouriteController>(
+                id: 'fav_${controller.products[index].id}',
                 builder: (favController) => ProductWidget(
                   body: controller.products[index].itmNameEn ?? "",
                   decorationImage: controller.products[index].primaryImage ==

@@ -100,6 +100,7 @@ class MostOrders extends StatelessWidget {
           mainAxisSpacing: 4.w),
       itemCount: list.length,
       itemBuilder: (context, index) => GetBuilder<FavouriteController>(
+        id: 'fav_${list[index].id}',
         builder: (fav) => ProductWidget(
           body: list[index].itmNameEn ?? "",
           decorationImage: list[index].primaryImage == null

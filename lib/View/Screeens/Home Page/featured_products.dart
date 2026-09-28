@@ -84,6 +84,7 @@ class FeaturedProducts extends StatelessWidget {
               crossAxisSpacing: 4.w,
               mainAxisSpacing: 4.w),
           itemBuilder: (context, index) => GetBuilder<FavouriteController>(
+            id: 'fav_${controller.searchList[index].id}',
             builder: (fav) => ProductWidget(
               body: controller.searchList[index].itmNameEn ?? "",
               decorationImage: controller.searchList[index].primaryImage == null
@@ -127,6 +128,7 @@ class FeaturedProducts extends StatelessWidget {
               crossAxisSpacing: 4.w,
               mainAxisSpacing: 4.w),
           itemBuilder: (context, index) => GetBuilder<FavouriteController>(
+            id: 'fav_${controller.trendProducts[index].id}',
             builder: (fav) => ProductWidget(
               body: controller.trendProducts[index].itmNameEn ?? "",
               decorationImage: controller.trendProducts[index].primaryImage ==
