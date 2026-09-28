@@ -18,13 +18,13 @@ class MedicineScannerScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-        homeController.changePage(0);
-        homeController.choose_1 = true;
-        homeController.choose_3 = false;
-      });
-        },
+        if (didPop) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          homeController.changePage(0);
+          homeController.choose_1 = true;
+          homeController.choose_3 = false;
+        });
+      },
       child: Scaffold(
         backgroundColor: Colors.black,
         body: GetBuilder<ScanController>(

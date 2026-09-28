@@ -11,10 +11,12 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class FavouriteController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  FavouriteRemoteData favouriteRemoteData = FavouriteRemoteData(Get.put(Api()));
+  FavouriteRemoteData favouriteRemoteData = FavouriteRemoteData(
+      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
 
   List<ProductModel> favItems = [];
-  final Set<dynamic> favProductsId = <dynamic>{};
+  final Set<int> favProductsId = <int>{};
+  final Set<int> _processingFavoriteIds = <int>{};
 
   bool choose_1 = true;
   bool choose_2 = false;
@@ -59,26 +61,57 @@ class FavouriteController extends GetxController {
     favItems.clear();
   }
 
-  Future<void> favProducts(dynamic id) async {
+  Future<void> favProducts(dynamic rawId) async {
+    final int? id =
+        rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '');
+    if (id == null) return;
+    if (_processingFavoriteIds.contains(id)) return;
+    _processingFavoriteIds.add(id);
+
+    // Optimistic update
     favProductsId.add(id);
     update(['fav_$id']);
-    await addItemToFav(id);
+
+    try {
+      await addItemToFav(id);
+    } finally {
+      _processingFavoriteIds.remove(id);
+    }
   }
 
-  Future<void> notFavProducts(dynamic id) async {
+  Future<void> notFavProducts(dynamic rawId) async {
+    final int? id =
+        rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '');
+    if (id == null) return;
+    if (_processingFavoriteIds.contains(id)) return;
+    _processingFavoriteIds.add(id);
+
+    // Optimistic removal with rollback backup
+    final originalIndex = favItems.indexWhere((item) => item.id == id);
+    ProductModel? removedItem;
+    if (originalIndex != -1) {
+      removedItem = favItems.removeAt(originalIndex);
+    }
     favProductsId.remove(id);
-    favItems.removeWhere((item) => item.id.toString() == id.toString());
     update(['fav_$id']);
-    await removeItemFromFav(id);
+    // If on favorite screen, also update the list
+    update();
+
+    try {
+      await removeItemFromFav(id,
+          removedItem: removedItem, originalIndex: originalIndex);
+    } finally {
+      _processingFavoriteIds.remove(id);
+    }
   }
 
-  change_1() {
+  void change_1() {
     choose_1 = true;
     choose_2 = false;
     update();
   }
 
-  change_2() {
+  void change_2() {
     choose_1 = false;
     choose_2 = true;
     update();
@@ -102,10 +135,11 @@ class FavouriteController extends GetxController {
 
       statuesRequest = handlingData(response);
 
-      if (statuesRequest == StatuesRequest.success) {
+      if (statuesRequest == StatuesRequest.success &&
+          response is Map<String, dynamic>) {
         Map<String, dynamic> responseBody = response;
 
-        List<ProductModel> newItems = (responseBody['data'] as List)
+        List<ProductModel> newItems = ((responseBody['data'] ?? []) as List)
             .map((item) => ProductModel.fromJson(item))
             .toList();
 
@@ -115,9 +149,22 @@ class FavouriteController extends GetxController {
           favItems.addAll(newItems);
         }
 
-        // Check if there's more data (assuming less than 20 items means no more data)
-        if (newItems.isEmpty || newItems.length < 20) {
-          hasMoreData = false;
+        for (final item in favItems) {
+          if (item.id != null) {
+            favProductsId.add(item.id!);
+          }
+        }
+
+        // Pagination metadata
+        final pagination = responseBody['pagination'];
+        if (pagination is Map &&
+            pagination['last_page'] != null &&
+            pagination['current_page'] != null) {
+          final int lastPage = pagination['last_page'] as int;
+          final int curr = pagination['current_page'] as int;
+          hasMoreData = curr < lastPage;
+        } else {
+          hasMoreData = newItems.isNotEmpty;
         }
       } else if (statuesRequest == StatuesRequest.unauthorizedException) {
         messageErrorWithButton("Error", "You need to login ", () {
@@ -136,7 +183,7 @@ class FavouriteController extends GetxController {
     }
   }
 
-  // Load more for pagination
+  // Load more for pagination - Retry-safe
   Future<void> loadMoreFavItems() async {
     if (isLoadingMore || !hasMoreData) return;
 
@@ -144,33 +191,45 @@ class FavouriteController extends GetxController {
     update();
 
     try {
-      currentPage++;
+      final nextPage = currentPage + 1;
 
       var response = await favouriteRemoteData.getFavProducts(
         token: sharedPreferences?.getString("token"),
-        page: currentPage,
+        page: nextPage,
       );
 
       StatuesRequest loadMoreStatus = handlingData(response);
 
-      if (loadMoreStatus == StatuesRequest.success) {
+      if (loadMoreStatus == StatuesRequest.success &&
+          response is Map<String, dynamic>) {
+        currentPage = nextPage;
         Map<String, dynamic> responseBody = response;
 
-        List<ProductModel> newItems = (responseBody['data'] as List)
+        List<ProductModel> newItems = ((responseBody['data'] ?? []) as List)
             .map((item) => ProductModel.fromJson(item))
             .toList();
 
         favItems.addAll(newItems);
+        for (final item in newItems) {
+          if (item.id != null) {
+            favProductsId.add(item.id!);
+          }
+        }
 
-        // Check if there's more data
-        if (newItems.isEmpty || newItems.length < 20) {
-          hasMoreData = false;
+        final pagination = responseBody['pagination'];
+        if (pagination is Map &&
+            pagination['last_page'] != null &&
+            pagination['current_page'] != null) {
+          final int lastPage = pagination['last_page'] as int;
+          final int curr = pagination['current_page'] as int;
+          hasMoreData = curr < lastPage;
+        } else {
+          hasMoreData = newItems.isNotEmpty;
         }
       } else if (loadMoreStatus == StatuesRequest.socketException) {
         messageError("Error", "please, check your internet");
-        currentPage--; // Rollback page number
       } else {
-        currentPage--; // Rollback page number
+        messageError("Error", "There is a problem. Please, try again later");
       }
     } finally {
       isLoadingMore = false;
@@ -178,7 +237,7 @@ class FavouriteController extends GetxController {
     }
   }
 
-  Future<void> addItemToFav(dynamic itemId) async {
+  Future<void> addItemToFav(int itemId) async {
     var response = await favouriteRemoteData.addToFav(
         id: itemId, token: sharedPreferences?.getString("token"));
     statuesRequest = handlingData(response);
@@ -202,7 +261,11 @@ class FavouriteController extends GetxController {
     }
   }
 
-  Future<void> removeItemFromFav(dynamic itemId) async {
+  Future<void> removeItemFromFav(dynamic rawId,
+      {ProductModel? removedItem, int? originalIndex}) async {
+    final int? itemId =
+        rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '');
+    if (itemId == null) return;
     var response = await favouriteRemoteData.removeFromFav(
         id: itemId, token: sharedPreferences?.getString("token"));
     statuesRequest = handlingData(response);
@@ -210,8 +273,18 @@ class FavouriteController extends GetxController {
     if (statuesRequest == StatuesRequest.success) {
       // Kept
     } else {
-      // Rollback on any failure
+      // Rollback on failure: restore both ID and ProductModel
       favProductsId.add(itemId);
+      if (removedItem != null) {
+        if (originalIndex != null &&
+            originalIndex >= 0 &&
+            originalIndex <= favItems.length) {
+          favItems.insert(originalIndex, removedItem);
+        } else {
+          favItems.add(removedItem);
+        }
+        update();
+      }
       update(['fav_$itemId']);
 
       if (statuesRequest == StatuesRequest.socketException) {

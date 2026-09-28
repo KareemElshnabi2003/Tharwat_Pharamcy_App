@@ -23,11 +23,11 @@ class VerifySign extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-        Get.offAll(() => const LoginPage());
-      });
-        },
+        if (didPop) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.offAll(() => const LoginPage());
+        });
+      },
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<VerifyCodeController>(

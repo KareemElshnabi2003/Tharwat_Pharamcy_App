@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/View/DeliveryView/completed_orders_delivery.dart';
 import 'package:tharwat_pharmacy/View/DeliveryView/my_orders_delivery.dart';
@@ -10,52 +11,45 @@ class HomeDeliveryController extends GetxController {
   bool choose_2 = false;
   bool choose_3 = false;
 
-  change_1() {
-    if (choose_1 == true) {
-      choose_1 = true;
-    } else {
-      choose_1 = true;
-      choose_2 = false;
-      choose_3 = false;
-    }
+  void _syncChoose(int index) {
+    choose_1 = index == 0;
+    choose_2 = index == 1;
+    choose_3 = index == 2;
+  }
+
+  void change_1() {
+    currentIndex = 0;
+    _syncChoose(0);
     update();
   }
 
-  change_2() {
-    if (choose_2 == true) {
-      choose_2 = true;
-    } else {
-      choose_2 = true;
-      choose_1 = false;
-      choose_3 = false;
-    }
+  void change_2() {
+    currentIndex = 1;
+    _syncChoose(1);
     update();
   }
 
-  change_3() {
-    if (choose_3 == true) {
-      choose_3 = true;
-    } else {
-      choose_3 = true;
-      choose_1 = false;
-      choose_2 = false;
-    }
+  void change_3() {
+    currentIndex = 2;
+    _syncChoose(2);
     update();
   }
 
-  List pages = [
+  List<Widget> pages = [
     const OrdersDelivery(),
     const MyOrdersDelivery(),
     const CompletedOrdersDelivery(),
   ];
-  changePage(int pageIndex, {name = "", id = ""}) {
+
+  void changePage(int pageIndex, {String name = "", String id = ""}) {
     currentIndex = pageIndex;
+    _syncChoose(pageIndex);
     update();
   }
 
   @override
   void onInit() {
-    choose_1 = currentIndex == 0 ? true : false;
+    _syncChoose(currentIndex);
     super.onInit();
   }
 }

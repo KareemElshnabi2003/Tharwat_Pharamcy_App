@@ -10,7 +10,8 @@ import 'package:tharwat_pharmacy/View/Widget/PublicWidget/message_error.dart';
 
 class ScanController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  final HomeRemoteData _homeRemoteData = HomeRemoteData(Get.put(Api()));
+  final HomeRemoteData _homeRemoteData = HomeRemoteData(
+      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
   ProductModel? productModewl;
   MobileScannerController cameraController = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
@@ -21,9 +22,10 @@ class ScanController extends GetxController {
 
   void onBarcodeDetect(BarcodeCapture barcodes) async {
     if (isScanned) return;
+    if (barcodes.barcodes.isEmpty) return;
 
     final barcode = barcodes.barcodes.first;
-    if (barcode.rawValue != null) {
+    if (barcode.rawValue != null && barcode.rawValue!.isNotEmpty) {
       isScanned = true;
 
       scannedCode = barcode.rawValue;
@@ -33,43 +35,47 @@ class ScanController extends GetxController {
     }
   }
 
-  scan() async {
+  Future<void> scan() async {
+    if (scannedCode == null) return;
     statuesRequest = StatuesRequest.loading;
     update();
 
-    var response = await _homeRemoteData.scanCode(
-      itemCode: scannedCode,
-    );
+    try {
+      var response = await _homeRemoteData.scanCode(
+        itemCode: scannedCode,
+      );
 
-    statuesRequest = handlingData(response);
+      statuesRequest = handlingData(response);
 
-    if (statuesRequest == StatuesRequest.success) {
-      final responseBody = response;
-      List resList = responseBody['data'];
-      if (resList.isEmpty) {
-        messageError("Result", "This product not available.", back: true,
-            onPressBack: () {
+      if (statuesRequest == StatuesRequest.success && response is Map) {
+        final responseBody = response;
+        List resList = responseBody['data'] ?? [];
+        if (resList.isEmpty) {
+          messageError("Result", "This product not available.", back: true,
+              onPressBack: () {
+            isScanned = false;
+            scannedCode = null;
+
+            update();
+            Get.back();
+          });
+        } else {
+          productModewl = ProductModel.fromJson(resList[0]);
+          Get.to(() => const ProductInfo(), arguments: {
+            "id": productModewl!.id.toString(),
+            "product": productModewl
+          });
           isScanned = false;
           scannedCode = null;
-
-          update();
-          Get.back();
-        });
+        }
+      } else if (statuesRequest == StatuesRequest.socketException) {
+        messageError("Error", "please, check your internet");
       } else {
-        productModewl = ProductModel.fromJson(resList[0]);
-        Get.to(() => const ProductInfo(), arguments: {
-          "id": productModewl!.id.toString(),
-          "product": productModewl
-        });
-        isScanned = false;
-        scannedCode = null;
+        messageError("Error", "There is a problem. Please, try again later");
       }
-    } else if (statuesRequest == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
-    } else {
-      messageError("Error", "There is a problem. Please, try again later");
+    } finally {
+      update();
     }
-    update();
   }
 
   @override
@@ -80,9 +86,8 @@ class ScanController extends GetxController {
   }
 
   @override
-  void dispose() {
+  void onClose() {
     cameraController.dispose();
-
-    super.dispose();
+    super.onClose();
   }
 }

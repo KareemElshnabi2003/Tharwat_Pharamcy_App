@@ -6,7 +6,7 @@ class CategoriesRemoteData {
   Api api;
   CategoriesRemoteData(this.api);
 
-  getCategories({token}) async {
+  Future<dynamic> getCategories({String? token}) async {
     var response = await api.getData(
       AppApi.categoriestUrl,
       Api.authHeaders(token),
@@ -14,33 +14,63 @@ class CategoriesRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  getSubCategories({token, catId, page}) async {
+  Future<dynamic> getSubCategories({
+    String? token,
+    required dynamic catId,
+    int? page,
+  }) async {
     var response = await api.getData(
-      "${AppApi.subCategoriestUrl}?category=$catId&page=$page",
+      Api.buildUrl(AppApi.subCategoriestUrl, {
+        "category": catId.toString(),
+        if (page != null) "page": page.toString(),
+      }),
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  getProductsCategories({token, catId, page}) async {
+  Future<dynamic> getProductsCategories({
+    String? token,
+    required dynamic catId,
+    int? page,
+  }) async {
     var response = await api.getData(
-      "${AppApi.allProductstUrl}?category_id=$catId&per_page=20&page=$page",
+      Api.buildUrl(AppApi.allProductstUrl, {
+        "category_id": catId.toString(),
+        "per_page": "20",
+        if (page != null) "page": page.toString(),
+      }),
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  search(
-      {token,
-      maxPrice,
-      minPrice,
-      catId,
-      availability,
-      special,
-      query,
-      page}) async {
+  Future<dynamic> search({
+    String? token,
+    dynamic catId,
+    String? query,
+    int? page,
+    String? inStock,
+    String? minPrice,
+    String? maxPrice,
+  }) async {
+    final effectiveStock =
+        inStock ?? sharedPreferences?.getString("stock") ?? "";
+    final effectiveMin =
+        minPrice ?? sharedPreferences?.getString("minPrice") ?? "";
+    final effectiveMax =
+        maxPrice ?? sharedPreferences?.getString("maxPrice") ?? "";
+
     var response = await api.getData(
-      "${AppApi.allProductstUrl}?category_id=$catId&per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
+      Api.buildUrl(AppApi.allProductstUrl, {
+        if (catId != null) "category_id": catId.toString(),
+        "per_page": "20",
+        if (page != null) "page": page.toString(),
+        if (query != null && query.isNotEmpty) "query": query,
+        if (effectiveStock.isNotEmpty) "in_stock": effectiveStock,
+        if (effectiveMin.isNotEmpty) "min_price": effectiveMin,
+        if (effectiveMax.isNotEmpty) "max_price": effectiveMax,
+      }),
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);

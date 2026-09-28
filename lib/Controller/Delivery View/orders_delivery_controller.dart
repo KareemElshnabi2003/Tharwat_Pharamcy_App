@@ -79,54 +79,72 @@ class OrdersDeliveryController extends GetxController {
     });
   }
 
-  acceptOrder({required id}) async {
+  Future<void> acceptOrder({required dynamic id}) async {
     statuesRequest = StatuesRequest.loading;
     update();
-    var response = await orderRemoteData.acceptOrder(id: id);
-    statuesRequest = handlingData(response);
+    try {
+      var response = await orderRemoteData.acceptOrder(id: id);
+      statuesRequest = handlingData(response);
 
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        Get.snackbar("Success", "The order is accepted successfully.",
-            borderRadius: 25,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green,
-            colorText: Colors.white);
-        refreshAvailableOrders();
-        refreshMyOrders();
-      },
-    );
-    update();
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {
+          Get.snackbar("Success", "The order is accepted successfully.",
+              borderRadius: 25,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.green,
+              colorText: Colors.white);
+          refreshAvailableOrders();
+          refreshMyOrders();
+        },
+      );
+    } finally {
+      update();
+    }
   }
 
-  completeOrder({required id}) async {
+  Future<void> completeOrder({required dynamic id}) async {
     statuesRequest = StatuesRequest.loading;
     update();
-    var response = await orderRemoteData.updateOrder(id: id);
-    statuesRequest = handlingData(response);
+    try {
+      var response = await orderRemoteData.updateOrder(id: id);
+      statuesRequest = handlingData(response);
 
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        Get.snackbar("Success", "The order is completed successfully.",
-            borderRadius: 25,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green,
-            colorText: Colors.white);
-        Get.back();
-        refreshMyOrders();
-        refreshCompletedOrders();
-      },
-    );
-    update();
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {
+          Get.snackbar("Success", "The order is completed successfully.",
+              borderRadius: 25,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.green,
+              colorText: Colors.white);
+          Get.back();
+          refreshMyOrders();
+          refreshCompletedOrders();
+        },
+      );
+    } finally {
+      update();
+    }
   }
 
   String editDate(String date) {
     DateTime dateTime = DateTime.parse(date);
     return "${DateFormat('dd MMM').format(dateTime)} / ${DateFormat('h:mm a').format(dateTime)}";
+  }
+
+  bool _determineHasMore(dynamic response, int listLength) {
+    if (response is Map && response['pagination'] is Map) {
+      final p = response['pagination'] as Map;
+      final lastPage = p['last_page'];
+      final curr = p['current_page'];
+      if (lastPage != null && curr != null) {
+        return (curr as int) < (lastPage as int);
+      }
+    }
+    return listLength >= 10;
   }
 
   // ==================== COMPLETED ORDERS ====================
@@ -136,15 +154,16 @@ class OrdersDeliveryController extends GetxController {
           await orderRemoteData.getCompletedDeliveryOrders(page: page);
       var status = handlingData(response);
 
-      if (status == StatuesRequest.success) {
-        List responseBody = response['data'];
+      if (status == StatuesRequest.success && response is Map) {
+        List responseBody = response['data'] ?? [];
         if (page == 1) {
           completeOrdered = responseBody
               .map((e) => OrdersDeliveryModel.fromJson(e))
               .where((e) => e.status == "Completed")
               .toList();
           completedCurrentPage = 1;
-          hasMoreCompletedOrders = responseBody.length >= 10;
+          hasMoreCompletedOrders =
+              _determineHasMore(response, responseBody.length);
         }
       }
       return completeOrdered;
@@ -167,28 +186,31 @@ class OrdersDeliveryController extends GetxController {
     isLoadingMoreCompleted = true;
     update();
 
-    completedCurrentPage++;
-    var response = await orderRemoteData.getCompletedDeliveryOrders(
-        page: completedCurrentPage);
-    var status = handlingData(response);
+    try {
+      final nextPage = completedCurrentPage + 1;
+      var response =
+          await orderRemoteData.getCompletedDeliveryOrders(page: nextPage);
+      var status = handlingData(response);
 
-    if (status == StatuesRequest.success) {
-      List responseBody = response['data'];
-      if (responseBody.isEmpty) {
-        hasMoreCompletedOrders = false;
-      } else {
-        List<OrdersDeliveryModel> newOrders = responseBody
-            .map((e) => OrdersDeliveryModel.fromJson(e))
-            .where((e) => e.status == "Completed")
-            .toList();
-        completeOrdered.addAll(newOrders);
-        hasMoreCompletedOrders = responseBody.length >= 10;
+      if (status == StatuesRequest.success && response is Map) {
+        List responseBody = response['data'] ?? [];
+        if (responseBody.isEmpty) {
+          hasMoreCompletedOrders = false;
+        } else {
+          completedCurrentPage = nextPage; // Only advance on success!
+          List<OrdersDeliveryModel> newOrders = responseBody
+              .map((e) => OrdersDeliveryModel.fromJson(e))
+              .where((e) => e.status == "Completed")
+              .toList();
+          completeOrdered.addAll(newOrders);
+          hasMoreCompletedOrders =
+              _determineHasMore(response, responseBody.length);
+        }
       }
-    } else {
-      completedCurrentPage--;
+    } finally {
+      isLoadingMoreCompleted = false;
+      update();
     }
-    isLoadingMoreCompleted = false;
-    update();
   }
 
   // ==================== AVAILABLE ORDERS ====================
@@ -197,15 +219,16 @@ class OrdersDeliveryController extends GetxController {
       var response = await orderRemoteData.getPendingDeliveryOrders(page: page);
       var status = handlingData(response);
 
-      if (status == StatuesRequest.success) {
-        List responseBody = response['data'];
+      if (status == StatuesRequest.success && response is Map) {
+        List responseBody = response['data'] ?? [];
         if (page == 1) {
           availableOrdered = responseBody
               .map((e) => OrdersDeliveryModel.fromJson(e))
               .where((e) => e.status == "Pending")
               .toList();
           availableCurrentPage = 1;
-          hasMoreAvailableOrders = responseBody.length >= 10;
+          hasMoreAvailableOrders =
+              _determineHasMore(response, responseBody.length);
         }
       }
       return availableOrdered;
@@ -228,28 +251,31 @@ class OrdersDeliveryController extends GetxController {
     isLoadingMoreAvailable = true;
     update();
 
-    availableCurrentPage++;
-    var response = await orderRemoteData.getPendingDeliveryOrders(
-        page: availableCurrentPage);
-    var status = handlingData(response);
+    try {
+      final nextPage = availableCurrentPage + 1;
+      var response =
+          await orderRemoteData.getPendingDeliveryOrders(page: nextPage);
+      var status = handlingData(response);
 
-    if (status == StatuesRequest.success) {
-      List responseBody = response['data'];
-      if (responseBody.isEmpty) {
-        hasMoreAvailableOrders = false;
-      } else {
-        List<OrdersDeliveryModel> newOrders = responseBody
-            .map((e) => OrdersDeliveryModel.fromJson(e))
-            .where((e) => e.status == "Pending")
-            .toList();
-        availableOrdered.addAll(newOrders);
-        hasMoreAvailableOrders = responseBody.length >= 10;
+      if (status == StatuesRequest.success && response is Map) {
+        List responseBody = response['data'] ?? [];
+        if (responseBody.isEmpty) {
+          hasMoreAvailableOrders = false;
+        } else {
+          availableCurrentPage = nextPage; // Only advance on success!
+          List<OrdersDeliveryModel> newOrders = responseBody
+              .map((e) => OrdersDeliveryModel.fromJson(e))
+              .where((e) => e.status == "Pending")
+              .toList();
+          availableOrdered.addAll(newOrders);
+          hasMoreAvailableOrders =
+              _determineHasMore(response, responseBody.length);
+        }
       }
-    } else {
-      availableCurrentPage--;
+    } finally {
+      isLoadingMoreAvailable = false;
+      update();
     }
-    isLoadingMoreAvailable = false;
-    update();
   }
 
   // ==================== MY ORDERS ====================
@@ -258,15 +284,15 @@ class OrdersDeliveryController extends GetxController {
       var response = await orderRemoteData.getMyOrderDelivery(page: page);
       var status = handlingData(response);
 
-      if (status == StatuesRequest.success) {
-        List responseBody = response['data'];
+      if (status == StatuesRequest.success && response is Map) {
+        List responseBody = response['data'] ?? [];
         if (page == 1) {
           myOrdered = responseBody
               .map((e) => OrdersDeliveryModel.fromJson(e))
               .where((e) => e.status == "Processing")
               .toList();
           myOrdersCurrentPage = 1;
-          hasMoreMyOrders = responseBody.length >= 10;
+          hasMoreMyOrders = _determineHasMore(response, responseBody.length);
         }
       }
       return myOrdered;
@@ -289,27 +315,28 @@ class OrdersDeliveryController extends GetxController {
     isLoadingMoreMyOrders = true;
     update();
 
-    myOrdersCurrentPage++;
-    var response =
-        await orderRemoteData.getMyOrderDelivery(page: myOrdersCurrentPage);
-    var status = handlingData(response);
+    try {
+      final nextPage = myOrdersCurrentPage + 1;
+      var response = await orderRemoteData.getMyOrderDelivery(page: nextPage);
+      var status = handlingData(response);
 
-    if (status == StatuesRequest.success) {
-      List responseBody = response['data'];
-      if (responseBody.isEmpty) {
-        hasMoreMyOrders = false;
-      } else {
-        List<OrdersDeliveryModel> newOrders = responseBody
-            .map((e) => OrdersDeliveryModel.fromJson(e))
-            .where((e) => e.status == "Processing")
-            .toList();
-        myOrdered.addAll(newOrders);
-        hasMoreMyOrders = responseBody.length >= 10;
+      if (status == StatuesRequest.success && response is Map) {
+        List responseBody = response['data'] ?? [];
+        if (responseBody.isEmpty) {
+          hasMoreMyOrders = false;
+        } else {
+          myOrdersCurrentPage = nextPage; // Only advance on success!
+          List<OrdersDeliveryModel> newOrders = responseBody
+              .map((e) => OrdersDeliveryModel.fromJson(e))
+              .where((e) => e.status == "Processing")
+              .toList();
+          myOrdered.addAll(newOrders);
+          hasMoreMyOrders = _determineHasMore(response, responseBody.length);
+        }
       }
-    } else {
-      myOrdersCurrentPage--;
+    } finally {
+      isLoadingMoreMyOrders = false;
+      update();
     }
-    isLoadingMoreMyOrders = false;
-    update();
   }
 }

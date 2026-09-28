@@ -36,7 +36,7 @@ class TermsOfServices extends StatelessWidget {
                   TitleTermsWidget(text: "1. Use of Services:"),
                   BodyTermsWidget(
                       body:
-                          '''You must be at least [age] years old to use our services. By accessing our services, you agree to use them only for lawful purposes and in accordance with these Terms.'''),
+                          '''You must be at least 18 years old to use our services. By accessing our services, you agree to use them only for lawful purposes and in accordance with these Terms.'''),
                   SizedBox(
                     height: 20,
                   ),
@@ -60,7 +60,7 @@ class TermsOfServices extends StatelessWidget {
                   TitleTermsWidget(text: "4. Intellectual Property:"),
                   BodyTermsWidget(
                       body:
-                          '''All content, trademarks, and intellectual property related to our services remain the exclusive property of [Your Company/App Name]. You may not use, copy, modify, or distribute our content without permission.'''),
+                          '''All content, trademarks, and intellectual property related to our services remain the exclusive property of Tharwat Pharmacy. You may not use, copy, modify, or distribute our content without permission.'''),
                   SizedBox(
                     height: 20,
                   ),
@@ -90,7 +90,7 @@ class TermsOfServices extends StatelessWidget {
                   TitleTermsWidget(text: "8. Governing Law:"),
                   BodyTermsWidget(
                       body:
-                          '''These Terms are governed by and construed in accordance with the laws of [Your Country/State].'''),
+                          '''These Terms are governed by and construed in accordance with the laws of Egypt.'''),
                   SizedBox(
                     height: 20,
                   ),

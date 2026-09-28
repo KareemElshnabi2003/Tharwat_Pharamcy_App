@@ -143,7 +143,9 @@ class Filter extends StatelessWidget {
                                         ? LightMode.whiteColor
                                         : LightMode.blackColor
                                             .withValues(alpha: .5),
-                                    text: controller.availablety[index]['name'],
+                                    text: controller.availablety[index]
+                                            ['name'] ??
+                                        '',
                                     onPress: () =>
                                         controller.addToMapAvailabel(index),
                                     size: 3.w);

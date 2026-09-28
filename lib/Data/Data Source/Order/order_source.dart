@@ -6,18 +6,19 @@ class OrderRemoteData {
   Api api;
   OrderRemoteData(this.api);
 
-  createOrder(
-      {token,
-      int? cityId,
-      int? countryId,
-      int? districtId,
-      address,
-      phone,
-      payment,
-      additionalInfo,
-      street,
-      total,
-      buildingNum}) async {
+  Future<dynamic> createOrder({
+    String? token,
+    int? cityId,
+    int? countryId,
+    int? districtId,
+    String? address,
+    String? phone,
+    String? payment,
+    String? additionalInfo,
+    String? street,
+    double? total,
+    String? buildingNum,
+  }) async {
     var response = await api.postData(
       AppApi.createOrderUrl,
       Api.authHeaders(token),
@@ -37,49 +38,62 @@ class OrderRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  checkPaymentStatus({token, orderId}) async {
+  Future<dynamic> checkPaymentStatus(
+      {String? token, required dynamic orderId}) async {
     var response = await api.getData(
-      "${AppApi.checkPaymentUrl}/$orderId",
+      "${AppApi.checkPaymentUrl}/${Uri.encodeComponent(orderId.toString())}",
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  getActiveOrder({token, page}) async {
+  Future<dynamic> getActiveOrder({String? token, int? page}) async {
     var response = await api.getData(
-      "${AppApi.getActivedOrderUrl}?page=$page&per_page=10",
+      Api.buildUrl(AppApi.getActivedOrderUrl, {
+        if (page != null) "page": page.toString(),
+        "per_page": "10",
+      }),
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  getPendingOrder({token, page}) async {
+  Future<dynamic> getPendingOrder({String? token, int? page}) async {
     var response = await api.getData(
-      "${AppApi.getPendingOrderUrl}?page=$page&per_page=10",
+      Api.buildUrl(AppApi.getPendingOrderUrl, {
+        if (page != null) "page": page.toString(),
+        "per_page": "10",
+      }),
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  getCompleteOrder({token, page}) async {
+  Future<dynamic> getCompleteOrder({String? token, int? page}) async {
     var response = await api.getData(
-      "${AppApi.getCompleteOrderUrl}?page=$page&per_page=10",
+      Api.buildUrl(AppApi.getCompleteOrderUrl, {
+        if (page != null) "page": page.toString(),
+        "per_page": "10",
+      }),
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  getCanceledOrder({token, page}) async {
+  Future<dynamic> getCanceledOrder({String? token, int? page}) async {
     var response = await api.getData(
-      "${AppApi.getCanceledOrderUrl}?page=$page&per_page=10",
+      Api.buildUrl(AppApi.getCanceledOrderUrl, {
+        if (page != null) "page": page.toString(),
+        "per_page": "10",
+      }),
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  cancelOrder({token, id}) async {
+  Future<dynamic> cancelOrder({String? token, required dynamic id}) async {
     var response = await api.updatePatchData(
-      "${AppApi.cancelOrderUrl}/$id",
+      "${AppApi.cancelOrderUrl}/${Uri.encodeComponent(id.toString())}",
       Api.authHeaders(token),
       {
         "status": "cancelled",
@@ -90,18 +104,18 @@ class OrderRemoteData {
 
   //deliveryData
 
-  acceptOrder({required id}) async {
+  Future<dynamic> acceptOrder({required dynamic id}) async {
     var response = await api.getData(
-      "${AppApi.acceptOrderDeliveryUrl}/$id",
-      Api.authHeaders(sharedPreferences!.getString("tokenDelivery")),
+      "${AppApi.acceptOrderDeliveryUrl}/${Uri.encodeComponent(id.toString())}",
+      Api.authHeaders(sharedPreferences?.getString("tokenDelivery")),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  updateOrder({required id}) async {
+  Future<dynamic> updateOrder({required dynamic id}) async {
     var response = await api.updatePatchData(
-      "${AppApi.updateOrderDeliveryUrl}/$id",
-      Api.authHeaders(sharedPreferences!.getString("tokenDelivery")),
+      "${AppApi.updateOrderDeliveryUrl}/${Uri.encodeComponent(id.toString())}",
+      Api.authHeaders(sharedPreferences?.getString("tokenDelivery")),
       {
         "status": 2,
       },
@@ -109,26 +123,35 @@ class OrderRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  getMyOrderDelivery({page}) async {
+  Future<dynamic> getMyOrderDelivery({int? page}) async {
     var response = await api.getData(
-      "${AppApi.getMyOrderDeliveryUrl}?page=$page&per_page=10",
-      Api.authHeaders(sharedPreferences!.getString("tokenDelivery")),
+      Api.buildUrl(AppApi.getMyOrderDeliveryUrl, {
+        if (page != null) "page": page.toString(),
+        "per_page": "10",
+      }),
+      Api.authHeaders(sharedPreferences?.getString("tokenDelivery")),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  getPendingDeliveryOrders({page}) async {
+  Future<dynamic> getPendingDeliveryOrders({int? page}) async {
     var response = await api.getData(
-      "${AppApi.getPendingOrderDeliveryUrl}?page=$page&per_page=10",
-      Api.authHeaders(sharedPreferences!.getString("tokenDelivery")),
+      Api.buildUrl(AppApi.getPendingOrderDeliveryUrl, {
+        if (page != null) "page": page.toString(),
+        "per_page": "10",
+      }),
+      Api.authHeaders(sharedPreferences?.getString("tokenDelivery")),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  getCompletedDeliveryOrders({page}) async {
+  Future<dynamic> getCompletedDeliveryOrders({int? page}) async {
     var response = await api.getData(
-      "${AppApi.getCompleteOrderDeliveryUrl}?page=$page&per_page=10",
-      Api.authHeaders(sharedPreferences!.getString("tokenDelivery")),
+      Api.buildUrl(AppApi.getCompleteOrderDeliveryUrl, {
+        if (page != null) "page": page.toString(),
+        "per_page": "10",
+      }),
+      Api.authHeaders(sharedPreferences?.getString("tokenDelivery")),
     );
     return response.fold((l) => l, (r) => r);
   }

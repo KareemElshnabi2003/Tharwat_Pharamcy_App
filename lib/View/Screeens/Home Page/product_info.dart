@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:screen_go/extensions/responsive_nums.dart';
-import 'package:tharwat_pharmacy/Controller/Home/home_controller.dart';
 import 'package:tharwat_pharmacy/Controller/Home/product_info_controller.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_api.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
@@ -18,13 +17,12 @@ class ProductInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    HomeController homeController = Get.put(HomeController());
-    Get.put(ProductInfoController());
     return Scaffold(
       backgroundColor: sharedPreferences!.getString("Mood") == "Dark"
           ? LightMode.nightColor
           : LightMode.whiteColor,
       body: GetBuilder<ProductInfoController>(
+        init: ProductInfoController(),
         builder: (controller) => Stack(
           clipBehavior: Clip.none,
           children: [

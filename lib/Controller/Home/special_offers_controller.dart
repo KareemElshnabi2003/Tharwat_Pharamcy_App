@@ -12,11 +12,15 @@ import 'package:tharwat_pharmacy/Data/Model/Home/offers_model.dart';
 import 'package:tharwat_pharmacy/main.dart';
 
 class SpecialOffersController extends GetxController {
-  FavouriteController favouriteController = Get.put(FavouriteController());
+  FavouriteController favouriteController =
+      Get.isRegistered<FavouriteController>()
+          ? Get.find<FavouriteController>()
+          : Get.put(FavouriteController());
 
   StatuesRequest statuesRequest = StatuesRequest.none;
   StatuesRequest loadMoreStatus = StatuesRequest.none;
-  HomeRemoteData homeRemoteData = HomeRemoteData(Get.put(Api()));
+  HomeRemoteData homeRemoteData = HomeRemoteData(
+      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
 
   List<OffersModel> offers = [];
   List<OfferProductsModel> offerProducts = [];
@@ -35,6 +39,7 @@ class SpecialOffersController extends GetxController {
   int offersIndex = 1;
   bool moreSearch = false;
   int indexSearch = 1;
+  int _searchRequestId = 0;
 
   bool isLoadingMore = false;
   bool isLoadingMoreOffers = false;
@@ -55,8 +60,9 @@ class SpecialOffersController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (Get.arguments != null && Get.arguments is Map) {
-      offerId = Get.arguments['id'] ?? "";
+    final args = Get.arguments;
+    if (args is Map) {
+      offerId = args['id']?.toString() ?? "";
     }
     if (offerId.isNotEmpty) {
       getOfferProducts();
@@ -105,7 +111,6 @@ class SpecialOffersController extends GetxController {
     loadMoreStatus = StatuesRequest.loading;
     update();
     try {
-      index++;
       await getOfferProducts(isLoadMore: true);
     } finally {
       isLoadingMore = false;
@@ -168,17 +173,26 @@ class SpecialOffersController extends GetxController {
     });
   }
 
-  search({bool isLoadMore = false}) async {
+  Future<void> search({bool isLoadMore = false}) async {
+    final currentRequestId = ++_searchRequestId;
+    final int requestPage = isLoadMore ? indexSearch + 1 : 1;
+
     if (!isLoadMore) {
+      searchList.clear();
       favouriteController.favProductsId.clear();
       statuesRequest = StatuesRequest.loading;
+      update();
     }
-    update();
 
     var response = await homeRemoteData.searchSpecial(
         query: searchController.text,
-        page: indexSearch,
+        page: requestPage,
         token: sharedPreferences!.getString("token"));
+
+    // Drop stale response
+    if (currentRequestId != _searchRequestId) {
+      return;
+    }
 
     statuesRequest = handlingData(response);
 
@@ -186,20 +200,23 @@ class SpecialOffersController extends GetxController {
       status: statuesRequest,
       response: response,
       onSuccess: (data) {
-        List resList = data['data'];
-        if (indexSearch <= data['pagination']['last_page']) {
-          if (indexSearch == 1 && !isLoadMore) {
-            searchList.clear();
-            favouriteController.favProductsId.clear();
-          }
-
-          moreSearch = indexSearch < data['pagination']['last_page'];
+        if (currentRequestId != _searchRequestId) return;
+        List resList = data['data'] ?? [];
+        final lastPage = data['pagination']?['last_page'] ?? 1;
+        if (requestPage <= lastPage) {
+          indexSearch = requestPage; // Only advance on success!
+          moreSearch = indexSearch < lastPage;
           searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
-          favouriteController.favProductsId.addAll(resList
-              .where((item) => item['is_favourite'] == true)
-              .map((e) => e['id']));
-
-          indexSearch++;
+          for (final item in resList) {
+            if (item['is_favourite'] == true && item['id'] != null) {
+              final id = item['id'] is int
+                  ? item['id'] as int
+                  : int.tryParse(item['id'].toString());
+              if (id != null) {
+                favouriteController.favProductsId.add(id);
+              }
+            }
+          }
         } else {
           moreSearch = false;
         }
@@ -208,16 +225,17 @@ class SpecialOffersController extends GetxController {
     update();
   }
 
-  getOffers({bool isLoadMore = false}) async {
+  Future<void> getOffers({bool isLoadMore = false}) async {
+    final int requestPage = isLoadMore ? offersIndex + 1 : 1;
+
     if (!isLoadMore) {
       offers.clear();
-      offersIndex = 1;
       statuesRequest = StatuesRequest.loading;
+      update();
     }
-    update();
 
     var response = await homeRemoteData.getOffersData(
-        page: offersIndex, token: sharedPreferences!.getString("token"));
+        page: requestPage, token: sharedPreferences!.getString("token"));
 
     statuesRequest = handlingData(response);
 
@@ -225,12 +243,13 @@ class SpecialOffersController extends GetxController {
       status: statuesRequest,
       response: response,
       onSuccess: (data) {
-        List resList = data['data'];
-        if (offersIndex <= data['pagination']['last_page']) {
-          moreOffers = offersIndex < data['pagination']['last_page'];
+        List resList = data['data'] ?? [];
+        final lastPage = data['pagination']?['last_page'] ?? 1;
+        if (requestPage <= lastPage) {
+          offersIndex = requestPage; // Only advance on success!
+          moreOffers = offersIndex < lastPage;
           offers.addAll(
               resList.map((item) => OffersModel.fromJson(item)).toList());
-          offersIndex++;
         } else {
           moreOffers = false;
         }
@@ -241,18 +260,18 @@ class SpecialOffersController extends GetxController {
 
   Future<List<OfferProductsModel>> getOfferProducts(
       {bool isLoadMore = false}) async {
+    final int requestPage = isLoadMore ? index + 1 : 1;
+
     if (!isLoadMore) {
-      index = 1;
       offerProducts.clear();
       favouriteController.favProductsId.clear();
+      statuesRequest = StatuesRequest.loading;
+      update();
     }
-    more = true;
-    statuesRequest = StatuesRequest.loading;
-    update();
 
     var response = await homeRemoteData.getOfferProductsData(
         offerId: offerId,
-        page: index,
+        page: requestPage,
         token: sharedPreferences!.getString("token"));
 
     statuesRequest = handlingData(response);
@@ -261,19 +280,29 @@ class SpecialOffersController extends GetxController {
       status: statuesRequest,
       response: response,
       onSuccess: (data) {
-        List resList = data['data'];
-        if (index <= data['pagination']['last_page']) {
-          more = index < data['pagination']['last_page'];
+        List resList = data['data'] ?? [];
+        final lastPage = data['pagination']?['last_page'] ?? 1;
+        if (requestPage <= lastPage) {
+          index = requestPage; // Only advance on success!
+          more = index < lastPage;
           offerProducts
               .addAll(resList.map((item) => OfferProductsModel.fromJson(item)));
-          favouriteController.favProductsId.addAll(resList
-              .where((item) => item['is_favourite'] == true)
-              .map((e) => e['id']));
+          for (final item in resList) {
+            if (item['is_favourite'] == true && item['id'] != null) {
+              final id = item['id'] is int
+                  ? item['id'] as int
+                  : int.tryParse(item['id'].toString());
+              if (id != null) {
+                favouriteController.favProductsId.add(id);
+              }
+            }
+          }
         } else {
           more = false;
         }
       },
     );
+    update();
     return offerProducts;
   }
 

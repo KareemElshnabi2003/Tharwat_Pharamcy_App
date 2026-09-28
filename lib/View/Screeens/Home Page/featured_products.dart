@@ -68,9 +68,12 @@ class FeaturedProducts extends StatelessWidget {
 
   Widget _buildSearchResults(FeaturedProductsController controller) {
     if (controller.statuesRequest == StatuesRequest.loading &&
-        controller.searchList.isEmpty) return LoadingWidget(height: 60.h);
-    if (controller.searchList.isEmpty)
+        controller.searchList.isEmpty) {
+      return LoadingWidget(height: 60.h);
+    }
+    if (controller.searchList.isEmpty) {
       return const Center(child: NoDataWidget(text: "No Items."));
+    }
     return ListView(
       controller: controller.scrollController,
       children: [
@@ -111,9 +114,12 @@ class FeaturedProducts extends StatelessWidget {
 
   Widget _buildFeaturedProducts(FeaturedProductsController controller) {
     if (controller.statuesRequest == StatuesRequest.loading &&
-        controller.trendProducts.isEmpty) return LoadingWidget(height: 60.h);
-    if (controller.trendProducts.isEmpty)
+        controller.trendProducts.isEmpty) {
+      return LoadingWidget(height: 60.h);
+    }
+    if (controller.trendProducts.isEmpty) {
       return const Center(child: NoDataWidget(text: "No Products Yet"));
+    }
     return ListView(
       padding: EdgeInsets.only(right: 7.w, left: 7.w),
       controller: controller.scrollController,

@@ -29,13 +29,13 @@ class Profile extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-        homeController.changePage(0);
-        homeController.choose_1 = true;
-        homeController.choose_2 = false;
-      });
-        },
+        if (didPop) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          homeController.changePage(0);
+          homeController.choose_1 = true;
+          homeController.choose_2 = false;
+        });
+      },
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<ProfileController>(

@@ -5,26 +5,29 @@ class FavouriteRemoteData {
   Api api;
   FavouriteRemoteData(this.api);
 
-  getFavProducts({token, page}) async {
+  Future<dynamic> getFavProducts({String? token, int? page}) async {
     var response = await api.getData(
-      "${AppApi.favProductsUrl}?per_page=15&page=$page",
+      Api.buildUrl(AppApi.favProductsUrl, {
+        "per_page": "15",
+        if (page != null) "page": page.toString(),
+      }),
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  addToFav({token, id}) async {
+  Future<dynamic> addToFav({String? token, required dynamic id}) async {
     var response = await api.postData(
-      "${AppApi.addToFavProductsUrl}/$id",
+      "${AppApi.addToFavProductsUrl}/${Uri.encodeComponent(id.toString())}",
       Api.authHeaders(token),
       {},
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  removeFromFav({token, id}) async {
+  Future<dynamic> removeFromFav({String? token, required dynamic id}) async {
     var response = await api.postData(
-      "${AppApi.addToFavProductsUrl}/$id",
+      "${AppApi.addToFavProductsUrl}/${Uri.encodeComponent(id.toString())}",
       Api.authHeaders(token),
       {},
     );

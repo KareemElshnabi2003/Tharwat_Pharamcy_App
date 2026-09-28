@@ -4,7 +4,7 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class FilterController extends GetxController {
   RangeValues currentRangeValues = const RangeValues(20, 70);
-  List ranges = [
+  final List<String> ranges = [
     "\$0",
     "\$10",
     "\$20",
@@ -27,34 +27,53 @@ class FilterController extends GetxController {
   bool chooseAllCat = true;
   bool chooseAllAvailable = true;
 
-  setPrice(RangeValues value) {
+  List<String> chooseCat = [];
+  List<String> chooseAvailabel = [];
+
+  final List<Map<String, String>> cateegory = [
+    {"name": "Sun Care", "id": "1"},
+    {"name": "Hair Care", "id": "2"},
+    {"name": "Make Up", "id": "3"},
+    {"name": "Skin Care", "id": "4"},
+  ];
+
+  final List<Map<String, String>> availablety = [
+    {"name": "In-stack", "id": "1"},
+    {"name": "Out-of-stack", "id": "2"},
+  ];
+
+  void setPrice(RangeValues value) {
     currentRangeValues = value;
     maxPriceRang = value.end.toString();
     minPriceRang = value.start.toString();
     update();
   }
 
-  chooseAllCategory() {
+  void chooseAllCategory() {
     chooseAllCat = true;
     chooseCat.clear();
     categoryName = "";
     update();
   }
 
-  List chooseCat = [];
-  List chooseAvailabel = [];
-  changeSpecialOfferes(value) {
+  void changeSpecialOfferes(String value) {
     specialOfferes = value;
     update();
   }
 
-  saveData() {
-    sharedPreferences!.setString('maxPrice', maxPriceRang);
-    sharedPreferences!.setString('minPrice', minPriceRang);
-    sharedPreferences!.setString('stock', available == "In-stack" ? "1" : "0");
+  String get stockParam {
+    if (available == "In-stack") return "1";
+    if (available == "Out-of-stack") return "0";
+    return "";
   }
 
-  clearData() {
+  void saveData() {
+    sharedPreferences?.setString('maxPrice', maxPriceRang);
+    sharedPreferences?.setString('minPrice', minPriceRang);
+    sharedPreferences?.setString('stock', stockParam);
+  }
+
+  void clearData() {
     currentRangeValues = const RangeValues(20, 70);
     review = '';
     available = '';
@@ -67,49 +86,38 @@ class FilterController extends GetxController {
     specialOfferes = "no";
     chooseCat.clear();
     chooseAvailabel.clear();
-    sharedPreferences!.setString('maxPrice', '');
-    sharedPreferences!.setString('minPrice', '');
-    sharedPreferences!.setString('stock', '');
+    sharedPreferences?.setString('maxPrice', '');
+    sharedPreferences?.setString('minPrice', '');
+    sharedPreferences?.setString('stock', '');
     update();
   }
 
-  changeReview(value) {
+  void changeReview(String value) {
     review = value;
     update();
   }
 
-  List cateegory = [
-    {"name": "Sun Care", "id": "1"},
-    {"name": "Hair Care", "id": "2"},
-    {"name": "Make Up", "id": "3"},
-    {"name": "Skin Care", "id": "4"},
-  ];
-  List availablety = [
-    {"name": "In-stack", "id": "1"},
-    {"name": "Out-of-stack", "id": "2"},
-  ];
-
-  addToMap(index) {
+  void addToMap(int index) {
     chooseCat.clear();
     chooseCat.add(cateegory[index]['id'].toString());
-    categoryName = cateegory[index]['name'];
+    categoryName = cateegory[index]['name'] ?? '';
 
     chooseAllCat = false;
     update();
   }
 
-  chooseAllAvailabel() {
+  void chooseAllAvailabel() {
     chooseAllAvailable = true;
     chooseAvailabel.clear();
     available = "";
     update();
   }
 
-  addToMapAvailabel(index) {
+  void addToMapAvailabel(int index) {
     chooseAllAvailable = false;
     chooseAvailabel.clear();
-    chooseAvailabel.add(availablety[index]['id']);
-    available = availablety[index]['name'];
+    chooseAvailabel.add(availablety[index]['id'] ?? '');
+    available = availablety[index]['name'] ?? '';
     update();
   }
 }

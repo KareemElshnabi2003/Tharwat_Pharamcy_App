@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
+import 'package:tharwat_pharmacy/Core/Constant/contact_config.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Profile/profile_source.dart';
@@ -10,14 +11,16 @@ import 'package:tharwat_pharmacy/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactUsController extends GetxController {
-  GlobalKey<FormState> changePassKey = GlobalKey();
+  GlobalKey<FormState> changePassKey = GlobalKey<FormState>();
   StatuesRequest statuesRequest = StatuesRequest.none;
-  ProfileRemoteData profileRemoteData = ProfileRemoteData(Get.put(Api()));
+  ProfileRemoteData profileRemoteData = ProfileRemoteData(Get.find<Api>());
   TextEditingController userNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController messageController = TextEditingController();
   String? status;
-  userNameValidtor(String val) {
+
+  String? userNameValidtor(String val) => userNameValidator(val);
+  String? userNameValidator(String val) {
     if (val.isEmpty) {
       return "Please, Enter your name ";
     } else if (val.length > 25) {
@@ -27,7 +30,8 @@ class ContactUsController extends GetxController {
     }
   }
 
-  emailValidtor(String val) {
+  String? emailValidtor(String val) => emailValidator(val);
+  String? emailValidator(String val) {
     if (val.isEmpty) {
       return "Please, Enter your email ";
     } else {
@@ -35,7 +39,8 @@ class ContactUsController extends GetxController {
     }
   }
 
-  messageValidtor(String val) {
+  String? messageValidtor(String val) => messageValidator(val);
+  String? messageValidator(String val) {
     if (val.isEmpty) {
       return "Please, Enter your message ";
     } else if (val.length < 10) {
@@ -45,95 +50,80 @@ class ContactUsController extends GetxController {
     }
   }
 
-  Future<void> urlLuncher(
-    String name,
-  ) async {
+  Future<void> urlLauncher(String name) => urlLuncher(name);
+  Future<void> urlLuncher(String name) async {
+    String? urlString;
     if (name == "sms") {
-      final Uri url = Uri.parse('sms:+201281265373');
-      if (!await launchUrl(url)) {
-        throw "can't launch $url";
-      }
+      urlString = ContactConfig.smsUrl;
     } else if (name == "phone") {
-      final Uri url = Uri.parse('tel:+201281265373');
-      if (!await launchUrl(url)) {
-        throw "can't launch $url";
-      }
+      urlString = ContactConfig.phoneUrl;
     } else if (name == "watsapp") {
-      final Uri url = Uri.parse('whatsapp://send?phone=+201281265373');
-      if (!await launchUrl(url)) {
-        throw "can't launch $url";
-      }
+      urlString = ContactConfig.whatsappUrl;
     } else if (name == "facebook") {
-      final Uri url =
-          Uri.parse('https://www.facebook.com/profile.php?id=100009638558266');
-      if (!await launchUrl(url)) {
-        throw "can't launch $url";
-      }
+      urlString = ContactConfig.facebookUrl;
     } else if (name == "instagram") {
-      final Uri url = Uri.parse(
-          'https://www.instagram.com/kareem_elshnabi/profilecard/?igsh=ZHJia3dtdDdycnlx');
-
-      if (!await launchUrl(url)) {
-        throw "can't launch $url";
-      }
+      urlString = ContactConfig.instagramUrl;
     } else if (name == "twitter") {
-      final Uri url = Uri.parse('https://www.threads.net/@FCBarcelona');
-
-      if (!await launchUrl(url)) {
-        throw "can't launch $url";
-      }
+      urlString = ContactConfig.twitterUrl;
     } else if (name == "linkedin") {
-      final Uri url = Uri.parse(
-          'https://www.linkedin.com/company/white-eagle-event-company/');
-
-      if (!await launchUrl(url)) {
-        throw "can't launch $url";
-      }
+      urlString = ContactConfig.linkedinUrl;
     } else if (name == "tiktok") {
-      final Uri url = Uri.parse(
-          'https://www.tiktok.com/@whiteeagleevent?_t=8lDZLVLCod8&_r=1');
-
-      if (!await launchUrl(url)) {
-        throw "can't launch $url";
-      }
+      urlString = ContactConfig.tiktokUrl;
     } else if (name == "gmail") {
-      final Uri url = Uri.parse(
-          'mailto:kareemelshnabi@gmail.com?subject=News&body=New plugin');
+      urlString = ContactConfig.mailtoUrl;
+    }
 
-      if (!await launchUrl(url)) {
-        throw "can't launch $url";
+    if (urlString == null) return;
+
+    try {
+      final Uri uri = Uri.parse(urlString);
+      if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+        Get.snackbar("Notice", "Could not open $name application");
       }
+    } catch (_) {
+      Get.snackbar("Notice", "Could not open $name application");
     }
   }
 
-  sendMesssage() async {
-    if (changePassKey.currentState!.validate()) {
+  Future<void> sendMessage() => sendMesssage();
+  Future<void> sendMesssage() async {
+    if (changePassKey.currentState?.validate() ?? false) {
       Get.back();
-      statuesRequest = StatuesRequest.loading;
-      update();
-      var response = await profileRemoteData.contactUs(
-        email: emailController.text,
-        message: messageController.text,
-        userName: userNameController.text,
-        token: sharedPreferences!.getString("token"),
-      );
-
-      statuesRequest = handlingData(response);
-
-      if (statuesRequest == StatuesRequest.success) {
-        Map<String, dynamic> responseBody = response;
-        status = responseBody['status'];
-        Get.back();
-        ScaffoldMessenger.of(Get.context!).showSnackBar(
-            snackBarWidget(message: "Your message sent successfully !"));
+      try {
+        statuesRequest = StatuesRequest.loading;
         update();
-      } else if (statuesRequest == StatuesRequest.socketException) {
-        messageError("Error", "please, check your internet");
-      } else {
+        var response = await profileRemoteData.contactUs(
+          email: emailController.text,
+          message: messageController.text,
+          userName: userNameController.text,
+          token: sharedPreferences?.getString("token"),
+        );
+
+        statuesRequest = handlingData(response);
+
+        if (statuesRequest == StatuesRequest.success) {
+          Map<String, dynamic> responseBody = response;
+          status = responseBody['status'];
+          Get.back();
+          if (Get.context != null) {
+            ScaffoldMessenger.of(Get.context!).showSnackBar(
+                snackBarWidget(message: "Your message sent successfully !"));
+          }
+        } else if (statuesRequest == StatuesRequest.socketException) {
+          messageError("Error", "please, check your internet");
+        } else {
+          messageError("Error", parseErrorMessage(response));
+        }
+      } catch (e) {
+        statuesRequest = StatuesRequest.serverError;
         messageError("Error", "There is a problem. Please,  try again later");
+      } finally {
+        if (statuesRequest == StatuesRequest.loading) {
+          statuesRequest = StatuesRequest.none;
+        }
+        update();
       }
     }
-    update();
   }
 
   @override

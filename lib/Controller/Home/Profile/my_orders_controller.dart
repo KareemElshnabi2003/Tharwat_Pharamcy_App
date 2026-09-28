@@ -67,12 +67,13 @@ class MyOrdersController extends GetxController {
 
     if (index == 0) {
       pendingOrdered.clear();
-    } else if (index == 1)
+    } else if (index == 1) {
       activeOrdered.clear();
-    else if (index == 2)
+    } else if (index == 2) {
       completeOrdered.clear();
-    else
+    } else {
       cancelOrdered.clear();
+    }
   }
 
   Future<void> loadInitialOrders() async {
@@ -84,10 +85,13 @@ class MyOrdersController extends GetxController {
     if (isLoadingMore || !hasMoreData || currentPage >= lastPage) return;
     isLoadingMore = true;
     update();
-    currentPage++;
-    await _fetchOrders();
-    isLoadingMore = false;
-    update();
+    try {
+      currentPage++;
+      await _fetchOrders();
+    } finally {
+      isLoadingMore = false;
+      update();
+    }
   }
 
   Future<void> refreshOrders() async {
@@ -107,15 +111,16 @@ class MyOrdersController extends GetxController {
     if (index == 0) {
       response = await orderRemoteData.getPendingOrder(
           token: token, page: currentPage);
-    } else if (index == 1)
+    } else if (index == 1) {
       response =
           await orderRemoteData.getActiveOrder(token: token, page: currentPage);
-    else if (index == 2)
+    } else if (index == 2) {
       response = await orderRemoteData.getCompleteOrder(
           token: token, page: currentPage);
-    else
+    } else {
       response = await orderRemoteData.getCanceledOrder(
           token: token, page: currentPage);
+    }
 
     statuesRequest = handlingData(response);
 

@@ -15,12 +15,12 @@ class VerifyCodeController extends GetxController {
   String verifyCodeSign = '';
   String verifyCodeForget = '';
   StatuesRequest statuesRequest = StatuesRequest.none;
-  AuthRemoteData authRemoteData = AuthRemoteData(Get.put(Api()));
+  AuthRemoteData authRemoteData = AuthRemoteData(Get.find<Api>());
   UserAuthModel? userAuthModel;
   String email = '';
   bool click = false;
 
-  change() {
+  void change() {
     if (click == false) {
       click = true;
       sendOTP();
@@ -30,38 +30,48 @@ class VerifyCodeController extends GetxController {
     update();
   }
 
-  sendOTP() async {
+  Future<void> sendOTP() async {
     verifyCodeSign = '';
     verifyCodeForget = '';
-    statuesRequest = StatuesRequest.loading;
-    update();
-    var response = await authRemoteData.sendOTP(email: email);
-    statuesRequest = handlingData(response);
+    try {
+      statuesRequest = StatuesRequest.loading;
+      update();
+      var response = await authRemoteData.sendOTP(email: email);
+      statuesRequest = handlingData(response);
 
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        click = false;
-      },
-    );
-    update();
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {
+          click = false;
+        },
+      );
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
+      click = false;
+    } finally {
+      if (statuesRequest == StatuesRequest.loading) {
+        statuesRequest = StatuesRequest.none;
+      }
+      update();
+    }
   }
 
-  setValSign(val) async {
+  Future<void> setValSign(String val) async {
     verifyCodeSign = val;
     await verifySign();
     update();
   }
 
-  setValForgetPass(val) async {
+  Future<void> setValForgetPass(String val) async {
     verifyCodeForget = val;
     await verifyForgetPass();
     update();
   }
 
-  verifySign() async {
-    if (verifyCodeSign != '') {
+  Future<void> verifySign() async {
+    if (verifyCodeSign.isEmpty) return;
+    try {
       statuesRequest = StatuesRequest.loading;
       update();
       var response =
@@ -76,35 +86,43 @@ class VerifyCodeController extends GetxController {
             messageError("Error", "Code is invalid");
           } else {
             userAuthModel = UserAuthModel.fromJson(data['data']);
-            sharedPreferences!.setString("phone", "${userAuthModel!.phone}");
-            sharedPreferences!.setString("email", "${userAuthModel!.email}");
-            sharedPreferences!.setString("image", "${userAuthModel!.image}");
-            sharedPreferences!.setString("token", "${userAuthModel!.token}");
-            sharedPreferences!.setString("name", "${userAuthModel!.name}");
-            sharedPreferences!.setString("role", "${userAuthModel!.role}");
-            sharedPreferences!.setString(
-                "cityName", userAuthModel!.district!.city!.name ?? "");
-            sharedPreferences!.setString("countryName",
-                "${userAuthModel!.district!.city!.country!.name}");
-            sharedPreferences!
-                .setString("districtName", "${userAuthModel!.district!.name}");
-            sharedPreferences!
-                .setString("cityId", "${userAuthModel!.district!.city!.id}");
-            sharedPreferences!.setString(
-                "countryId", "${userAuthModel!.district!.city!.country!.id}");
-            sharedPreferences!
-                .setString("districtId", "${userAuthModel!.district!.id}");
-            sharedPreferences!.setString("pageStart", "Home");
+            sharedPreferences?.setString("phone", "${userAuthModel!.phone}");
+            sharedPreferences?.setString("email", "${userAuthModel!.email}");
+            sharedPreferences?.setString("image", "${userAuthModel!.image}");
+            sharedPreferences?.setString("token", "${userAuthModel!.token}");
+            sharedPreferences?.setString("name", "${userAuthModel!.name}");
+            sharedPreferences?.setString("role", "${userAuthModel!.role}");
+            sharedPreferences?.setString(
+                "cityName", userAuthModel!.district?.city?.name ?? "");
+            sharedPreferences?.setString("countryName",
+                userAuthModel!.district?.city?.country?.name ?? '');
+            sharedPreferences?.setString(
+                "districtName", userAuthModel!.district?.name ?? '');
+            sharedPreferences?.setString(
+                "cityId", "${userAuthModel!.district?.city?.id ?? ''}");
+            sharedPreferences?.setString("countryId",
+                "${userAuthModel!.district?.city?.country?.id ?? ''}");
+            sharedPreferences?.setString(
+                "districtId", "${userAuthModel!.district?.id ?? ''}");
+            sharedPreferences?.setString("pageStart", "Home");
             Get.offAll(() => const SuccsessSign());
           }
         },
       );
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
+      messageError("Error", "Code is invalid or an error occurred");
+    } finally {
+      if (statuesRequest == StatuesRequest.loading) {
+        statuesRequest = StatuesRequest.none;
+      }
       update();
     }
   }
 
-  verifyForgetPass() async {
-    if (verifyCodeForget != '') {
+  Future<void> verifyForgetPass() async {
+    if (verifyCodeForget.isEmpty) return;
+    try {
       statuesRequest = StatuesRequest.loading;
       update();
       var response =
@@ -118,18 +136,30 @@ class VerifyCodeController extends GetxController {
           if (data['status'] == "error") {
             messageError("Error", "Code is invalid");
           } else {
-            sharedPreferences!.setString("pageStart", "Login");
+            sharedPreferences?.setString("pageStart", "Login");
             Get.off(() => const ResetPass());
           }
         },
       );
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
+      messageError("Error", "Code is invalid or an error occurred");
+    } finally {
+      if (statuesRequest == StatuesRequest.loading) {
+        statuesRequest = StatuesRequest.none;
+      }
       update();
     }
   }
 
   @override
   void onInit() {
-    email = Get.arguments['email'];
+    final args = Get.arguments;
+    if (args is Map) {
+      email = args['email']?.toString() ?? "";
+    } else if (args is String) {
+      email = args;
+    }
     super.onInit();
   }
 }

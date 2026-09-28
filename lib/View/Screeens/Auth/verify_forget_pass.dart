@@ -22,13 +22,13 @@ class VerifyForgetPass extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.canPop(context)
-            ? Get.back()
-            : Get.off(() => const ForgetPass());
-      });
-        },
+        if (didPop) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.canPop(context)
+              ? Get.back()
+              : Get.off(() => const ForgetPass());
+        });
+      },
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<VerifyCodeController>(

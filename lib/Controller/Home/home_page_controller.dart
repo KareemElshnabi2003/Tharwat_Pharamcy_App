@@ -11,20 +11,26 @@ import 'package:tharwat_pharmacy/Data/Model/Home/home_model.dart';
 import 'package:tharwat_pharmacy/main.dart';
 
 class HomePageController extends GetxController {
-  FavouriteController favouriteController = Get.put(FavouriteController());
+  FavouriteController favouriteController =
+      Get.isRegistered<FavouriteController>()
+          ? Get.find<FavouriteController>()
+          : Get.put(FavouriteController());
   TextEditingController searchController = TextEditingController();
 
   ScrollController scrollController = ScrollController();
   StatuesRequest statuesRequest = StatuesRequest.none;
   StatuesRequest loadMoreStatus = StatuesRequest.none;
 
-  HomeRemoteData homeRemoteData = HomeRemoteData(Get.put(Api()));
+  HomeRemoteData homeRemoteData = HomeRemoteData(
+      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
   HomeModel? homeModel;
   List<ProductModel> searchList = [];
   bool isSearch = false;
   bool more = false;
   bool isLoadingMore = false;
   bool isLoadingHome = false;
+  bool isLoadingSearch = false;
+  int _searchRequestId = 0;
   int index = 1;
   Timer? _debounce;
   Future<HomeModel?>? homeDataFuture;
@@ -62,7 +68,6 @@ class HomePageController extends GetxController {
       if (value.isNotEmpty) {
         isSearch = true;
         index = 1;
-        searchList.clear();
         more = true;
         await search();
       } else {
@@ -95,25 +100,38 @@ class HomePageController extends GetxController {
           homeModel = HomeModel.fromJson(data);
 
           if (data['data']?['trending_products']?['data'] != null) {
-            favouriteController.favProductsId.addAll(
-              (data['data']['trending_products']['data'] as List)
-                  .where((item) => item['is_favourite'] == true)
-                  .map((e) => e['id']),
-            );
+            for (final item
+                in (data['data']['trending_products']['data'] as List)) {
+              if (item['is_favourite'] == true && item['id'] != null) {
+                final id = item['id'] is int
+                    ? item['id'] as int
+                    : int.tryParse(item['id'].toString());
+                if (id != null) {
+                  favouriteController.favProductsId.add(id);
+                }
+              }
+            }
           }
 
           if (data['data']?['most_ordered_products']?['data'] != null) {
-            favouriteController.favProductsId.addAll(
-              (data['data']['most_ordered_products']['data'] as List)
-                  .where((item) => item['is_favourite'] == true)
-                  .map((e) => e['id']),
-            );
+            for (final item
+                in (data['data']['most_ordered_products']['data'] as List)) {
+              if (item['is_favourite'] == true && item['id'] != null) {
+                final id = item['id'] is int
+                    ? item['id'] as int
+                    : int.tryParse(item['id'].toString());
+                if (id != null) {
+                  favouriteController.favProductsId.add(id);
+                }
+              }
+            }
           }
         },
       );
       return homeModel;
-    } catch (_) {
-      return homeModel;
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
+      return null;
     } finally {
       isLoadingHome = false;
       update();
@@ -136,46 +154,77 @@ class HomePageController extends GetxController {
     }
   }
 
-  Future<void> search({bool isLoadMore = false}) async {
+  Future<void> search({String? query, bool isLoadMore = false}) async {
+    final currentRequestId = ++_searchRequestId;
+    final int requestPage = isLoadMore ? index : 1;
+    final String searchQuery = query ?? searchController.text;
+
     if (!isLoadMore) {
+      isLoadingSearch = true;
+      searchList.clear();
       favouriteController.favProductsId.clear();
-      statuesRequest = StatuesRequest.loading;
     }
     update();
 
-    var response = await homeRemoteData.searchHome(
-        query: searchController.text,
-        page: index,
-        token: sharedPreferences?.getString("token"));
+    try {
+      var response = await homeRemoteData.searchHome(
+          query: searchQuery,
+          page: requestPage,
+          token: sharedPreferences?.getString("token"));
 
-    statuesRequest = handlingData(response);
+      // Drop stale response
+      if (currentRequestId != _searchRequestId) {
+        return;
+      }
 
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        List resList = data['data'] ?? [];
-        int lastPage = data['pagination']?['last_page'] ?? 1;
-        if (index <= lastPage) {
-          if (index == 1 && !isLoadMore) {
-            searchList.clear();
-            favouriteController.favProductsId.clear();
+      final status = handlingData(response);
+      if (!isLoadMore) {
+        statuesRequest = status;
+      }
+
+      handleApiResponse(
+        status: status,
+        response: response,
+        onSuccess: (data) {
+          if (currentRequestId != _searchRequestId) return;
+          List resList = data['data'] ?? [];
+          int lastPage = data['pagination']?['last_page'] ?? 1;
+          if (requestPage <= lastPage) {
+            if (!isLoadMore) {
+              searchList.clear();
+              index = 1;
+            }
+
+            more = requestPage < lastPage;
+            searchList
+                .addAll(resList.map((item) => ProductModel.fromJson(item)));
+
+            for (final item in resList) {
+              if (item['is_favourite'] == true && item['id'] != null) {
+                final id = item['id'] is int
+                    ? item['id'] as int
+                    : int.tryParse(item['id'].toString());
+                if (id != null) {
+                  favouriteController.favProductsId.add(id);
+                }
+              }
+            }
+
+            // Only advance upon success!
+            index = requestPage + 1;
+          } else {
+            more = false;
           }
-
-          more = index < lastPage;
-          searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
-
-          favouriteController.favProductsId.addAll(resList
-              .where((item) => item['is_favourite'] == true)
-              .map((e) => e['id']));
-
-          index++;
-        } else {
-          more = false;
+        },
+      );
+    } finally {
+      if (currentRequestId == _searchRequestId) {
+        if (!isLoadMore) {
+          isLoadingSearch = false;
         }
-      },
-    );
-    update();
+        update();
+      }
+    }
   }
 
   @override

@@ -33,12 +33,14 @@ class ProfileController extends GetxController {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passOldController = TextEditingController();
   final TextEditingController passNewController = TextEditingController();
-  final TextEditingController passNewConfirmController = TextEditingController();
+  final TextEditingController passNewConfirmController =
+      TextEditingController();
 
   StatuesRequest statuesRequest = StatuesRequest.none;
-  final ProfileRemoteData profileRemoteData = ProfileRemoteData(Get.put(Api()));
+  final ProfileRemoteData profileRemoteData =
+      ProfileRemoteData(Get.find<Api>());
   final LocationRemoteData locationRemoteData =
-      LocationRemoteData(Get.put(Api()));
+      LocationRemoteData(Get.find<Api>());
 
   UserAuthModel? userInfoModel;
 
@@ -168,22 +170,36 @@ class ProfileController extends GetxController {
   }
 
   void changLang() {
-    if (sharedPreferences!.getString("Lang") != "Ar") {
-      sharedPreferences!.setString("Lang", "Ar");
-    } else {
-      sharedPreferences!.setString("Lang", "En");
-    }
+    final current = sharedPreferences?.getString("locale") ??
+        sharedPreferences?.getString("local") ??
+        sharedPreferences?.getString("Lang") ??
+        "ar";
+    final isAr = current.toLowerCase().startsWith("ar");
+    final newLocaleStr = isAr ? "en" : "ar";
+
+    sharedPreferences?.setString("locale", newLocaleStr);
+    sharedPreferences?.setString("local", newLocaleStr);
+    sharedPreferences?.setString("Lang", isAr ? "En" : "Ar");
+
+    Get.updateLocale(Locale(newLocaleStr));
     update();
     Get.offAll(() => const Home());
   }
 
   Future<File?> _compressImage(String path) async {
-    final compressed = await FlutterImageCompress.compressAndGetFile(
-      path,
-      "${path}_compressed.jpg",
-      quality: 60,
-    );
-    return compressed != null ? File(compressed.path) : null;
+    try {
+      final tempDir = Directory.systemTemp;
+      final targetPath =
+          "${tempDir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg";
+      final compressed = await FlutterImageCompress.compressAndGetFile(
+        path,
+        targetPath,
+        quality: 60,
+      );
+      return compressed != null ? File(compressed.path) : null;
+    } catch (_) {
+      return File(path);
+    }
   }
 
   Future<void> pickImageFromGellary() async {
@@ -235,12 +251,15 @@ class ProfileController extends GetxController {
             .map((item) => CountryModel.fromJson(item))
             .toList();
       } else if (statuesRequest == StatuesRequest.unprocessableException) {
-        messageError("Error", "${response["error"]["message"]}");
+        messageError("Error", parseErrorMessage(response));
       } else if (statuesRequest == StatuesRequest.socketException) {
         messageError("Error", "please, check your internet");
       } else {
         messageError("Error", "There is a problem. Please,  try again later");
       }
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
+      messageError("Error", "There is a problem. Please,  try again later");
     } finally {
       isLoadingCountry = false;
       update();
@@ -273,22 +292,28 @@ class ProfileController extends GetxController {
     if (countryId == null) return;
 
     cityList.clear();
-    var response = await locationRemoteData.getCities(countryId: countryId);
-    statuesRequest = handlingData(response);
+    try {
+      var response = await locationRemoteData.getCities(countryId: countryId);
+      statuesRequest = handlingData(response);
 
-    if (statuesRequest == StatuesRequest.success) {
-      Map<String, dynamic> responseBody = response;
-      cityList = (responseBody['data'] as List)
-          .map((item) => CityModel.fromJson(item))
-          .toList();
-    } else if (statuesRequest == StatuesRequest.unprocessableException) {
-      messageError("Error", "${response["error"]["message"]}");
-    } else if (statuesRequest == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
-    } else {
+      if (statuesRequest == StatuesRequest.success) {
+        Map<String, dynamic> responseBody = response;
+        cityList = (responseBody['data'] as List)
+            .map((item) => CityModel.fromJson(item))
+            .toList();
+      } else if (statuesRequest == StatuesRequest.unprocessableException) {
+        messageError("Error", parseErrorMessage(response));
+      } else if (statuesRequest == StatuesRequest.socketException) {
+        messageError("Error", "please, check your internet");
+      } else {
+        messageError("Error", "There is a problem. Please,  try again later");
+      }
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
       messageError("Error", "There is a problem. Please,  try again later");
+    } finally {
+      update();
     }
-    update();
   }
 
   Future<void> getDistrict() async {
@@ -296,59 +321,76 @@ class ProfileController extends GetxController {
     if (cityId == null) return;
 
     districtList.clear();
-    var response = await locationRemoteData.getDistrict(cityId: cityId);
-    statuesRequest = handlingData(response);
+    try {
+      var response = await locationRemoteData.getDistrict(cityId: cityId);
+      statuesRequest = handlingData(response);
 
-    if (statuesRequest == StatuesRequest.success) {
-      Map<String, dynamic> responseBody = response;
-      districtList = (responseBody['data'] as List)
-          .map((item) => DistrictModel.fromJson(item))
-          .toList();
-    } else if (statuesRequest == StatuesRequest.unprocessableException) {
-      messageError("Error", "${response["error"]["message"]}");
-    } else if (statuesRequest == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
-    } else {
+      if (statuesRequest == StatuesRequest.success) {
+        Map<String, dynamic> responseBody = response;
+        districtList = (responseBody['data'] as List)
+            .map((item) => DistrictModel.fromJson(item))
+            .toList();
+      } else if (statuesRequest == StatuesRequest.unprocessableException) {
+        messageError("Error", parseErrorMessage(response));
+      } else if (statuesRequest == StatuesRequest.socketException) {
+        messageError("Error", "please, check your internet");
+      } else {
+        messageError("Error", "There is a problem. Please,  try again later");
+      }
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
       messageError("Error", "There is a problem. Please,  try again later");
+    } finally {
+      update();
     }
-    update();
   }
 
   Future<void> updateProfile() async {
     if (editKey.currentState?.validate() ?? false) {
       Get.back();
 
-      statuesRequest = StatuesRequest.loading;
-      update();
-      var response = await profileRemoteData.updateDataProfile(
-        image: fileImg,
-        token: sharedPreferences!.getString("token"),
-        cityId: cityId ?? sharedPreferences!.getString("cityId"),
-        countryId: countryId ?? sharedPreferences!.getString("countryId"),
-        districtId: districtId ?? sharedPreferences!.getString("districtId"),
-        name: userNameController.text.trim().isEmpty
-            ? sharedPreferences!.getString("name")
-            : userNameController.text,
-        phone: phoneController.text.trim().isEmpty
-            ? sharedPreferences!.getString("phone")
-            : phoneController.text,
-      );
-
-      statuesRequest = handlingData(response);
-
-      if (statuesRequest == StatuesRequest.success) {
-        await getProfile();
-        ScaffoldMessenger.of(Get.context!).showSnackBar(
-          snackBarWidget(message: "Your new data save successfully !"),
+      try {
+        statuesRequest = StatuesRequest.loading;
+        update();
+        var response = await profileRemoteData.updateDataProfile(
+          image: fileImg,
+          token: sharedPreferences?.getString("token"),
+          cityId: cityId ?? sharedPreferences?.getString("cityId"),
+          countryId: countryId ?? sharedPreferences?.getString("countryId"),
+          districtId: districtId ?? sharedPreferences?.getString("districtId"),
+          name: userNameController.text.trim().isEmpty
+              ? (sharedPreferences?.getString("name") ?? "")
+              : userNameController.text,
+          phone: phoneController.text.trim().isEmpty
+              ? (sharedPreferences?.getString("phone") ?? "")
+              : phoneController.text,
         );
-      } else if (statuesRequest == StatuesRequest.unprocessableException) {
-        messageError("Error", "${response["error"]["message"]}");
-      } else if (statuesRequest == StatuesRequest.socketException) {
-        messageError("Error", "please, check your internet");
-      } else {
+
+        statuesRequest = handlingData(response);
+
+        if (statuesRequest == StatuesRequest.success) {
+          await getProfile();
+          if (Get.context != null) {
+            ScaffoldMessenger.of(Get.context!).showSnackBar(
+              snackBarWidget(message: "Your new data save successfully !"),
+            );
+          }
+        } else if (statuesRequest == StatuesRequest.unprocessableException) {
+          messageError("Error", parseErrorMessage(response));
+        } else if (statuesRequest == StatuesRequest.socketException) {
+          messageError("Error", "please, check your internet");
+        } else {
+          messageError("Error", "There is a problem. Please,  try again later");
+        }
+      } catch (e) {
+        statuesRequest = StatuesRequest.serverError;
         messageError("Error", "There is a problem. Please,  try again later");
+      } finally {
+        if (statuesRequest == StatuesRequest.loading) {
+          statuesRequest = StatuesRequest.none;
+        }
+        update();
       }
-      update();
     }
   }
 
@@ -385,7 +427,7 @@ class ProfileController extends GetxController {
         sharedPreferences?.setString("name", userInfoModel!.name ?? '');
         sharedPreferences?.setString("image", userInfoModel!.image ?? '');
       } else if (statuesRequest == StatuesRequest.unprocessableException) {
-        messageError("Error", "${response["error"]?["message"] ?? 'Error'}");
+        messageError("Error", parseErrorMessage(response));
       } else if (statuesRequest == StatuesRequest.unauthorizedException) {
         messageErrorWithButton("Error", "You need to login ", () {
           Get.offAll(() => const LoginPage());
@@ -395,6 +437,9 @@ class ProfileController extends GetxController {
       } else {
         messageError("Error", "There is a problem. Please,  try again later");
       }
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
+      messageError("Error", "There is a problem. Please,  try again later");
     } finally {
       isLoadingProfile = false;
       update();
@@ -402,93 +447,121 @@ class ProfileController extends GetxController {
   }
 
   Future<void> logOut() async {
-    statuesRequest = StatuesRequest.loading;
-    update();
-    var response = await profileRemoteData.logOut(
-      token: sharedPreferences?.getString("token"),
-    );
-
-    statuesRequest = handlingData(response);
-
-    if (statuesRequest == StatuesRequest.success) {
-      sharedPreferences?.setString("pageStart", "Login");
-      Get.offAll(() => const LoginPage());
-    } else if (statuesRequest == StatuesRequest.unprocessableException) {
-      messageError("Error", "${response["error"]?["message"] ?? 'Error'}");
-    } else if (statuesRequest == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
-    } else {
-      messageError("Error", "There is a problem. Please,  try again later");
-    }
-
-    update();
-  }
-
-  Future<void> deleteAcc() async {
-    statuesRequest = StatuesRequest.loading;
-    update();
-    var response = await profileRemoteData.deleteAcc(
-      token: sharedPreferences?.getString("token"),
-      password: passOldController.text,
-    );
-
-    statuesRequest = handlingData(response);
-
-    if (statuesRequest == StatuesRequest.success) {
-      if (response['status'] == 'error') {
-        messageError("Error", "${response["message"]}");
-      } else {
-        final isDark = sharedPreferences?.getString("Mood") == "Dark";
-        sharedPreferences?.clear();
-        sharedPreferences?.setString("pageStart", "Login");
-        if (isDark) {
-          sharedPreferences?.setString("Mood", "Dark");
-        }
-        Get.offAll(() => const LoginPage());
-      }
-    } else if (statuesRequest == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
-    } else {
-      messageError("Error", "There is a problem. Please,  try again later");
-    }
-
-    update();
-  }
-
-  Future<void> changePassword() async {
-    if (changePassKey.currentState?.validate() ?? false) {
+    try {
       statuesRequest = StatuesRequest.loading;
       update();
-      var response = await profileRemoteData.changeOldPass(
+      var response = await profileRemoteData.logOut(
         token: sharedPreferences?.getString("token"),
-        newPass: passNewController.text,
-        newConfirmPass: passNewConfirmController.text,
-        oldPass: passOldController.text,
       );
 
       statuesRequest = handlingData(response);
 
       if (statuesRequest == StatuesRequest.success) {
-        final responseBody = response;
-        if (responseBody['status'] == "error") {
-          Get.back();
-          messageError("Error", "The old password is wrong");
-        } else {
-          Get.back();
-          ScaffoldMessenger.of(Get.context!).showSnackBar(
-            snackBarWidget(message: "Your new password save successfully !"),
-          );
-          Get.back();
-        }
+        sharedPreferences?.setString("pageStart", "Login");
+        Get.offAll(() => const LoginPage());
       } else if (statuesRequest == StatuesRequest.unprocessableException) {
-        messageError("Error", "${response["error"]?["message"] ?? 'Error'}");
+        messageError("Error", parseErrorMessage(response));
       } else if (statuesRequest == StatuesRequest.socketException) {
         messageError("Error", "please, check your internet");
       } else {
         messageError("Error", "There is a problem. Please,  try again later");
       }
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
+      messageError("Error", "There is a problem. Please,  try again later");
+    } finally {
+      if (statuesRequest == StatuesRequest.loading) {
+        statuesRequest = StatuesRequest.none;
+      }
+      update();
     }
-    update();
+  }
+
+  Future<void> deleteAcc() async {
+    try {
+      statuesRequest = StatuesRequest.loading;
+      update();
+      var response = await profileRemoteData.deleteAcc(
+        token: sharedPreferences?.getString("token"),
+        password: passOldController.text,
+      );
+
+      statuesRequest = handlingData(response);
+
+      if (statuesRequest == StatuesRequest.success) {
+        if (response['status'] == 'error') {
+          messageError("Error", "${response["message"]}");
+        } else {
+          final isDark = sharedPreferences?.getString("Mood") == "Dark";
+          sharedPreferences?.clear();
+          sharedPreferences?.setString("pageStart", "Login");
+          if (isDark) {
+            sharedPreferences?.setString("Mood", "Dark");
+          }
+          Get.offAll(() => const LoginPage());
+        }
+      } else if (statuesRequest == StatuesRequest.socketException) {
+        messageError("Error", "please, check your internet");
+      } else {
+        messageError("Error", "There is a problem. Please,  try again later");
+      }
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
+      messageError("Error", "There is a problem. Please,  try again later");
+    } finally {
+      if (statuesRequest == StatuesRequest.loading) {
+        statuesRequest = StatuesRequest.none;
+      }
+      update();
+    }
+  }
+
+  Future<void> changePassword() async {
+    if (changePassKey.currentState?.validate() ?? false) {
+      try {
+        statuesRequest = StatuesRequest.loading;
+        update();
+        var response = await profileRemoteData.changeOldPass(
+          token: sharedPreferences?.getString("token"),
+          newPass: passNewController.text,
+          newConfirmPass: passNewConfirmController.text,
+          oldPass: passOldController.text,
+        );
+
+        statuesRequest = handlingData(response);
+
+        if (statuesRequest == StatuesRequest.success) {
+          final responseBody = response;
+          if (responseBody['status'] == "error") {
+            Get.back();
+            messageError("Error", "The old password is wrong");
+          } else {
+            Get.back();
+            if (Get.context != null) {
+              ScaffoldMessenger.of(Get.context!).showSnackBar(
+                snackBarWidget(
+                    message: "Your new password save successfully !"),
+              );
+            }
+            Get.back();
+          }
+        } else if (statuesRequest == StatuesRequest.unprocessableException) {
+          messageError("Error", parseErrorMessage(response));
+        } else if (statuesRequest == StatuesRequest.socketException) {
+          messageError("Error", "please, check your internet");
+        } else {
+          messageError("Error", "There is a problem. Please,  try again later");
+        }
+      } catch (e) {
+        statuesRequest = StatuesRequest.serverError;
+        messageError("Error", "There is a problem. Please,  try again later");
+      } finally {
+        if (statuesRequest == StatuesRequest.loading) {
+          statuesRequest = StatuesRequest.none;
+        }
+        update();
+      }
+    }
   }
 
   @override

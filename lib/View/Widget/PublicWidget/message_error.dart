@@ -9,6 +9,7 @@ import 'package:tharwat_pharmacy/View/Widget/PublicWidget/text_normal_widget.dar
 
 void messageError(String title, String body,
     {bool back = false, VoidCallback? onPressBack}) {
+  if (Get.testMode || Get.context == null) return;
   Get.defaultDialog(
     backgroundColor: ThemeService.backgroundColor,
     title: title,
@@ -49,6 +50,7 @@ void messageError(String title, String body,
 }
 
 void messageErrorVerify(String title, String body, VoidCallback onPress) {
+  if (Get.testMode || Get.context == null) return;
   Get.defaultDialog(
     backgroundColor: ThemeService.backgroundColor,
     title: title,
@@ -99,6 +101,7 @@ void messageErrorVerify(String title, String body, VoidCallback onPress) {
 
 void messageErrorWithButton(
     String title, String body, VoidCallback onPress, String btnTitle) {
+  if (Get.testMode || Get.context == null) return;
   Get.defaultDialog(
     backgroundColor: ThemeService.backgroundColor,
     title: title,
@@ -148,6 +151,7 @@ void messageErrorWithButton(
 }
 
 void messageChooseVerify(VoidCallback onPressWats, VoidCallback onPressEmail) {
+  if (Get.testMode || Get.context == null) return;
   Get.defaultDialog(
     backgroundColor: ThemeService.backgroundColor,
     title: "OTP",

@@ -12,9 +12,9 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class CheckOutController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  OrderRemoteData orderRemoteData = OrderRemoteData(Get.put(Api()));
+  OrderRemoteData orderRemoteData = OrderRemoteData(Get.find<Api>());
   OrderModel? orderModel;
-  GlobalKey<FormState> checkKey = GlobalKey();
+  GlobalKey<FormState> checkKey = GlobalKey<FormState>();
 
   TextEditingController buildingController = TextEditingController();
   TextEditingController addressController = TextEditingController();
@@ -26,7 +26,9 @@ class CheckOutController extends GetxController {
   double? totalCost;
   String timeOnly = '';
   String dateOnly = '';
-  phoneValidtor(String val) {
+
+  String? phoneValidtor(String val) => phoneValidator(val);
+  String? phoneValidator(String val) {
     if (!val.isPhoneNumber) {
       return "Please, Enter your phone ";
     } else {
@@ -34,7 +36,8 @@ class CheckOutController extends GetxController {
     }
   }
 
-  streetValidtor(String val) {
+  String? streetValidtor(String val) => streetValidator(val);
+  String? streetValidator(String val) {
     if (val.length < 15) {
       return "Please, Enter your street in detail ";
     } else {
@@ -42,7 +45,8 @@ class CheckOutController extends GetxController {
     }
   }
 
-  addressValidtor(String val) {
+  String? addressValidtor(String val) => addressValidator(val);
+  String? addressValidator(String val) {
     if (val.length < 20) {
       return "Please, Enter your address in detail ";
     } else {
@@ -50,7 +54,8 @@ class CheckOutController extends GetxController {
     }
   }
 
-  buildingValidtor(String val) {
+  String? buildingValidtor(String val) => buildingValidator(val);
+  String? buildingValidator(String val) {
     if (val.isEmpty) {
       return "Please, Enter your building ";
     } else {
@@ -58,7 +63,8 @@ class CheckOutController extends GetxController {
     }
   }
 
-  additionalInfoValidtor(String val) {
+  String? additionalInfoValidtor(String val) => additionalInfoValidator(val);
+  String? additionalInfoValidator(String val) {
     if (val.isEmpty) {
       return "Please, Enter your info ";
     } else {
@@ -66,8 +72,25 @@ class CheckOutController extends GetxController {
     }
   }
 
-  craeteOrder() async {
-    if (checkKey.currentState!.validate()) {
+  Future<void> createOrder() => craeteOrder();
+  Future<void> craeteOrder() async {
+    if (!checkKey.currentState!.validate()) {
+      return;
+    }
+
+    final cityIdStr = sharedPreferences?.getString("cityId");
+    final countryIdStr = sharedPreferences?.getString("countryId");
+    final districtIdStr = sharedPreferences?.getString("districtId");
+    final cityId = int.tryParse(cityIdStr ?? '');
+    final countryId = int.tryParse(countryIdStr ?? '');
+    final districtId = int.tryParse(districtIdStr ?? '');
+
+    if (cityId == null || countryId == null || districtId == null) {
+      messageError("Error", "Please select your location / address first");
+      return;
+    }
+
+    try {
       statuesRequest = StatuesRequest.loading;
       update();
 
@@ -75,9 +98,9 @@ class CheckOutController extends GetxController {
           additionalInfo: additionalInfoController.text,
           address: addressController.text,
           buildingNum: buildingController.text,
-          cityId: int.parse(sharedPreferences!.getString("cityId")!),
-          countryId: int.parse(sharedPreferences!.getString("countryId")!),
-          districtId: int.parse(sharedPreferences!.getString("districtId")!),
+          cityId: cityId,
+          countryId: countryId,
+          districtId: districtId,
           payment: paymentMethod == ""
               ? "instapay"
               : paymentMethod == "credit / debit card"
@@ -88,7 +111,7 @@ class CheckOutController extends GetxController {
           phone: phoneController.text,
           street: streetController.text,
           total: totalCost,
-          token: sharedPreferences!.getString("token"));
+          token: sharedPreferences?.getString("token"));
 
       statuesRequest = handlingData(response);
 
@@ -107,29 +130,52 @@ class CheckOutController extends GetxController {
       } else {
         messageError("Error", "There is a problem. Please,  try again later");
       }
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
+      messageError("Error", "There is a problem. Please, try again later");
+    } finally {
+      if (statuesRequest == StatuesRequest.loading) {
+        statuesRequest = StatuesRequest.none;
+      }
+      update();
     }
-    update();
   }
 
-  editDate(date) {
-    DateTime dateTime = DateTime.parse(date);
-    dateOnly = DateFormat('yyyy-MM-dd').format(dateTime);
-
-    return dateOnly;
+  String editDate(dynamic date) {
+    if (date == null || date.toString().isEmpty) return '';
+    try {
+      DateTime dateTime = DateTime.parse(date.toString());
+      dateOnly = DateFormat('yyyy-MM-dd').format(dateTime);
+      return dateOnly;
+    } catch (_) {
+      return date.toString();
+    }
   }
 
-  edittime(date) {
-    DateTime dateTime = DateTime.parse(date);
-    dateOnly = DateFormat('yyyy-MM-dd').format(dateTime);
-    timeOnly = DateFormat('h:mm a').format(dateTime);
-    return timeOnly;
+  String edittime(dynamic date) => editTime(date);
+  String editTime(dynamic date) {
+    if (date == null || date.toString().isEmpty) return '';
+    try {
+      DateTime dateTime = DateTime.parse(date.toString());
+      dateOnly = DateFormat('yyyy-MM-dd').format(dateTime);
+      timeOnly = DateFormat('h:mm a').format(dateTime);
+      return timeOnly;
+    } catch (_) {
+      return date.toString();
+    }
   }
 
   @override
   void onInit() {
-    paymentMethod = Get.arguments['payment'] ?? "";
-
-    totalCost = Get.arguments['totalCost'] ?? 0;
+    final args = Get.arguments;
+    if (args is Map) {
+      paymentMethod = args['payment']?.toString() ?? "";
+      if (args['totalCost'] is num) {
+        totalCost = (args['totalCost'] as num).toDouble();
+      } else if (args['totalCost'] != null) {
+        totalCost = double.tryParse(args['totalCost'].toString());
+      }
+    }
     super.onInit();
   }
 

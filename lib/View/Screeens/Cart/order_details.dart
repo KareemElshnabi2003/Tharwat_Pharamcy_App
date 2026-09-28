@@ -24,11 +24,11 @@ class OrderDetails extends StatelessWidget {
     return PopScope(
       canPop: true,
       onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-        myOrdersController.update();
-      });
-        },
+        if (didPop) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          myOrdersController.update();
+        });
+      },
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<OrderDetailsController>(

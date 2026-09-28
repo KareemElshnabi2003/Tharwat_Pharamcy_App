@@ -9,7 +9,7 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class MyCartController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  CartRemoteData cartRemoteData = CartRemoteData(Get.put(Api()));
+  CartRemoteData cartRemoteData = CartRemoteData(Get.find<Api>());
   CartModel? cartModel;
   TextEditingController couponController = TextEditingController();
 
@@ -29,7 +29,8 @@ class MyCartController extends GetxController {
     update();
   }
 
-  Future<void> decreaseCart({required productId, required qtv}) async {
+  Future<void> decreaseCart(
+      {required dynamic productId, required int qtv}) async {
     if (isUpdatingCart) return;
     isUpdatingCart = true;
     try {
@@ -54,7 +55,8 @@ class MyCartController extends GetxController {
     }
   }
 
-  Future<void> increaseCart({required productId, required qtv}) async {
+  Future<void> increaseCart(
+      {required dynamic productId, required int qtv}) async {
     if (isUpdatingCart) return;
     isUpdatingCart = true;
     try {
@@ -101,8 +103,9 @@ class MyCartController extends GetxController {
         },
       );
       return cartModel;
-    } catch (_) {
-      return cartModel;
+    } catch (e) {
+      statuesRequest = StatuesRequest.serverError;
+      return null;
     } finally {
       isLoadingCart = false;
       update();

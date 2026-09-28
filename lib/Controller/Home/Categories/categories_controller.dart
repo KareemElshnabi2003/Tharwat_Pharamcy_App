@@ -9,8 +9,8 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class CategoriesController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  CategoriesRemoteData categoriesRemoteData =
-      CategoriesRemoteData(Get.put(Api()));
+  CategoriesRemoteData categoriesRemoteData = CategoriesRemoteData(
+      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
 
   List<CategoryModel> categories = [];
   List<CategoryModel> subCategories = [];
@@ -44,13 +44,17 @@ class CategoriesController extends GetxController {
     if (!hasMoreSubCategories || isLoadingMore) return;
     isLoadingMore = true;
     update();
-    currentPage++;
-    await getSubCategories();
-    isLoadingMore = false;
-    update();
+    try {
+      final nextPage = currentPage + 1;
+      await getSubCategories(page: nextPage);
+    } finally {
+      isLoadingMore = false;
+      update();
+    }
   }
 
-  changeIndex(index) {
+  void changeIndex(int? index) {
+    if (index == null) return;
     indexCat = index;
     currentPage = 1;
     subCategories.clear();
@@ -59,34 +63,34 @@ class CategoriesController extends GetxController {
     update();
   }
 
-  change_1(index) {
+  void change_1(int index) {
     indexCat = index;
     choose_1 = true;
     choose_2 = false;
     update();
   }
 
-  change_2(index) {
+  void change_2(int index) {
     indexCat = index;
     choose_1 = false;
     choose_2 = true;
     update();
   }
 
-  getCategories() async {
+  Future<void> getCategories() async {
     categories.clear();
     statuesRequest = StatuesRequest.loading;
     update();
 
     var response = await categoriesRemoteData.getCategories(
-        token: sharedPreferences!.getString("token"));
+        token: sharedPreferences?.getString("token"));
     statuesRequest = handlingData(response);
 
     handleApiResponse(
       status: statuesRequest,
       response: response,
       onSuccess: (data) {
-        categories = (data['data'] as List)
+        categories = ((data['data'] ?? []) as List)
             .map((item) => CategoryModel.fromJson(item))
             .toList();
         if (categories.isNotEmpty) {
@@ -98,15 +102,16 @@ class CategoriesController extends GetxController {
     update();
   }
 
-  Future<void> getSubCategories() async {
-    if (currentPage == 1) subCategories.clear();
+  Future<void> getSubCategories({int? page}) async {
+    final int requestPage = page ?? currentPage;
+    if (requestPage == 1) subCategories.clear();
     statuesRequest = StatuesRequest.loading;
     update();
 
     var response = await categoriesRemoteData.getSubCategories(
         catId: indexCat,
-        page: currentPage,
-        token: sharedPreferences!.getString("token"));
+        page: requestPage,
+        token: sharedPreferences?.getString("token"));
 
     statuesRequest = handlingData(response);
 
@@ -114,26 +119,22 @@ class CategoriesController extends GetxController {
       status: statuesRequest,
       response: response,
       onSuccess: (data) {
-        List<CategoryModel> newSubCategories = (data['data'] as List)
+        currentPage = requestPage; // Advance only on success!
+        List<CategoryModel> newSubCategories = ((data['data'] ?? []) as List)
             .map((item) => CategoryModel.fromJson(item))
             .toList();
 
         subCategories.addAll(newSubCategories);
 
-        if (data.containsKey('pagination')) {
-          int currentPageNum = data['pagination']['current_page'];
-          int lastPage = data['pagination']['last_page'];
+        if (data.containsKey('pagination') && data['pagination'] is Map) {
+          int currentPageNum = data['pagination']['current_page'] ?? 1;
+          int lastPage = data['pagination']['last_page'] ?? 1;
           hasMoreSubCategories = currentPageNum < lastPage;
         } else {
           hasMoreSubCategories = newSubCategories.isNotEmpty;
         }
       },
     );
-
-    // Rollback pagination counter on error
-    if (statuesRequest != StatuesRequest.success && currentPage > 1) {
-      currentPage--;
-    }
     update();
   }
 

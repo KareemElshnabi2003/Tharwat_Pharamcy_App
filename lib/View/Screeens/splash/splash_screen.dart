@@ -97,26 +97,27 @@ class _SplashScreenState extends State<SplashScreen> {
         Get.offAll(() => const Home(),
             transition: Transition.rightToLeftWithFade,
             duration: const Duration(milliseconds: 1200));
-      } else if (pageStart == "HomeDelivery")
+      } else if (pageStart == "HomeDelivery") {
         Get.offAll(() => const HomeDelivery(),
             transition: Transition.rightToLeftWithFade,
             duration: const Duration(milliseconds: 1200));
-      else if (pageStart == "Login")
+      } else if (pageStart == "Login") {
         Get.offAll(() => const LoginPage(),
             transition: Transition.rightToLeftWithFade,
             duration: const Duration(milliseconds: 1200));
-      else if (pageStart == "VerifyForget")
+      } else if (pageStart == "VerifyForget") {
         Get.offAll(() => const VerifyForgetPass(),
             transition: Transition.rightToLeftWithFade,
             duration: const Duration(milliseconds: 1200));
-      else if (pageStart == "VerifySign")
+      } else if (pageStart == "VerifySign") {
         Get.offAll(() => const VerifySign(),
             transition: Transition.rightToLeftWithFade,
             duration: const Duration(milliseconds: 1200));
-      else
+      } else {
         Get.offAll(() => const OnBoardding(),
             transition: Transition.rightToLeftWithFade,
             duration: const Duration(milliseconds: 1200));
+      }
     });
     super.initState();
   }

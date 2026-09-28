@@ -21,8 +21,10 @@ class Api {
     };
 
     if (sharedPreferences != null) {
-      final lang = sharedPreferences!.getString("local");
-      headers['Lang'] = (lang == "en") ? "en" : "ar";
+      final lang = sharedPreferences!.getString("locale") ??
+          sharedPreferences!.getString("local") ??
+          sharedPreferences!.getString("Lang");
+      headers['Lang'] = (lang?.toLowerCase() == "en") ? "en" : "ar";
     } else {
       headers['Lang'] = 'ar';
     }
@@ -39,8 +41,27 @@ class Api {
   }
 
   /// Helper to generate authenticated headers with a Bearer token.
-  static Map<String, String> authHeaders([dynamic token]) {
-    return defaultHeaders(token: token?.toString());
+  static Map<String, String> authHeaders([String? token]) {
+    return defaultHeaders(token: token);
+  }
+
+  /// Helper to build URL with properly encoded query parameters.
+  static String buildUrl(String baseUrl,
+      [Map<String, dynamic>? queryParameters]) {
+    final uri = Uri.parse(baseUrl);
+    if (queryParameters == null || queryParameters.isEmpty) {
+      return uri.toString();
+    }
+    final cleanParams = <String, String>{};
+    // Include existing query params
+    cleanParams.addAll(uri.queryParameters);
+    // Add new params, converting values to strings and omitting nulls
+    queryParameters.forEach((key, value) {
+      if (value != null && value.toString().isNotEmpty) {
+        cleanParams[key] = value.toString();
+      }
+    });
+    return uri.replace(queryParameters: cleanParams).toString();
   }
 
   /// Internal helper to merge default headers with caller-provided headers.
@@ -55,10 +76,21 @@ class Api {
     return headers;
   }
 
+  /// Public response handler mapping HTTP status codes to StatuesRequest.
+  Either<StatuesRequest, dynamic> handleResponse(http.Response response) =>
+      _handleResponse(response);
+
   /// Centralized response handler mapping HTTP status codes to StatuesRequest.
   Either<StatuesRequest, dynamic> _handleResponse(http.Response response) {
     final statusCode = response.statusCode;
-    if (statusCode == 200 || statusCode == 201) {
+    // Support 204 No Content or 2xx with empty body
+    if (statusCode == 204 ||
+        (statusCode >= 200 && statusCode < 300 && response.body.isEmpty)) {
+      return right(<String, dynamic>{});
+    }
+
+    // Support all 2xx success codes
+    if (statusCode >= 200 && statusCode < 300) {
       try {
         final data = jsonDecode(response.body);
         return right(data);

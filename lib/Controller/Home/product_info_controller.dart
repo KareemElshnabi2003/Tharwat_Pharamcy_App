@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
+import 'package:tharwat_pharmacy/Controller/Home/Favourite/favourite_controller.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Cart/cart_source.dart';
-import 'package:tharwat_pharmacy/Data/Data%20Source/Home/favourite_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Cart/cart_model.dart';
 import 'package:tharwat_pharmacy/Data/Model/Categories/product_model.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home%20Page/my_cart_page.dart';
@@ -11,7 +11,8 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class ProductInfoController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  CartRemoteData cartRemoteData = CartRemoteData(Get.put(Api()));
+  CartRemoteData cartRemoteData = CartRemoteData(
+      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
   CartModel? cartModel;
   String? productId;
   ProductModel? productModel;
@@ -23,70 +24,50 @@ class ProductInfoController extends GetxController {
   bool readMore_5 = false;
   int count = 0;
 
-  FavouriteRemoteData favouriteRemoteData = FavouriteRemoteData(Get.put(Api()));
-  List<ProductModel> favItems = [];
-  final Set<dynamic> favProductsId = <dynamic>{};
+  FavouriteController get _favController {
+    if (!Get.isRegistered<FavouriteController>()) {
+      return Get.put(FavouriteController());
+    }
+    return Get.find<FavouriteController>();
+  }
 
-  increseCount() {
+  Set<int> get favProductsId => _favController.favProductsId;
+  List<ProductModel> get favItems => _favController.favItems;
+
+  bool isTogglingFav = false;
+  bool isAddingToCart = false;
+
+  void increseCount() {
     count++;
     update();
   }
 
-  decreseCount() {
+  void decreseCount() {
     if (count > 0) count--;
     update();
   }
 
-  Future<void> addItemToFav(dynamic itemId) async {
-    var response = await favouriteRemoteData.addToFav(
-        id: itemId, token: sharedPreferences?.getString("token"));
-    statuesRequest = handlingData(response);
-
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {},
-    );
-
-    // إذا فشل الإرسال نعكس الحالة محلياً
-    if (statuesRequest != StatuesRequest.success) {
-      favProductsId.remove(itemId);
-    }
-    update();
-  }
-
   Future<void> favProducts(dynamic id) async {
-    favProductsId.add(id);
-    update();
-    await addItemToFav(id);
+    if (isTogglingFav) return;
+    isTogglingFav = true;
+    try {
+      await _favController.favProducts(id);
+    } finally {
+      isTogglingFav = false;
+      update();
+    }
   }
 
   Future<void> notFavProducts(dynamic id) async {
-    favProductsId.remove(id);
-    update();
-    await removeItemFromFav(id);
-  }
-
-  Future<void> removeItemFromFav(dynamic itemId) async {
-    var response = await favouriteRemoteData.removeFromFav(
-        id: itemId, token: sharedPreferences?.getString("token"));
-    statuesRequest = handlingData(response);
-
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        favItems.removeWhere((item) => item.id.toString() == itemId.toString());
-      },
-    );
-
-    if (statuesRequest != StatuesRequest.success) {
-      favProductsId.add(itemId);
+    if (isTogglingFav) return;
+    isTogglingFav = true;
+    try {
+      await _favController.notFavProducts(id);
+    } finally {
+      isTogglingFav = false;
+      update();
     }
-    update();
   }
-
-  bool isAddingToCart = false;
 
   Future<void> addToCart() async {
     if (isAddingToCart) return;
@@ -95,7 +76,9 @@ class ProductInfoController extends GetxController {
       statuesRequest = StatuesRequest.loading;
       update();
       var response = await cartRemoteData.addToCart(
-          token: sharedPreferences?.getString("token"), id: productId, qti: "1");
+          token: sharedPreferences?.getString("token"),
+          id: productId,
+          qti: "1");
       statuesRequest = handlingData(response);
 
       handleApiResponse(
@@ -111,27 +94,27 @@ class ProductInfoController extends GetxController {
     }
   }
 
-  change_1() {
+  void change_1() {
     readMore_1 = !readMore_1;
     update();
   }
 
-  change_2() {
+  void change_2() {
     readMore_2 = !readMore_2;
     update();
   }
 
-  change_3() {
+  void change_3() {
     readMore_3 = !readMore_3;
     update();
   }
 
-  change_4() {
+  void change_4() {
     readMore_4 = !readMore_4;
     update();
   }
 
-  change_5() {
+  void change_5() {
     readMore_5 = !readMore_5;
     update();
   }
@@ -139,12 +122,13 @@ class ProductInfoController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (Get.arguments is Map) {
-      productId = Get.arguments['id']?.toString();
-      if (Get.arguments['product'] is ProductModel) {
-        productModel = Get.arguments['product'] as ProductModel;
+    final args = Get.arguments;
+    if (args is Map) {
+      productId = args['id']?.toString();
+      if (args['product'] is ProductModel) {
+        productModel = args['product'] as ProductModel;
         if (productModel?.isFavourite == true && productModel?.id != null) {
-          favProductsId.add(productModel!.id);
+          _favController.favProductsId.add(productModel!.id!);
         }
       }
     }

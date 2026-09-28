@@ -6,7 +6,24 @@ class HomeRemoteData {
   Api api;
   HomeRemoteData(this.api);
 
-  getHomeData({token}) async {
+  Map<String, dynamic> _buildFilterParams({
+    dynamic page,
+    String? query,
+    String? inStock,
+    String? maxPrice,
+    String? minPrice,
+  }) {
+    return {
+      'per_page': '20',
+      if (page != null) 'page': page.toString(),
+      if (query != null && query.isNotEmpty) 'query': query,
+      'in_stock': inStock ?? sharedPreferences?.getString("stock") ?? "",
+      'max_price': maxPrice ?? sharedPreferences?.getString("maxPrice") ?? "",
+      'min_price': minPrice ?? sharedPreferences?.getString("minPrice") ?? "",
+    };
+  }
+
+  Future<dynamic> getHomeData({String? token}) async {
     var response = await api.getData(
       AppApi.homeDataUrl,
       Api.authHeaders(token),
@@ -14,105 +31,163 @@ class HomeRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  getOffersData({token, page}) async {
+  Future<dynamic> getOffersData({String? token, dynamic page}) async {
+    final url = Api.buildUrl(AppApi.offersUrl, {
+      'per_page': '20',
+      'page': page?.toString(),
+    });
     var response = await api.getData(
-      "${AppApi.offersUrl}?per_page=20&page=$page",
+      url,
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  getOfferProductsData({token, offerId, page}) async {
+  Future<dynamic> getOfferProductsData(
+      {String? token, dynamic offerId, dynamic page}) async {
+    final url = Api.buildUrl(AppApi.offersProductUrl, {
+      'per_page': '20',
+      'page': page?.toString(),
+      if (offerId != null) 'offer_id': Uri.encodeComponent(offerId.toString()),
+    });
     var response = await api.getData(
-      "${AppApi.offersProductUrl}?per_page=20&page=$page&offer_id=$offerId",
+      url,
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  getTrendProduct({token, page}) async {
+  Future<dynamic> getTrendProduct({String? token, dynamic page}) async {
+    final url = Api.buildUrl(AppApi.trendingProductUrl, {
+      'per_page': '20',
+      'page': page?.toString(),
+    });
     var response = await api.getData(
-      "${AppApi.trendingProductUrl}?per_page=20&page=$page",
+      url,
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  getMostOrderdProduct({token, page}) async {
+  Future<dynamic> getMostOrderdProduct({String? token, dynamic page}) async {
+    final url = Api.buildUrl(AppApi.mostOrderedProductUrl, {
+      'per_page': '20',
+      'page': page?.toString(),
+    });
     var response = await api.getData(
-      "${AppApi.mostOrderedProductUrl}?per_page=20&page=$page",
+      url,
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  searchHome(
-      {token,
-      maxPrice,
-      minPrice,
-      catId,
-      availability,
-      special,
-      query,
-      page}) async {
+  Future<dynamic> searchHome({
+    String? token,
+    String? query,
+    dynamic page,
+    String? inStock,
+    String? maxPrice,
+    String? minPrice,
+  }) async {
+    final url = Api.buildUrl(
+      AppApi.allProductstUrl,
+      _buildFilterParams(
+        page: page,
+        query: query,
+        inStock: inStock,
+        maxPrice: maxPrice,
+        minPrice: minPrice,
+      ),
+    );
     var response = await api.getData(
-      "${AppApi.allProductstUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
+      url,
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  scanCode({itemCode}) async {
+  Future<dynamic> scanCode({dynamic itemCode}) async {
+    final cleanCode = itemCode?.toString() ?? '';
+    final url = Api.buildUrl(AppApi.allProductstUrl, {
+      'itnl_code': cleanCode,
+    });
     var response = await api.getData(
-      "${AppApi.allProductstUrl}?itnl_code=${int.parse(itemCode)}",
-      Api.authHeaders(sharedPreferences!.getString('token')),
+      url,
+      Api.authHeaders(sharedPreferences?.getString('token')),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  searchSpecial(
-      {token,
-      maxPrice,
-      minPrice,
-      catId,
-      availability,
-      special,
-      query,
-      page}) async {
+  Future<dynamic> searchSpecial({
+    String? token,
+    String? query,
+    dynamic page,
+    String? inStock,
+    String? maxPrice,
+    String? minPrice,
+  }) async {
+    final url = Api.buildUrl(
+      AppApi.offersProductUrl,
+      _buildFilterParams(
+        page: page,
+        query: query,
+        inStock: inStock,
+        maxPrice: maxPrice,
+        minPrice: minPrice,
+      ),
+    );
     var response = await api.getData(
-      "${AppApi.offersProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
+      url,
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  searchMost(
-      {token,
-      maxPrice,
-      minPrice,
-      catId,
-      availability,
-      special,
-      query,
-      page}) async {
+  Future<dynamic> searchMost({
+    String? token,
+    String? query,
+    dynamic page,
+    String? inStock,
+    String? maxPrice,
+    String? minPrice,
+  }) async {
+    final url = Api.buildUrl(
+      AppApi.mostOrderedProductUrl,
+      _buildFilterParams(
+        page: page,
+        query: query,
+        inStock: inStock,
+        maxPrice: maxPrice,
+        minPrice: minPrice,
+      ),
+    );
     var response = await api.getData(
-      "${AppApi.mostOrderedProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
+      url,
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  searchFeatures(
-      {token,
-      maxPrice,
-      minPrice,
-      catId,
-      availability,
-      special,
-      query,
-      page}) async {
+  Future<dynamic> searchFeatures({
+    String? token,
+    String? query,
+    dynamic page,
+    String? inStock,
+    String? maxPrice,
+    String? minPrice,
+  }) async {
+    final url = Api.buildUrl(
+      AppApi.trendingProductUrl,
+      _buildFilterParams(
+        page: page,
+        query: query,
+        inStock: inStock,
+        maxPrice: maxPrice,
+        minPrice: minPrice,
+      ),
+    );
     var response = await api.getData(
-      "${AppApi.trendingProductUrl}?per_page=20&page=$page&query=$query&in_stock=${sharedPreferences!.getString("stock") ?? ""}&max_price=${sharedPreferences!.getString("maxPrice") ?? ""}&min_price=${sharedPreferences!.getString("minPrice") ?? ""}",
+      url,
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);

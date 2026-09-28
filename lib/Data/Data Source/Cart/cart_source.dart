@@ -5,7 +5,7 @@ class CartRemoteData {
   Api api;
   CartRemoteData(this.api);
 
-  getCartItem({token}) async {
+  Future<dynamic> getCartItem({String? token}) async {
     var response = await api.getData(
       AppApi.cartUrl,
       Api.authHeaders(token),
@@ -13,7 +13,11 @@ class CartRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  addToCart({token, qti, id}) async {
+  Future<dynamic> addToCart({
+    String? token,
+    required dynamic qti,
+    required dynamic id,
+  }) async {
     var response = await api.postData(
       AppApi.addToCartUrl,
       Api.authHeaders(token),
@@ -25,17 +29,24 @@ class CartRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  removeFromCart({token, id}) async {
+  Future<dynamic> removeFromCart({
+    String? token,
+    required dynamic id,
+  }) async {
     var response = await api.deleteData(
-      "${AppApi.deleteFromCartUrl}/$id",
+      "${AppApi.deleteFromCartUrl}/${Uri.encodeComponent(id.toString())}",
       Api.authHeaders(token),
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  increaseCart({token, id, qtv}) async {
+  Future<dynamic> increaseCart({
+    String? token,
+    required dynamic id,
+    required int qtv,
+  }) async {
     var response = await api.updatePatchData(
-      "${AppApi.updateCartUrl}/$id",
+      "${AppApi.updateCartUrl}/${Uri.encodeComponent(id.toString())}",
       Api.authHeaders(token),
       {
         "quantity": qtv,
@@ -44,9 +55,13 @@ class CartRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  decreaseCart({token, id, qtv}) async {
+  Future<dynamic> decreaseCart({
+    String? token,
+    required dynamic id,
+    required int qtv,
+  }) async {
     var response = await api.updatePatchData(
-      "${AppApi.updateCartUrl}/$id",
+      "${AppApi.updateCartUrl}/${Uri.encodeComponent(id.toString())}",
       Api.authHeaders(token),
       {
         "quantity": qtv,

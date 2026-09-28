@@ -5,7 +5,7 @@ class AuthRemoteData {
   Api api;
   AuthRemoteData(this.api);
 
-  login({String? email, String? password}) async {
+  Future<dynamic> login({String? email, String? password}) async {
     var response = await api.postData(AppApi.loginUrl, null, {
       "email": email,
       "password": password,
@@ -13,7 +13,7 @@ class AuthRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  register({
+  Future<dynamic> register({
     String? email,
     String? password,
     String? name,
@@ -26,7 +26,7 @@ class AuthRemoteData {
   }) async {
     var response = await api.postData(AppApi.registerUrl, null, {
       "name": name,
-      "gender": gender!.toLowerCase(),
+      "gender": gender?.toLowerCase(),
       "password": password,
       "password_confirmation": passwordConfirmation,
       "email": email,
@@ -38,7 +38,7 @@ class AuthRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  sendOTP({
+  Future<dynamic> sendOTP({
     String? email,
   }) async {
     var response = await api.postData(AppApi.sendOTPUrl, null, {
@@ -47,7 +47,8 @@ class AuthRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  resetPAss({String? email, password, passwordConfirmation}) async {
+  Future<dynamic> resetPAss(
+      {String? email, String? password, String? passwordConfirmation}) async {
     var response = await api.postData(AppApi.resetPassUrl, null, {
       "email": email,
       "password": password,
@@ -56,7 +57,7 @@ class AuthRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  verifyOTP({String? email, String? otp}) async {
+  Future<dynamic> verifyOTP({String? email, String? otp}) async {
     var response = await api.postData(AppApi.verifyCodeUrl, null, {
       "email": email,
       "token": otp,

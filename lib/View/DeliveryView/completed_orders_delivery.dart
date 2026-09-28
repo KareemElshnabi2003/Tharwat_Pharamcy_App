@@ -20,13 +20,13 @@ class CompletedOrdersDelivery extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-        homeController.changePage(0);
-        homeController.choose_1 = true;
-        homeController.choose_2 = false;
-      });
-        },
+        if (didPop) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          homeController.changePage(0);
+          homeController.choose_1 = true;
+          homeController.choose_2 = false;
+        });
+      },
       child: Scaffold(
         backgroundColor: LightMode.whiteColor,
         body: Column(
@@ -82,10 +82,12 @@ class CompletedOrdersDelivery extends StatelessWidget {
     required int orderType,
     required OrdersDeliveryController controller,
   }) {
-    if (snapshot.connectionState == ConnectionState.waiting)
+    if (snapshot.connectionState == ConnectionState.waiting) {
       return const Center(child: CircularProgressIndicator());
-    if (snapshot.hasError)
+    }
+    if (snapshot.hasError) {
       return const Center(child: Text("Error loading orders"));
+    }
     if (orders.isEmpty) return Center(child: Text(emptyMessage));
 
     return ListView.separated(

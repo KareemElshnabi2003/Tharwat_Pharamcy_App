@@ -5,8 +5,9 @@ import 'package:get/get.dart';
 class ChoosePaymentController extends GetxController {
   double? totalCost;
   TextEditingController addressController = TextEditingController();
-  GlobalKey<FormState> addressKey = GlobalKey();
-  addressValidtor(String val) {
+  GlobalKey<FormState> addressKey = GlobalKey<FormState>();
+  String? addressValidtor(String val) => addressValidator(val);
+  String? addressValidator(String val) {
     if (val.isEmpty) {
       return "Please, Enter your address ";
     } else {
@@ -15,15 +16,21 @@ class ChoosePaymentController extends GetxController {
   }
 
   String? payment;
-  choose(type) {
-    payment = type;
-
+  void choose(dynamic type) {
+    payment = type?.toString();
     update();
   }
 
   @override
   void onInit() {
-    totalCost = Get.arguments["totalCost"];
+    final args = Get.arguments;
+    if (args is Map) {
+      if (args['totalCost'] is num) {
+        totalCost = (args['totalCost'] as num).toDouble();
+      } else if (args['totalCost'] != null) {
+        totalCost = double.tryParse(args['totalCost'].toString());
+      }
+    }
     super.onInit();
   }
 

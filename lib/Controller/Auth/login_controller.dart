@@ -105,15 +105,17 @@ class LoginController extends GetxController {
               userAuthModel = UserAuthModel.fromJson(responseBody);
 
               if (userAuthModel!.role == "User") {
-                sharedPreferences?.setString("email", "${userAuthModel!.email}");
+                sharedPreferences?.setString(
+                    "email", "${userAuthModel!.email}");
                 sharedPreferences?.setString("id", "${userAuthModel!.id}");
-                sharedPreferences?.setString("token", "${userAuthModel!.token}");
+                sharedPreferences?.setString(
+                    "token", "${userAuthModel!.token}");
                 sharedPreferences?.setString("name", "${userAuthModel!.name}");
                 sharedPreferences?.setString("role", "${userAuthModel!.role}");
                 sharedPreferences?.setString(
                     "cityId", "${userAuthModel!.district!.city!.id}");
-                sharedPreferences?.setString(
-                    "countryId", "${userAuthModel!.district!.city!.country!.id}");
+                sharedPreferences?.setString("countryId",
+                    "${userAuthModel!.district!.city!.country!.id}");
                 sharedPreferences?.setString(
                     "districtId", "${userAuthModel!.district!.id}");
                 sharedPreferences?.setString(
@@ -126,17 +128,17 @@ class LoginController extends GetxController {
 
                 Get.offAll(() => const SuccsessLogin());
               } else {
-                sharedPreferences
-                    ?.setString("roleDelivery", "${userAuthModel!.role}");
+                sharedPreferences?.setString(
+                    "roleDelivery", "${userAuthModel!.role}");
                 sharedPreferences?.setString("pageStart", "HomeDelivery");
-                sharedPreferences
-                    ?.setString("tokenDelivery", "${userAuthModel!.token}");
-                sharedPreferences
-                    ?.setString("emailDelivery", "${userAuthModel!.email}");
-                sharedPreferences
-                    ?.setString("nameDelivery", "${userAuthModel!.name}");
-                sharedPreferences
-                    ?.setString("idDelivery", "${userAuthModel!.id}");
+                sharedPreferences?.setString(
+                    "tokenDelivery", "${userAuthModel!.token}");
+                sharedPreferences?.setString(
+                    "emailDelivery", "${userAuthModel!.email}");
+                sharedPreferences?.setString(
+                    "nameDelivery", "${userAuthModel!.name}");
+                sharedPreferences?.setString(
+                    "idDelivery", "${userAuthModel!.id}");
 
                 Get.offAll(() => const SuccsessLogin());
               }

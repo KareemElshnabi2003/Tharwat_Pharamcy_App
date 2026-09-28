@@ -12,13 +12,17 @@ import 'package:tharwat_pharmacy/View/Widget/PublicWidget/message_error.dart';
 import 'package:tharwat_pharmacy/main.dart';
 
 class MostOrdersController extends GetxController {
-  FavouriteController favouriteController = Get.put(FavouriteController());
+  FavouriteController favouriteController =
+      Get.isRegistered<FavouriteController>()
+          ? Get.find<FavouriteController>()
+          : Get.put(FavouriteController());
 
   TextEditingController searchController = TextEditingController();
   ScrollController scrollController = ScrollController();
 
   StatuesRequest statuesRequest = StatuesRequest.none;
-  HomeRemoteData homeRemoteData = HomeRemoteData(Get.put(Api()));
+  HomeRemoteData homeRemoteData = HomeRemoteData(
+      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
 
   List<ProductModel> mostOrderProducts = [];
   List<ProductModel> searchList = [];
@@ -28,6 +32,7 @@ class MostOrdersController extends GetxController {
   int index = 1;
   bool moreSearch = false;
   int indexSearch = 1;
+  int _searchRequestId = 0;
   Timer? _debounce;
 
   // Loading states for infinite scroll
@@ -89,7 +94,6 @@ class MostOrdersController extends GetxController {
     update();
 
     try {
-      index++;
       await getMostOrderProducts(isLoadMore: true);
     } finally {
       isLoadingMore = false;
@@ -118,72 +122,72 @@ class MostOrdersController extends GetxController {
   }
 
   Future<void> search({bool isLoadMore = false}) async {
-    // Don't clear favorites if loading more
-    if (indexSearch == 1 && !isLoadMore) {
-      favouriteController.favProductsId.clear();
-    }
+    final currentRequestId = ++_searchRequestId;
+    final int requestPage = isLoadMore ? indexSearch + 1 : 1;
 
     if (!isLoadMore) {
+      searchList.clear();
+      favouriteController.favProductsId.clear();
       statuesRequest = StatuesRequest.loading;
       update();
     }
 
     var response = await homeRemoteData.searchMost(
-        page: indexSearch,
+        page: requestPage,
         query: searchController.text,
         token: sharedPreferences?.getString("token"));
+
+    // Drop stale response
+    if (currentRequestId != _searchRequestId) {
+      return;
+    }
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
+      indexSearch = requestPage; // Only advance on success!
       final responseBody = response;
       List resList = responseBody['data']?['data'] ?? [];
       int lastPage = responseBody['data']?['pagination']?['last_page'] ?? 1;
 
-      if (indexSearch <= lastPage) {
-        if (indexSearch == 1 && !isLoadMore) {
-          searchList.clear();
-          favouriteController.favProductsId.clear();
+      moreSearch = indexSearch < lastPage;
+
+      searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
+      for (final item in resList) {
+        if (item['is_favourite'] == true && item['id'] != null) {
+          final id = item['id'] is int
+              ? item['id'] as int
+              : int.tryParse(item['id'].toString());
+          if (id != null) {
+            favouriteController.favProductsId.add(id);
+          }
         }
-
-        moreSearch = indexSearch < lastPage;
-        indexSearch++;
-
-        searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
-        favouriteController.favProductsId.addAll(resList
-            .where((item) => item['is_favourite'] == true)
-            .map((e) => e['id']));
-      } else {
-        moreSearch = false;
       }
     } else if (statuesRequest == StatuesRequest.socketException) {
-      if (indexSearch > 1) indexSearch--; // Rollback on error
       messageError("Error", "please, check your internet");
     } else {
-      if (indexSearch > 1) indexSearch--; // Rollback on error
       messageError("Error", "There is a problem. Please, try again later");
     }
     update();
   }
 
   Future<void> getMostOrderProducts({bool isLoadMore = false}) async {
-    // Don't clear favorites if loading more
-    if (index == 1 && !isLoadMore) {
-      favouriteController.favProductsId.clear();
-      mostOrderProducts.clear();
-    }
+    final int requestPage = isLoadMore ? index + 1 : 1;
 
     if (!isLoadMore) {
+      favouriteController.favProductsId.clear();
+      mostOrderProducts.clear();
       statuesRequest = StatuesRequest.loading;
       update();
     }
 
     var response = await homeRemoteData.getMostOrderdProduct(
-        page: index, token: sharedPreferences?.getString("token"));
+        page: requestPage, token: sharedPreferences?.getString("token"));
 
     statuesRequest = handlingData(response);
 
     if (statuesRequest == StatuesRequest.success) {
+      index = requestPage; // Only advance on success!
       final responseBody = response;
       List resList = responseBody['data']?['data'] ?? [];
 
@@ -192,14 +196,19 @@ class MostOrdersController extends GetxController {
 
       mostOrderProducts
           .addAll(resList.map((item) => ProductModel.fromJson(item)));
-      favouriteController.favProductsId.addAll(resList
-          .where((item) => item['is_favourite'] == true)
-          .map((e) => e['id']));
+      for (final item in resList) {
+        if (item['is_favourite'] == true && item['id'] != null) {
+          final id = item['id'] is int
+              ? item['id'] as int
+              : int.tryParse(item['id'].toString());
+          if (id != null) {
+            favouriteController.favProductsId.add(id);
+          }
+        }
+      }
     } else if (statuesRequest == StatuesRequest.socketException) {
-      if (index > 1) index--; // Rollback on error
       messageError("Error", "please, check your internet");
     } else {
-      if (index > 1) index--; // Rollback on error
       messageError("Error", "There is a problem. Please, try again later");
     }
     update();

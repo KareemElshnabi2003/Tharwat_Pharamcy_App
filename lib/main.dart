@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:screen_go/screen_go.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/View/Screeens/splash/splash_screen.dart';
 
 SharedPreferences? sharedPreferences;
@@ -11,6 +12,7 @@ SharedPreferences? sharedPreferences;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sharedPreferences = await SharedPreferences.getInstance();
+  Get.put<Api>(Api(), permanent: true);
   runApp(
     DevicePreview(
       enabled: false, // Enable in debug mode only
@@ -24,24 +26,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final savedLang = sharedPreferences?.getString("locale") ??
+        sharedPreferences?.getString("local") ??
+        sharedPreferences?.getString("Lang");
+    final initialLocale = (savedLang?.toLowerCase() == "en")
+        ? const Locale("en")
+        : const Locale("ar");
+
     return ScreenGo(
       materialApp: true,
-      builder: (context, deviceInfo) => const GetMaterialApp(
-        builder: DevicePreview.appBuilder, // Add this line
-        useInheritedMediaQuery: true, // Add this line
-
-        locale:
-            // sharedPreferences!.getString("Lang") == "Ar"
-            //   ?
-            Locale("ar"),
-        // : const Locale("en"),
-        localizationsDelegates: [
+      builder: (context, deviceInfo) => GetMaterialApp(
+        builder: DevicePreview.appBuilder,
+        useInheritedMediaQuery: true,
+        locale: initialLocale,
+        fallbackLocale: const Locale("ar"),
+        localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate
         ],
         debugShowCheckedModeBanner: false,
-        home: SplashScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

@@ -5,12 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:screen_go/extensions/responsive_nums.dart';
 import 'package:tharwat_pharmacy/Controller/Home/Favourite/favourite_controller.dart';
-import 'package:tharwat_pharmacy/Controller/Home/home_controller.dart';
 import 'package:tharwat_pharmacy/Controller/Home/home_page_controller.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_api.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_images.dart';
 import 'package:tharwat_pharmacy/Core/Constant/theme_service.dart';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
 import 'package:tharwat_pharmacy/Data/Model/Home/home_model.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home%20Page/categories.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home%20Page/category_products.dart';
@@ -37,23 +35,21 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeController = Get.find<HomeController>();
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-        messageErrorWithButton(
-          "Warning",
-          "Are you sure you want to close app",
-          () {
-            exit(0);
-          },
-          "Close",
-        );
-      });
-        },
+        if (didPop) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          messageErrorWithButton(
+            "Warning",
+            "Are you sure you want to close app",
+            () {
+              exit(0);
+            },
+            "Close",
+          );
+        });
+      },
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<HomePageController>(
@@ -77,12 +73,11 @@ class HomePage extends StatelessWidget {
                   ),
                   SizedBox(height: 3.h),
                   controller.isSearch == true
-                      ? controller.statuesRequest == StatuesRequest.loading
-                          ? LoadingWidget(height: 80.h) // تعديل
+                      ? controller.isLoadingSearch
+                          ? LoadingWidget(height: 80.h)
                           : controller.searchList.isEmpty
                               ? const Center(
-                                  child:
-                                      NoDataWidget(text: "No Items .")) // تعديل
+                                  child: NoDataWidget(text: "No Items ."))
                               : Column(
                                   children: [
                                     Container(
@@ -189,6 +184,15 @@ class HomePage extends StatelessWidget {
                                 snapshot.data == null) {
                               return const NoDataWidget(text: 'no Data');
                             } else {
+                              final home = snapshot.data!;
+                              final data = home.data;
+                              final offers = data?.offers ?? [];
+                              final categories = data?.categories ?? [];
+                              final trendingProducts =
+                                  data?.trendingProducts?.data ?? [];
+                              final mostOrdered =
+                                  data?.mostOrderedProducts?.data ?? [];
+
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -201,7 +205,7 @@ class HomePage extends StatelessWidget {
                                     title: "Special Offers",
                                   ),
                                   SizedBox(height: 2.h),
-                                  snapshot.data!.data!.offers!.isEmpty
+                                  offers.isEmpty
                                       ? const Center(
                                           child:
                                               NoDataWidget(text: "No Offers"))
@@ -210,38 +214,28 @@ class HomePage extends StatelessWidget {
                                           height: 24.h,
                                           child: ListView.builder(
                                             padding: EdgeInsets.zero,
-                                            itemCount: snapshot
-                                                .data!.data!.offers!.length,
-                                            shrinkWrap: true,
+                                            itemCount: offers.length,
                                             scrollDirection: Axis.horizontal,
-                                            itemBuilder: (context, index) =>
-                                                SpecialCardWidget(
-                                              descripe: snapshot
-                                                      .data!
-                                                      .data!
-                                                      .offers![index]
-                                                      .description ??
-                                                  "",
-                                              offer: snapshot.data!.data!
-                                                      .offers![index].type ??
-                                                  "",
-                                              decorationImage:
-                                                  "${AppApi.imgUrl}/${snapshot.data!.data!.offers![index].image}",
-                                              titleBTN_1: snapshot.data!.data!
-                                                      .offers![index].name ??
-                                                  "",
-                                              onPressBTN_2: () {
-                                                Get.to(
-                                                    () =>
-                                                        const SpecialOffersProducts(),
-                                                    arguments: {
-                                                      "id": snapshot.data!.data!
-                                                          .offers![index].id
-                                                          .toString()
-                                                    });
-                                                homeController.choose_1 = false;
-                                              },
-                                            ),
+                                            itemBuilder: (context, index) {
+                                              final offer = offers[index];
+                                              return SpecialCardWidget(
+                                                descripe:
+                                                    offer.description ?? "",
+                                                offer: offer.type ?? "",
+                                                decorationImage:
+                                                    "${AppApi.imgUrl}/${offer.image}",
+                                                titleBTN_1: offer.name ?? "",
+                                                onPressBTN_2: () {
+                                                  Get.to(
+                                                      () =>
+                                                          const SpecialOffersProducts(),
+                                                      arguments: {
+                                                        "id":
+                                                            offer.id.toString()
+                                                      });
+                                                },
+                                              );
+                                            },
                                           ),
                                         ),
                                   SizedBox(height: 2.h),
@@ -253,7 +247,7 @@ class HomePage extends StatelessWidget {
                                     title: "Category",
                                   ),
                                   SizedBox(height: 2.h),
-                                  snapshot.data!.data!.categories!.isEmpty
+                                  categories.isEmpty
                                       ? const Center(
                                           child: NoDataWidget(
                                               text: "No Categories Yet."))
@@ -267,78 +261,56 @@ class HomePage extends StatelessWidget {
                                                 (context, index) =>
                                                     SizedBox(width: 4.5.w),
                                             padding: EdgeInsets.zero,
-                                            itemCount: snapshot
-                                                .data!.data!.categories!.length,
-                                            shrinkWrap: true,
+                                            itemCount: categories.length,
                                             scrollDirection: Axis.horizontal,
-                                            itemBuilder: (context, index) =>
-                                                CategoryCardWidget(
-                                              // تعديل
-                                              onPress: () {
-                                                Get.to(
-                                                    () =>
-                                                        const CategoryProducts(),
-                                                    arguments: {
-                                                      "name": snapshot
-                                                          .data!
-                                                          .data!
-                                                          .categories![index]
-                                                          .name,
-                                                      "id": snapshot.data!.data!
-                                                          .categories![index].id
-                                                          .toString()
-                                                    });
-                                              },
-                                              text: snapshot
-                                                      .data!
-                                                      .data!
-                                                      .categories![index]
-                                                      .name ??
-                                                  "",
-                                              image: snapshot
-                                                          .data!
-                                                          .data!
-                                                          .categories![index]
-                                                          .icon ==
-                                                      null
-                                                  ? Image.asset(
-                                                      AppImages.noImage,
-                                                      width: 10.w,
-                                                      height: 10.w,
-                                                      fit: BoxFit.cover)
-                                                  : snapshot
-                                                          .data!
-                                                          .data!
-                                                          .categories![index]
-                                                          .icon!
-                                                          .contains(".svg")
-                                                      ? SvgPicture.network(
-                                                          "${AppApi.imgUrl}/${snapshot.data!.data!.categories![index].icon}",
-                                                          width: 9.w,
-                                                          height: 9.w,
-                                                          fit: BoxFit.fill)
-                                                      : CachedNetworkImage(
-                                                          imageUrl:
-                                                              "${AppApi.imgUrl}/${snapshot.data!.data!.categories![index].icon}",
-                                                          width: 10.w,
-                                                          height: 10.w,
-                                                          fit: BoxFit.cover),
-                                            ),
+                                            itemBuilder: (context, index) {
+                                              final category =
+                                                  categories[index];
+                                              final icon = category.icon;
+                                              return CategoryCardWidget(
+                                                onPress: () {
+                                                  Get.to(
+                                                      () =>
+                                                          const CategoryProducts(),
+                                                      arguments: {
+                                                        "name": category.name,
+                                                        "id": category.id
+                                                            .toString()
+                                                      });
+                                                },
+                                                text: category.name ?? "",
+                                                image: icon == null
+                                                    ? Image.asset(
+                                                        AppImages.noImage,
+                                                        width: 10.w,
+                                                        height: 10.w,
+                                                        fit: BoxFit.cover)
+                                                    : icon.contains(".svg")
+                                                        ? SvgPicture.network(
+                                                            "${AppApi.imgUrl}/$icon",
+                                                            width: 9.w,
+                                                            height: 9.w,
+                                                            fit: BoxFit.fill)
+                                                        : CachedNetworkImage(
+                                                            imageUrl:
+                                                                "${AppApi.imgUrl}/$icon",
+                                                            width: 10.w,
+                                                            height: 10.w,
+                                                            fit: BoxFit.cover),
+                                              );
+                                            },
                                           ),
                                         ),
                                   SizedBox(height: 2.h),
                                   TitleSectionHomeWidget(
                                     margin: true,
                                     onPressSeeAll: () {
-                                      // homeController.changePage(4);
-                                      // homeController.choose_1 = false;
                                       Get.to(() => const FeaturedProducts());
                                     },
                                     title: "Featured Products",
                                   ),
                                   SizedBox(height: 2.h),
-                                  snapshot.data!.data!.trendingProducts!.data!
-                                          .isEmpty
+                                  trendingProducts.isEmpty
                                       ? const Center(
                                           child: NoDataWidget(
                                               text: "No Products Yet."))
@@ -352,108 +324,69 @@ class HomePage extends StatelessWidget {
                                                 (context, index) =>
                                                     SizedBox(width: 4.w),
                                             padding: EdgeInsets.zero,
-                                            itemCount: snapshot.data!.data!
-                                                .trendingProducts!.data!.length,
-                                            shrinkWrap: true,
+                                            itemCount: trendingProducts.length,
                                             scrollDirection: Axis.horizontal,
-                                            itemBuilder: (context, index) =>
-                                                GetBuilder<FavouriteController>(
-                                              id: 'fav_${snapshot.data!.data!.trendingProducts!.data![index].id}',
-                                              builder: (favController) =>
-                                                  ProductWidget(
-                                                // تعديل
-                                                onPressFav: () {
-                                                  var id = snapshot
-                                                      .data!
-                                                      .data!
-                                                      .trendingProducts!
-                                                      .data![index]
-                                                      .id;
-                                                  if (favController
+                                            itemBuilder: (context, index) {
+                                              final item =
+                                                  trendingProducts[index];
+                                              final itemId = item.id;
+                                              return GetBuilder<
+                                                  FavouriteController>(
+                                                id: 'fav_$itemId',
+                                                builder: (favController) =>
+                                                    ProductWidget(
+                                                  onPressFav: () {
+                                                    if (favController
+                                                        .favProductsId
+                                                        .contains(itemId)) {
+                                                      favController
+                                                          .notFavProducts(
+                                                              itemId);
+                                                    } else {
+                                                      favController
+                                                          .favProducts(itemId);
+                                                    }
+                                                  },
+                                                  decorationImage: item
+                                                              .primaryImage ==
+                                                          null
+                                                      ? AssetImage(
+                                                              AppImages.noImage)
+                                                          as ImageProvider
+                                                      : CachedNetworkImageProvider(
+                                                          "${AppApi.imgUrl}/${item.primaryImage}"),
+                                                  title: item.itmNameEn ?? "",
+                                                  price:
+                                                      item.itmSellPrice ?? "0",
+                                                  body: item.description ?? "",
+                                                  fav: favController
                                                       .favProductsId
-                                                      .contains(id)) {
-                                                    favController
-                                                        .notFavProducts(id);
-                                                  } else {
-                                                    favController
-                                                        .favProducts(id);
-                                                  }
-                                                },
-                                                decorationImage: snapshot
-                                                            .data!
-                                                            .data!
-                                                            .trendingProducts!
-                                                            .data![index]
-                                                            .primaryImage ==
-                                                        null
-                                                    ? AssetImage(
-                                                            AppImages.noImage)
-                                                        as ImageProvider
-                                                    : CachedNetworkImageProvider(
-                                                        "${AppApi.imgUrl}/${snapshot.data!.data!.trendingProducts!.data![index].primaryImage}"),
-                                                title: snapshot
-                                                        .data!
-                                                        .data!
-                                                        .trendingProducts!
-                                                        .data![index]
-                                                        .itmNameEn ??
-                                                    "",
-                                                price: snapshot
-                                                        .data!
-                                                        .data!
-                                                        .trendingProducts!
-                                                        .data![index]
-                                                        .itmSellPrice ??
-                                                    "0",
-                                                body: snapshot
-                                                        .data!
-                                                        .data!
-                                                        .trendingProducts!
-                                                        .data![index]
-                                                        .description ??
-                                                    "",
-                                                fav: favController.favProductsId
-                                                    .contains(snapshot
-                                                        .data!
-                                                        .data!
-                                                        .trendingProducts!
-                                                        .data![index]
-                                                        .id),
-                                                onPressShop: () {
-                                                  Get.to(
-                                                      () => const ProductInfo(),
-                                                      arguments: {
-                                                        "id": snapshot
-                                                            .data!
-                                                            .data!
-                                                            .trendingProducts!
-                                                            .data![index]
-                                                            .id
-                                                            .toString(),
-                                                        "product": snapshot
-                                                            .data!
-                                                            .data!
-                                                            .trendingProducts!
-                                                            .data![index]
-                                                      });
-                                                },
-                                              ),
-                                            ),
+                                                      .contains(itemId),
+                                                  onPressShop: () {
+                                                    Get.to(
+                                                        () =>
+                                                            const ProductInfo(),
+                                                        arguments: {
+                                                          "id":
+                                                              itemId.toString(),
+                                                          "product": item
+                                                        });
+                                                  },
+                                                ),
+                                              );
+                                            },
                                           ),
                                         ),
                                   SizedBox(height: 2.h),
                                   TitleSectionHomeWidget(
                                     margin: true,
                                     onPressSeeAll: () {
-                                      // homeController.changePage(5);
-                                      // homeController.choose_1 = false;
                                       Get.to(() => const MostOrders());
                                     },
                                     title: "Most Ordered",
                                   ),
                                   SizedBox(height: 2.h),
-                                  snapshot.data!.data!.mostOrderedProducts!
-                                          .data!.isEmpty
+                                  mostOrdered.isEmpty
                                       ? const Center(
                                           child: NoDataWidget(
                                               text: "No Products Yet."))
@@ -467,104 +400,58 @@ class HomePage extends StatelessWidget {
                                                 (context, index) =>
                                                     SizedBox(width: 4.w),
                                             padding: EdgeInsets.zero,
-                                            itemCount: snapshot
-                                                .data!
-                                                .data!
-                                                .mostOrderedProducts!
-                                                .data!
-                                                .length,
-                                            shrinkWrap: true,
+                                            itemCount: mostOrdered.length,
                                             scrollDirection: Axis.horizontal,
-                                            itemBuilder: (context, index) =>
-                                                GetBuilder<FavouriteController>(
-                                              id: 'fav_${snapshot.data!.data!.mostOrderedProducts!.data![index].id}',
-                                              builder: (favController) =>
-                                                  ProductWidget(
-                                                // تعديل
-                                                onPressFav: () {
-                                                  var id = snapshot
-                                                      .data!
-                                                      .data!
-                                                      .mostOrderedProducts!
-                                                      .data![index]
-                                                      .id;
-                                                  if (favController
-                                                          .favProductsId
-                                                          .contains(id) ||
-                                                      snapshot
-                                                              .data!
-                                                              .data!
-                                                              .mostOrderedProducts!
-                                                              .data![index]
-                                                              .isFavourite ==
-                                                          true) {
-                                                    favController
-                                                        .notFavProducts(id);
-                                                  } else {
-                                                    favController
-                                                        .favProducts(id);
-                                                  }
-                                                },
-                                                decorationImage: snapshot
-                                                            .data!
-                                                            .data!
-                                                            .mostOrderedProducts!
-                                                            .data![index]
-                                                            .primaryImage ==
-                                                        null
-                                                    ? AssetImage(
-                                                            AppImages.noImage)
-                                                        as ImageProvider
-                                                    : CachedNetworkImageProvider(
-                                                        "${AppApi.imgUrl}/${snapshot.data!.data!.mostOrderedProducts!.data![index].primaryImage}"),
-                                                title: snapshot
-                                                        .data!
-                                                        .data!
-                                                        .mostOrderedProducts!
-                                                        .data![index]
-                                                        .itmNameEn ??
-                                                    "",
-                                                price: snapshot
-                                                        .data!
-                                                        .data!
-                                                        .mostOrderedProducts!
-                                                        .data![index]
-                                                        .itmSellPrice ??
-                                                    "0",
-                                                body: snapshot
-                                                        .data!
-                                                        .data!
-                                                        .mostOrderedProducts!
-                                                        .data![index]
-                                                        .description ??
-                                                    "",
-                                                fav: favController.favProductsId
-                                                    .contains(snapshot
-                                                        .data!
-                                                        .data!
-                                                        .mostOrderedProducts!
-                                                        .data![index]
-                                                        .id),
-                                                onPressShop: () {
-                                                  Get.to(
-                                                      () => const ProductInfo(),
-                                                      arguments: {
-                                                        "id": snapshot
-                                                            .data!
-                                                            .data!
-                                                            .mostOrderedProducts!
-                                                            .data![index]
-                                                            .id
-                                                            .toString(),
-                                                        "product": snapshot
-                                                            .data!
-                                                            .data!
-                                                            .mostOrderedProducts!
-                                                            .data![index]
-                                                      });
-                                                },
-                                              ),
-                                            ),
+                                            itemBuilder: (context, index) {
+                                              final item = mostOrdered[index];
+                                              final itemId = item.id;
+                                              return GetBuilder<
+                                                  FavouriteController>(
+                                                id: 'fav_$itemId',
+                                                builder: (favController) =>
+                                                    ProductWidget(
+                                                  onPressFav: () {
+                                                    if (favController
+                                                            .favProductsId
+                                                            .contains(itemId) ||
+                                                        item.isFavourite ==
+                                                            true) {
+                                                      favController
+                                                          .notFavProducts(
+                                                              itemId);
+                                                    } else {
+                                                      favController
+                                                          .favProducts(itemId);
+                                                    }
+                                                  },
+                                                  decorationImage: item
+                                                              .primaryImage ==
+                                                          null
+                                                      ? AssetImage(
+                                                              AppImages.noImage)
+                                                          as ImageProvider
+                                                      : CachedNetworkImageProvider(
+                                                          "${AppApi.imgUrl}/${item.primaryImage}"),
+                                                  title: item.itmNameEn ?? "",
+                                                  price:
+                                                      item.itmSellPrice ?? "0",
+                                                  body: item.description ?? "",
+                                                  fav: favController
+                                                      .favProductsId
+                                                      .contains(itemId),
+                                                  onPressShop: () {
+                                                    Get.to(
+                                                        () =>
+                                                            const ProductInfo(),
+                                                        arguments: {
+                                                          "id":
+                                                              itemId.toString(),
+                                                          "product": item
+                                                        });
+                                                  },
+                                                ),
+                                              );
+                                            },
                                           ),
                                         ),
                                   SizedBox(height: 2.h),

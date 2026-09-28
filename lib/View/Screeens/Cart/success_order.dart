@@ -28,11 +28,11 @@ class SuccessOrder extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-        homeController.goToHome(0, null);
-      });
-        },
+        if (didPop) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          homeController.goToHome(0, null);
+        });
+      },
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: SingleChildScrollView(
@@ -178,16 +178,16 @@ class SuccessOrder extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 TextNormalWidget(
-                                    text:
-                                        "${Get.find<CheckOutController>().editDate(orderModel.createdAt)}",
+                                    text: Get.find<CheckOutController>()
+                                        .editDate(orderModel.createdAt),
                                     color: ThemeService.isDark
                                         ? LightMode.whiteBlueColor
                                         : LightMode.blackColor,
                                     size: 3.w,
                                     weight: FontWeight.w600),
                                 TextNormalWidget(
-                                    text:
-                                        "${Get.find<CheckOutController>().edittime(orderModel.createdAt)}",
+                                    text: Get.find<CheckOutController>()
+                                        .edittime(orderModel.createdAt),
                                     color: ThemeService.isDark
                                         ? LightMode.whiteBlueColor
                                         : LightMode.blackColor,

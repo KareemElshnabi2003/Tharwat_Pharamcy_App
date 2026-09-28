@@ -93,7 +93,7 @@ class OrderModel {
     data['total'] = total;
     data['delivery_cost'] = deliveryCost;
     data['date'] = date;
-    data['dapayment_urlte'] = paymentUrl;
+    data['payment_url'] = paymentUrl;
     data['paymob_order_id'] = paymobOrderId;
     if (productsDetail != null) {
       data['products_detail'] = productsDetail!.map((v) => v.toJson()).toList();

@@ -70,7 +70,9 @@ class TypeUserChooseWidget extends StatelessWidget {
                     : LightMode.mainColor,
                 activeColor: LightMode.mainColor,
                 value: typeUser,
+                // ignore: deprecated_member_use
                 groupValue: groubVal,
+                // ignore: deprecated_member_use
                 onChanged: onChanged),
           ],
         ),
