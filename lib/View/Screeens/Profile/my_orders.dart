@@ -17,11 +17,10 @@ class MyOrders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(MyOrdersController());
-
     return Scaffold(
       backgroundColor: ThemeService.backgroundColor,
       body: GetBuilder<MyOrdersController>(
+        init: MyOrdersController(),
         builder: (controller) => Column(
           children: [
             AppBarPageWidget(

@@ -152,7 +152,7 @@ class Api {
   Future<Either<StatuesRequest, dynamic>> postData(
     String linkUrl,
     Map<String, String>? headers,
-    Map data,
+    Map<String, dynamic> data,
   ) async {
     final dataPost = jsonEncode(data);
     return _executeRequest(
@@ -167,7 +167,7 @@ class Api {
   Future<Either<StatuesRequest, dynamic>> updatePutData(
     String linkUrl,
     Map<String, String>? headers,
-    Map data,
+    Map<String, dynamic> data,
   ) async {
     final dataPost = jsonEncode(data);
     return _executeRequest(
@@ -182,7 +182,7 @@ class Api {
   Future<Either<StatuesRequest, dynamic>> updatePatchData(
     String linkUrl,
     Map<String, String>? headers,
-    Map data,
+    Map<String, dynamic> data,
   ) async {
     final dataPost = jsonEncode(data);
     return _executeRequest(
@@ -208,7 +208,7 @@ class Api {
 
   Future<Either<StatuesRequest, dynamic>> postRequestwithfile(
     String url,
-    Map data,
+    Map<String, dynamic> data,
     File? image,
     String token,
   ) async {

@@ -21,9 +21,9 @@ class SuccessOrder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    HomeController homeController = Get.put(HomeController());
-    Get.put(
-        CheckOutController()); // قمنا بحذف تعريف المتغير إذا لم نكن نستخدمه لتنظيف الكود
+    final homeController = Get.isRegistered<HomeController>()
+        ? Get.find<HomeController>()
+        : Get.put(HomeController());
 
     return PopScope(
       canPop: false,

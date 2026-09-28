@@ -18,13 +18,12 @@ class SpecialOffers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(SpecialOffersController());
-
     return Scaffold(
       backgroundColor: sharedPreferences!.getString("Mood") == "Dark"
           ? LightMode.nightColor
           : LightMode.whiteColor,
       body: GetBuilder<SpecialOffersController>(
+        init: SpecialOffersController(),
         builder: (controller) => Column(
           children: [
             AppBarWidget(

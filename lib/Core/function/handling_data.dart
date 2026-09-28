@@ -53,7 +53,7 @@ StatuesRequest handlingData(dynamic response) {
 void handleApiResponse({
   required StatuesRequest status,
   required dynamic response,
-  required Function(dynamic data) onSuccess,
+  required void Function(dynamic data) onSuccess,
 }) {
   if (status == StatuesRequest.success) {
     onSuccess(response);

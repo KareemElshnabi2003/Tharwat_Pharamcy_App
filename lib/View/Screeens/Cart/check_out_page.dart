@@ -16,10 +16,10 @@ class CheckOutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(CheckOutController());
     return Scaffold(
       backgroundColor: ThemeService.backgroundColor,
       body: GetBuilder<CheckOutController>(
+        init: CheckOutController(),
         builder: (controller) => controller.statuesRequest ==
                 StatuesRequest.loading
             ? LoadingWidget(height: 100.h)

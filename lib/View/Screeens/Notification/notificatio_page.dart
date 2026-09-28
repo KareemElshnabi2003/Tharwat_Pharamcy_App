@@ -13,10 +13,10 @@ class NotificatioPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(NotifyController());
     return Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<NotifyController>(
+          init: NotifyController(),
           builder: (controller) => SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Categories/categories_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Categories/category_model.dart';
@@ -9,8 +10,8 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class CategoriesController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  CategoriesRemoteData categoriesRemoteData = CategoriesRemoteData(
-      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
+  CategoriesRemoteData categoriesRemoteData =
+      CategoriesRemoteData(Get.find<Api>());
 
   List<CategoryModel> categories = [];
   List<CategoryModel> subCategories = [];
@@ -20,9 +21,17 @@ class CategoriesController extends GetxController {
   int currentPage = 1;
   bool hasMoreSubCategories = true;
   bool isLoadingMore = false;
+  int _categoryRequestId = 0;
 
   bool choose_1 = true;
   bool choose_2 = false;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _setupScrollListener();
+    getCategories();
+  }
 
   void _setupScrollListener() {
     scrollController.addListener(() {
@@ -35,7 +44,6 @@ class CategoriesController extends GetxController {
 
   Future<void> refreshSubCategories() async {
     currentPage = 1;
-    subCategories.clear();
     hasMoreSubCategories = true;
     await getSubCategories();
   }
@@ -57,7 +65,6 @@ class CategoriesController extends GetxController {
     if (index == null) return;
     indexCat = index;
     currentPage = 1;
-    subCategories.clear();
     hasMoreSubCategories = true;
     getSubCategories();
     update();
@@ -78,71 +85,90 @@ class CategoriesController extends GetxController {
   }
 
   Future<void> getCategories() async {
-    categories.clear();
     statuesRequest = StatuesRequest.loading;
     update();
 
-    var response = await categoriesRemoteData.getCategories(
-        token: sharedPreferences?.getString("token"));
-    statuesRequest = handlingData(response);
+    try {
+      var response = await categoriesRemoteData.getCategories(
+          token: sharedPreferences?.getString("token"));
+      statuesRequest = handlingData(response);
 
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        categories = ((data['data'] ?? []) as List)
-            .map((item) => CategoryModel.fromJson(item))
-            .toList();
-        if (categories.isNotEmpty) {
-          indexCat = categories[0].id!;
-          getSubCategories();
-        }
-      },
-    );
-    update();
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {
+          categories = ((data['data'] ?? []) as List)
+              .map((item) => CategoryModel.fromJson(item))
+              .toList();
+          if (categories.isNotEmpty) {
+            indexCat = categories[0].id!;
+            getSubCategories();
+          }
+        },
+      );
+    } catch (e) {
+      statuesRequest = handleException(e);
+    } finally {
+      update();
+    }
   }
 
   Future<void> getSubCategories({int? page}) async {
+    final currentRequestId = ++_categoryRequestId;
     final int requestPage = page ?? currentPage;
-    if (requestPage == 1) subCategories.clear();
-    statuesRequest = StatuesRequest.loading;
-    update();
+    if (requestPage == 1) {
+      statuesRequest = StatuesRequest.loading;
+      update();
+    }
 
-    var response = await categoriesRemoteData.getSubCategories(
-        catId: indexCat,
-        page: requestPage,
-        token: sharedPreferences?.getString("token"));
+    try {
+      var response = await categoriesRemoteData.getSubCategories(
+          catId: indexCat,
+          page: requestPage,
+          token: sharedPreferences?.getString("token"));
 
-    statuesRequest = handlingData(response);
+      if (currentRequestId != _categoryRequestId) return;
 
-    handleApiResponse(
-      status: statuesRequest,
-      response: response,
-      onSuccess: (data) {
-        currentPage = requestPage; // Advance only on success!
-        List<CategoryModel> newSubCategories = ((data['data'] ?? []) as List)
-            .map((item) => CategoryModel.fromJson(item))
-            .toList();
+      statuesRequest = handlingData(response);
 
-        subCategories.addAll(newSubCategories);
+      handleApiResponse(
+        status: statuesRequest,
+        response: response,
+        onSuccess: (data) {
+          if (currentRequestId != _categoryRequestId) return;
+          currentPage = requestPage; // Advance only on success!
+          List<CategoryModel> newSubCategories = ((data['data'] ?? []) as List)
+              .map((item) => CategoryModel.fromJson(item))
+              .toList();
 
-        if (data.containsKey('pagination') && data['pagination'] is Map) {
-          int currentPageNum = data['pagination']['current_page'] ?? 1;
-          int lastPage = data['pagination']['last_page'] ?? 1;
-          hasMoreSubCategories = currentPageNum < lastPage;
-        } else {
-          hasMoreSubCategories = newSubCategories.isNotEmpty;
-        }
-      },
-    );
-    update();
-  }
+          if (requestPage == 1) {
+            subCategories = newSubCategories;
+          } else {
+            subCategories.addAll(newSubCategories);
+          }
 
-  @override
-  void onInit() {
-    _setupScrollListener();
-    getCategories();
-    super.onInit();
+          if (data.containsKey('pagination') && data['pagination'] is Map) {
+            int currentPageNum = int.tryParse(
+                    data['pagination']['current_page']?.toString() ?? '') ??
+                1;
+            int lastPage = int.tryParse(
+                    data['pagination']['last_page']?.toString() ?? '') ??
+                1;
+            hasMoreSubCategories = currentPageNum < lastPage;
+          } else {
+            hasMoreSubCategories = newSubCategories.isNotEmpty;
+          }
+        },
+      );
+    } catch (e) {
+      if (currentRequestId == _categoryRequestId) {
+        statuesRequest = handleException(e);
+      }
+    } finally {
+      if (currentRequestId == _categoryRequestId) {
+        update();
+      }
+    }
   }
 
   @override

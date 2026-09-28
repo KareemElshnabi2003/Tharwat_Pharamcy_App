@@ -18,10 +18,10 @@ class ContactUs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ContactUsController());
     return Scaffold(
       backgroundColor: ThemeService.backgroundColor,
       body: GetBuilder<ContactUsController>(
+        init: ContactUsController(),
         builder: (controller) => controller.statuesRequest ==
                 StatuesRequest.loading
             ? LoadingWidget(height: 80.h)

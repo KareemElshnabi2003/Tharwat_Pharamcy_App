@@ -18,8 +18,9 @@ class OrderDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(OrderDetailsController());
-    MyOrdersController myOrdersController = Get.put(MyOrdersController());
+    final myOrdersController = Get.isRegistered<MyOrdersController>()
+        ? Get.find<MyOrdersController>()
+        : Get.put(MyOrdersController());
 
     return PopScope(
       canPop: true,
@@ -32,6 +33,7 @@ class OrderDetails extends StatelessWidget {
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<OrderDetailsController>(
+          init: OrderDetailsController(),
           builder: (controller) => controller.statuesRequest ==
                   StatuesRequest.loading
               ? LoadingWidget(height: 100.h)

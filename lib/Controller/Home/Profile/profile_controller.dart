@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Data%20Location/data_location_source.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Profile/profile_source.dart';
@@ -258,7 +259,7 @@ class ProfileController extends GetxController {
         messageError("Error", "There is a problem. Please,  try again later");
       }
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       messageError("Error", "There is a problem. Please,  try again later");
     } finally {
       isLoadingCountry = false;
@@ -309,7 +310,7 @@ class ProfileController extends GetxController {
         messageError("Error", "There is a problem. Please,  try again later");
       }
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       messageError("Error", "There is a problem. Please,  try again later");
     } finally {
       update();
@@ -338,7 +339,7 @@ class ProfileController extends GetxController {
         messageError("Error", "There is a problem. Please,  try again later");
       }
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       messageError("Error", "There is a problem. Please,  try again later");
     } finally {
       update();
@@ -383,7 +384,7 @@ class ProfileController extends GetxController {
           messageError("Error", "There is a problem. Please,  try again later");
         }
       } catch (e) {
-        statuesRequest = StatuesRequest.serverError;
+        statuesRequest = handleException(e);
         messageError("Error", "There is a problem. Please,  try again later");
       } finally {
         if (statuesRequest == StatuesRequest.loading) {
@@ -438,7 +439,7 @@ class ProfileController extends GetxController {
         messageError("Error", "There is a problem. Please,  try again later");
       }
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       messageError("Error", "There is a problem. Please,  try again later");
     } finally {
       isLoadingProfile = false;
@@ -467,7 +468,7 @@ class ProfileController extends GetxController {
         messageError("Error", "There is a problem. Please,  try again later");
       }
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       messageError("Error", "There is a problem. Please,  try again later");
     } finally {
       if (statuesRequest == StatuesRequest.loading) {
@@ -506,7 +507,7 @@ class ProfileController extends GetxController {
         messageError("Error", "There is a problem. Please,  try again later");
       }
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       messageError("Error", "There is a problem. Please,  try again later");
     } finally {
       if (statuesRequest == StatuesRequest.loading) {
@@ -553,7 +554,7 @@ class ProfileController extends GetxController {
           messageError("Error", "There is a problem. Please,  try again later");
         }
       } catch (e) {
-        statuesRequest = StatuesRequest.serverError;
+        statuesRequest = handleException(e);
         messageError("Error", "There is a problem. Please,  try again later");
       } finally {
         if (statuesRequest == StatuesRequest.loading) {

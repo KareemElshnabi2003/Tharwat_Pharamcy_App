@@ -57,30 +57,45 @@ class ProductModel {
       this.offer});
 
   ProductModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    itmCode = json['itm_code'];
-    itnlCode = json['itnl_code'];
-    itmNameAr = json['itm_name_ar'];
-    itmNameEn = json['itm_name_en'];
-    itmScientificN1 = json['itm_scientific_n1'];
-    itmScientificN2 = json['itm_scientific_n2'];
-    stoName = json['sto_name'];
-    uNameBig = json['u_name_big'];
-    uNameMedium = json['u_name_medium'];
-    uNameSmall = json['u_name_small'];
-    stoQtyBig = json['sto_qty_big'];
-    stoQtyMedium = json['sto_qty_medium'];
-    stoQtySmall = json['sto_qty_small'];
-    itmSellPrice = json['itm_sell_price'];
-    itmIsmedicine = json['itm_ismedicine'];
-    itmActive = json['itm_active'];
-    companyNameAr = json['Company_Name_Ar'];
-    companyNameEn = json['Company_Name_En'];
-    description = json['Description'];
-    insertDate = json['insert_date'];
-    updateDate = json['update_date'];
-    isFavourite = json['is_favourite'];
-    primaryImage = json['primary_image'];
+    id = json['id'] is int
+        ? json['id'] as int
+        : int.tryParse(json['id']?.toString() ?? '');
+    itmCode = json['itm_code']?.toString();
+    itnlCode = json['itnl_code']?.toString();
+    itmNameAr = json['itm_name_ar']?.toString();
+    itmNameEn = json['itm_name_en']?.toString();
+    itmScientificN1 = json['itm_scientific_n1']?.toString();
+    itmScientificN2 = json['itm_scientific_n2']?.toString();
+    stoName = json['sto_name']?.toString();
+    uNameBig = json['u_name_big']?.toString();
+    uNameMedium = json['u_name_medium']?.toString();
+    uNameSmall = json['u_name_small']?.toString();
+    stoQtyBig = json['sto_qty_big']?.toString();
+    stoQtyMedium = json['sto_qty_medium']?.toString();
+    stoQtySmall = json['sto_qty_small']?.toString();
+    itmSellPrice = json['itm_sell_price']?.toString();
+    itmIsmedicine = json['itm_ismedicine'] is int
+        ? json['itm_ismedicine'] as int
+        : int.tryParse(json['itm_ismedicine']?.toString() ?? '');
+    itmActive = json['itm_active'] is int
+        ? json['itm_active'] as int
+        : int.tryParse(json['itm_active']?.toString() ?? '');
+    companyNameAr = json['Company_Name_Ar']?.toString();
+    companyNameEn = json['Company_Name_En']?.toString();
+    description = json['Description']?.toString();
+    insertDate = json['insert_date']?.toString();
+    updateDate = json['update_date']?.toString();
+    final favVal = json['is_favourite'];
+    if (favVal is bool) {
+      isFavourite = favVal;
+    } else if (favVal is num) {
+      isFavourite = favVal == 1;
+    } else if (favVal is String) {
+      isFavourite = favVal == '1' || favVal.toLowerCase() == 'true';
+    } else {
+      isFavourite = false;
+    }
+    primaryImage = json['primary_image']?.toString();
     category =
         json['category'] != null ? Category.fromJson(json['category']) : null;
     offer = json['offer'] != null ? OffersModel.fromJson(json['offer']) : null;
@@ -130,9 +145,11 @@ class Category {
   Category({this.id, this.name, this.icon});
 
   Category.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    icon = json['icon'];
+    id = json['id'] is int
+        ? json['id'] as int
+        : int.tryParse(json['id']?.toString() ?? '');
+    name = json['name']?.toString();
+    icon = json['icon']?.toString();
   }
 
   Map<String, dynamic> toJson() {

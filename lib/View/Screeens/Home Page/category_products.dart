@@ -22,14 +22,12 @@ class CategoryProducts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(FavouriteController());
-    Get.put(CategoryProductsController());
-
     return Scaffold(
       backgroundColor: sharedPreferences!.getString("Mood") == "Dark"
           ? LightMode.nightColor
           : LightMode.whiteColor,
       body: GetBuilder<CategoryProductsController>(
+        init: CategoryProductsController(),
         builder: (controller) => Column(
           children: [
             // App Bar

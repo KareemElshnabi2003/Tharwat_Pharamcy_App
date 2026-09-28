@@ -18,7 +18,6 @@ class VerifyForgetPass extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(VerifyCodeController());
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -32,6 +31,7 @@ class VerifyForgetPass extends StatelessWidget {
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<VerifyCodeController>(
+          init: VerifyCodeController(),
           builder: (controller) => SingleChildScrollView(
             child: Column(
               children: [

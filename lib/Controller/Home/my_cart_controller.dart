@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Cart/cart_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Cart/cart_model.dart';
@@ -104,7 +105,7 @@ class MyCartController extends GetxController {
       );
       return cartModel;
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       return null;
     } finally {
       isLoadingCart = false;

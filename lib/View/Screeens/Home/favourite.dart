@@ -20,8 +20,9 @@ class Favourite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(FavouriteController());
-    HomeController homeController = Get.put(HomeController());
+    final homeController = Get.isRegistered<HomeController>()
+        ? Get.find<HomeController>()
+        : Get.put(HomeController());
 
     return PopScope(
       canPop: false,
@@ -36,6 +37,10 @@ class Favourite extends StatelessWidget {
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<FavouriteController>(
+          id: 'favorites_list',
+          init: Get.isRegistered<FavouriteController>()
+              ? null
+              : FavouriteController(),
           builder: (controller) => RefreshIndicator(
             onRefresh: controller.refreshFavItems,
             child: Column(
@@ -100,8 +105,8 @@ class Favourite extends StatelessWidget {
                                   : CachedNetworkImageProvider(
                                       "${AppApi.imgUrl}/${product.primaryImage}"),
                               fav: true,
-                              onPressFav: () => controller
-                                  .removeItemFromFav(product.id.toString()),
+                              onPressFav: () =>
+                                  controller.notFavProducts(product.id),
                               onPressShop: () {
                                 Get.to(() => const ProductInfo(), arguments: {
                                   "id": product.id.toString(),

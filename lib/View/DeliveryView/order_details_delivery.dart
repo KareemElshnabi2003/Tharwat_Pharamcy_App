@@ -18,10 +18,10 @@ class OrderDetailsDelivery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(OrdersDeliveryController());
     return Scaffold(
       backgroundColor: ThemeService.backgroundColor,
       body: GetBuilder<OrdersDeliveryController>(
+        init: OrdersDeliveryController(),
         builder: (controller) => controller.statuesRequest ==
                 StatuesRequest.loading
             ? LoadingWidget(height: 100.h)

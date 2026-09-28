@@ -1,14 +1,19 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tharwat_pharmacy/Controller/Home/Favourite/favourite_controller.dart';
+import 'package:tharwat_pharmacy/Controller/Home/featured_products_controller.dart';
 import 'package:tharwat_pharmacy/Controller/Home/filter_controller.dart';
 import 'package:tharwat_pharmacy/Controller/Home/home_page_controller.dart';
+import 'package:tharwat_pharmacy/Controller/Home/Payment/check_out_controller.dart';
+import 'package:tharwat_pharmacy/Controller/Home/Profile/order_details_controller.dart';
 import 'package:tharwat_pharmacy/Controller/Home/special_offers_controller.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Home/favourite_source.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Home/home_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Categories/product_model.dart';
@@ -23,7 +28,7 @@ class MockFavouriteRemoteData extends FavouriteRemoteData {
   Completer<dynamic>? addCompleter;
 
   @override
-  Future<dynamic> addToFav({String? token, required dynamic id}) async {
+  Future<dynamic> addToFav({String? token, required int id}) async {
     addCalls++;
     if (addCompleter != null) {
       await addCompleter!.future;
@@ -35,7 +40,7 @@ class MockFavouriteRemoteData extends FavouriteRemoteData {
   }
 
   @override
-  Future<dynamic> removeFromFav({String? token, required dynamic id}) async {
+  Future<dynamic> removeFromFav({String? token, required int id}) async {
     removeCalls++;
     if (shouldFail) {
       return StatuesRequest.serverError;
@@ -291,6 +296,125 @@ void main() {
       // Page index should not advance on failure!
       expect(controller.index, 1);
       expect(controller.isLoadingMore, isFalse);
+    });
+  });
+
+  group('Favorite Synchronization & Multi-Feature Isolation Tests', () {
+    test('syncProductFavorite correctly adds and removes ids', () {
+      final favController = FavouriteController();
+      favController.syncProductFavorite(10, true);
+      expect(favController.favProductsId.contains(10), isTrue);
+
+      favController.syncProductFavorite(10, false);
+      expect(favController.favProductsId.contains(10), isFalse);
+    });
+
+    test('syncProductsFavorite reconciles list without wiping other favorites',
+        () {
+      final favController = FavouriteController();
+      // Pre-existing favorite from another feature
+      favController.favProductsId.add(99);
+
+      final products = [
+        ProductModel(id: 1, isFavourite: true),
+        ProductModel(id: 2, isFavourite: false),
+      ];
+
+      favController.syncProductsFavorite(products);
+
+      // Pre-existing favorite preserved
+      expect(favController.favProductsId.contains(99), isTrue);
+      // New favorites synced
+      expect(favController.favProductsId.contains(1), isTrue);
+      expect(favController.favProductsId.contains(2), isFalse);
+    });
+
+    test('Two feature controllers do not erase each others favorites',
+        () async {
+      final favController = Get.put(FavouriteController());
+      favController.favProductsId.add(10); // Favorite from Home
+
+      final homeController = HomePageController();
+      final featuredController = FeaturedProductsController();
+
+      // Home and Featured controllers reference the shared FavouriteController
+      expect(homeController.favouriteController.favProductsId.contains(10),
+          isTrue);
+      expect(featuredController.favouriteController.favProductsId.contains(10),
+          isTrue);
+
+      // Featured populates its own trending products
+      final featuredProducts = [
+        ProductModel(id: 20, isFavourite: true),
+        ProductModel(id: 21, isFavourite: false),
+      ];
+      featuredController.trendProducts = featuredProducts;
+      featuredController.favouriteController
+          .syncProductsFavorite(featuredProducts);
+
+      // Both product 10 and product 20 must exist!
+      expect(favController.favProductsId.contains(10), isTrue);
+      expect(favController.favProductsId.contains(20), isTrue);
+      expect(favController.favProductsId.contains(21), isFalse);
+    });
+
+    test('Search empty state preserves global favorite state', () {
+      final favController = Get.put(FavouriteController());
+      favController.favProductsId.add(55);
+
+      final homeController = HomePageController();
+      homeController.isSearch = true;
+      homeController.searchList = [ProductModel(id: 1, isFavourite: false)];
+
+      // Clearing search text
+      homeController.checkSearch('');
+
+      expect(homeController.isSearch, isFalse);
+      expect(homeController.searchList.isEmpty, isTrue);
+      // Product 55 from favorites must not be erased!
+      expect(favController.favProductsId.contains(55), isTrue);
+    });
+  });
+
+  group('Safe Parsing & Exception Handling Tests', () {
+    test('Date parsing handles invalid input gracefully without crashing', () {
+      final orderDetails = OrderDetailsController();
+      expect(orderDetails.editDate('invalid-date'), 'invalid-date');
+      expect(orderDetails.editDate('2025-01-15T12:00:00Z'), contains('15 Jan'));
+
+      final checkOut = CheckOutController();
+      expect(checkOut.editDate('bad-date'), 'bad-date');
+      expect(checkOut.editTime('bad-date'), 'bad-date');
+    });
+
+    test('handleException maps exceptions correctly to StatuesRequest', () {
+      expect(handleException(const SocketException('no net')),
+          StatuesRequest.socketException);
+      expect(handleException(TimeoutException('timeout')),
+          StatuesRequest.timeoutException);
+      expect(handleException(const FormatException('bad format')),
+          StatuesRequest.formatException);
+      expect(handleException(Exception('unknown')),
+          StatuesRequest.unExpectedException);
+    });
+
+    test('ProductModel.fromJson safely parses string ids and numeric favorites',
+        () {
+      final model = ProductModel.fromJson({
+        'id': '105',
+        'is_favourite': 1,
+        'itm_sell_price': 150.5,
+        'category': {
+          'id': '7',
+          'name': 'Medicine',
+        },
+      });
+
+      expect(model.id, 105);
+      expect(model.isFavourite, isTrue);
+      expect(model.itmSellPrice, '150.5');
+      expect(model.category?.id, 7);
+      expect(model.category?.name, 'Medicine');
     });
   });
 }

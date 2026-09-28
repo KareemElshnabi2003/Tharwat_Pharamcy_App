@@ -50,7 +50,7 @@ class ProfileRemoteData {
 
   Future<dynamic> deleteAcc({String? token, String? password}) async {
     final url = Api.buildUrl(AppApi.deleteAccUrl, {
-      if (password != null) 'password': password,
+      if (password != null) 'password': Uri.encodeComponent(password),
     });
     var response = await api.deleteData(
       url,

@@ -11,8 +11,7 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class ProductInfoController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  CartRemoteData cartRemoteData = CartRemoteData(
-      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
+  CartRemoteData cartRemoteData = CartRemoteData(Get.find<Api>());
   CartModel? cartModel;
   String? productId;
   ProductModel? productModel;
@@ -127,8 +126,9 @@ class ProductInfoController extends GetxController {
       productId = args['id']?.toString();
       if (args['product'] is ProductModel) {
         productModel = args['product'] as ProductModel;
-        if (productModel?.isFavourite == true && productModel?.id != null) {
-          _favController.favProductsId.add(productModel!.id!);
+        if (productModel?.id != null) {
+          _favController.syncProductFavorite(
+              productModel!.id!, productModel!.isFavourite == true);
         }
       }
     }

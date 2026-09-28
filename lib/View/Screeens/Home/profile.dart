@@ -24,8 +24,9 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ProfileController());
-    HomeController homeController = Get.put(HomeController());
+    final homeController = Get.isRegistered<HomeController>()
+        ? Get.find<HomeController>()
+        : Get.put(HomeController());
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -39,6 +40,9 @@ class Profile extends StatelessWidget {
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<ProfileController>(
+          init: Get.isRegistered<ProfileController>()
+              ? null
+              : ProfileController(),
           builder: (controller) => controller.statuesRequest ==
                   StatuesRequest.loading
               ? LoadingWidget(height: 80.h)

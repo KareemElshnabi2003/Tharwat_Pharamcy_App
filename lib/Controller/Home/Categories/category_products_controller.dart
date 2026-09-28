@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Controller/Home/Favourite/favourite_controller.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Categories/categories_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Categories/product_model.dart';
@@ -19,8 +20,8 @@ class CategoryProductsController extends GetxController {
 
   StatuesRequest statuesRequest = StatuesRequest.none;
   List<ProductModel> products = [];
-  CategoriesRemoteData categoriesRemoteData = CategoriesRemoteData(
-      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
+  CategoriesRemoteData categoriesRemoteData =
+      CategoriesRemoteData(Get.find<Api>());
   TextEditingController searchController = TextEditingController();
   ScrollController scrollController = ScrollController();
 
@@ -36,23 +37,31 @@ class CategoryProductsController extends GetxController {
   int _searchRequestId = 0;
   Timer? _debounce;
 
-  // Loading states for infinite scroll
+  // Loading states for infinite scroll & search
   bool isLoadingMore = false;
   bool isLoadingMoreSearch = false;
+  bool isLoadingSearch = false;
+
+  @override
+  void onInit() {
+    super.onInit();
+    final args = Get.arguments;
+    if (args is Map) {
+      catId = args['id']?.toString() ?? "";
+      categoryTitle = args['name']?.toString() ?? "";
+    }
+
+    _setupScrollListener();
+    getProducts();
+  }
 
   /// Refresh products page
   Future<void> refreshProducts() async {
     if (isSearch) {
-      // Refresh search results
       indexSearch = 1;
-      searchList.clear();
-      favouriteController.favProductsId.clear();
       await search();
     } else {
-      // Refresh products
       index = 1;
-      products.clear();
-      favouriteController.favProductsId.clear();
       await getProducts();
     }
     update();
@@ -105,7 +114,8 @@ class CategoryProductsController extends GetxController {
   void checkSearchCAT(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), () {
-      if (value.trim().isNotEmpty) {
+      final trimmed = value.trim();
+      if (trimmed.isNotEmpty) {
         isSearch = true;
         indexSearch = 1;
         more = false;
@@ -115,7 +125,7 @@ class CategoryProductsController extends GetxController {
         isSearch = false;
         moreSearch = false;
         searchList.clear();
-        favouriteController.favProductsId.clear();
+        favouriteController.syncProductsFavorite(products);
         update();
       }
     });
@@ -124,109 +134,108 @@ class CategoryProductsController extends GetxController {
   Future<void> search({bool isLoadMore = false}) async {
     final currentRequestId = ++_searchRequestId;
     final int requestPage = isLoadMore ? indexSearch + 1 : 1;
+    final String query = searchController.text.trim();
 
     if (!isLoadMore) {
+      isLoadingSearch = true;
       searchList.clear();
-      favouriteController.favProductsId.clear();
       statuesRequest = StatuesRequest.loading;
       update();
     }
 
-    var response = await categoriesRemoteData.search(
-        catId: catId,
-        query: searchController.text,
-        page: requestPage,
-        token: sharedPreferences!.getString("token"));
+    try {
+      var response = await categoriesRemoteData.search(
+          catId: catId,
+          query: query,
+          page: requestPage,
+          token: sharedPreferences!.getString("token"));
 
-    // Drop stale response
-    if (currentRequestId != _searchRequestId) {
-      return;
-    }
-
-    statuesRequest = handlingData(response);
-
-    if (statuesRequest == StatuesRequest.success) {
-      indexSearch = requestPage; // Only advance on success!
-      final responseBody = response;
-      List resList = responseBody['data'] ?? [];
-      final lastPage = responseBody['pagination']?['last_page'] ?? 1;
-
-      moreSearch = indexSearch < lastPage;
-
-      searchList.addAll(resList.map((item) => ProductModel.fromJson(item)));
-      for (final item in resList) {
-        if (item['is_favourite'] == true && item['id'] != null) {
-          final id = item['id'] is int
-              ? item['id'] as int
-              : int.tryParse(item['id'].toString());
-          if (id != null) {
-            favouriteController.favProductsId.add(id);
-          }
-        }
+      // Drop stale response
+      if (currentRequestId != _searchRequestId) {
+        return;
       }
-    } else if (statuesRequest == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
-    } else {
-      messageError("Error", "There is a problem. Please, try again later");
+
+      statuesRequest = handlingData(response);
+
+      if (statuesRequest == StatuesRequest.success) {
+        indexSearch = requestPage; // Only advance on success!
+        final responseBody = response;
+        List resList = responseBody['data'] ?? [];
+        final lastPage = int.tryParse(
+                responseBody['pagination']?['last_page']?.toString() ?? '') ??
+            1;
+
+        moreSearch = indexSearch < lastPage;
+
+        final newProducts =
+            resList.map((item) => ProductModel.fromJson(item)).toList();
+        if (!isLoadMore) {
+          searchList = newProducts;
+        } else {
+          searchList.addAll(newProducts);
+        }
+        favouriteController.syncProductsFavorite(newProducts);
+      } else if (statuesRequest == StatuesRequest.socketException) {
+        messageError("Error", "please, check your internet");
+      } else {
+        messageError("Error", "There is a problem. Please, try again later");
+      }
+    } catch (e) {
+      if (!isLoadMore) statuesRequest = handleException(e);
+    } finally {
+      if (currentRequestId == _searchRequestId) {
+        if (!isLoadMore) {
+          isLoadingSearch = false;
+        }
+        update();
+      }
     }
-    update();
   }
 
   Future<void> getProducts({bool isLoadMore = false}) async {
     final int requestPage = isLoadMore ? index + 1 : 1;
 
     if (!isLoadMore) {
-      favouriteController.favProductsId.clear();
-      products.clear();
       statuesRequest = StatuesRequest.loading;
       update();
     }
 
-    var response = await categoriesRemoteData.getProductsCategories(
-        page: requestPage,
-        catId: catId,
-        token: sharedPreferences!.getString("token"));
+    try {
+      var response = await categoriesRemoteData.getProductsCategories(
+          page: requestPage,
+          catId: catId,
+          token: sharedPreferences!.getString("token"));
 
-    statuesRequest = handlingData(response);
+      statuesRequest = handlingData(response);
 
-    if (statuesRequest == StatuesRequest.success) {
-      index = requestPage; // Only advance on success!
-      final responseBody = response;
-      List resList = responseBody['data'] ?? [];
-      int lastPage = responseBody['pagination']?['last_page'] ?? 1;
+      if (statuesRequest == StatuesRequest.success) {
+        index = requestPage; // Only advance on success!
+        final responseBody = response;
+        List resList = responseBody['data'] ?? [];
+        int lastPage = int.tryParse(
+                responseBody['pagination']?['last_page']?.toString() ?? '') ??
+            1;
 
-      more = index < lastPage;
+        more = index < lastPage;
 
-      products.addAll(resList.map((item) => ProductModel.fromJson(item)));
-      for (final item in resList) {
-        if (item['is_favourite'] == true && item['id'] != null) {
-          final id = item['id'] is int
-              ? item['id'] as int
-              : int.tryParse(item['id'].toString());
-          if (id != null) {
-            favouriteController.favProductsId.add(id);
-          }
+        final newProducts =
+            resList.map((item) => ProductModel.fromJson(item)).toList();
+        if (!isLoadMore) {
+          products = newProducts;
+        } else {
+          products.addAll(newProducts);
         }
+        favouriteController.syncProductsFavorite(newProducts);
+      } else if (statuesRequest == StatuesRequest.socketException) {
+        messageError("Error", "please, check your internet");
+      } else {
+        messageError("Error", "There is a problem. Please, try again later");
       }
-    } else if (statuesRequest == StatuesRequest.socketException) {
-      messageError("Error", "please, check your internet");
-    } else {
-      messageError("Error", "There is a problem. Please, try again later");
+    } catch (e) {
+      if (!isLoadMore) statuesRequest = handleException(e);
+    } finally {
+      update();
     }
-    update();
-  }
-
-  @override
-  void onInit() {
-    final args = Get.arguments;
-    if (args is Map) {
-      catId = args['id']?.toString() ?? "";
-      categoryTitle = args['name']?.toString() ?? "";
-    }
-
-    _setupScrollListener();
-    getProducts();
-    super.onInit();
   }
 
   @override

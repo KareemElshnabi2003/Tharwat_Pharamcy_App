@@ -16,20 +16,20 @@ class FavouriteRemoteData {
     return response.fold((l) => l, (r) => r);
   }
 
-  Future<dynamic> addToFav({String? token, required dynamic id}) async {
+  Future<dynamic> addToFav({String? token, required int id}) async {
     var response = await api.postData(
       "${AppApi.addToFavProductsUrl}/${Uri.encodeComponent(id.toString())}",
       Api.authHeaders(token),
-      {},
+      <String, dynamic>{},
     );
     return response.fold((l) => l, (r) => r);
   }
 
-  Future<dynamic> removeFromFav({String? token, required dynamic id}) async {
+  Future<dynamic> removeFromFav({String? token, required int id}) async {
     var response = await api.postData(
       "${AppApi.addToFavProductsUrl}/${Uri.encodeComponent(id.toString())}",
       Api.authHeaders(token),
-      {},
+      <String, dynamic>{},
     );
     return response.fold((l) => l, (r) => r);
   }

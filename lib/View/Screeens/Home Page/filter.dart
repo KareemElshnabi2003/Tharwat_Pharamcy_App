@@ -14,10 +14,10 @@ class Filter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(FilterController());
     return Scaffold(
       backgroundColor: ThemeService.backgroundColor,
       body: GetBuilder<FilterController>(
+        init: FilterController(),
         builder: (controller) => Stack(
           children: [
             SingleChildScrollView(

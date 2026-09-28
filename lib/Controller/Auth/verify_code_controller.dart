@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:tharwat_pharmacy/Controller/Auth/forget_pass_controller.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Auth/auth_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/User/user_auth_model.dart';
@@ -11,7 +11,6 @@ import 'package:tharwat_pharmacy/View/Widget/PublicWidget/message_error.dart';
 import 'package:tharwat_pharmacy/main.dart';
 
 class VerifyCodeController extends GetxController {
-  ForgetPassController forgetController = Get.put(ForgetPassController());
   String verifyCodeSign = '';
   String verifyCodeForget = '';
   StatuesRequest statuesRequest = StatuesRequest.none;
@@ -47,7 +46,7 @@ class VerifyCodeController extends GetxController {
         },
       );
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       click = false;
     } finally {
       if (statuesRequest == StatuesRequest.loading) {
@@ -110,7 +109,7 @@ class VerifyCodeController extends GetxController {
         },
       );
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       messageError("Error", "Code is invalid or an error occurred");
     } finally {
       if (statuesRequest == StatuesRequest.loading) {
@@ -142,7 +141,7 @@ class VerifyCodeController extends GetxController {
         },
       );
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       messageError("Error", "Code is invalid or an error occurred");
     } finally {
       if (statuesRequest == StatuesRequest.loading) {
@@ -154,12 +153,12 @@ class VerifyCodeController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     final args = Get.arguments;
     if (args is Map) {
       email = args['email']?.toString() ?? "";
     } else if (args is String) {
       email = args;
     }
-    super.onInit();
   }
 }

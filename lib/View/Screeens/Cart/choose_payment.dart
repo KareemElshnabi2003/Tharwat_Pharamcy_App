@@ -16,10 +16,10 @@ class ChoosePayment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ChoosePaymentController());
     return Scaffold(
       backgroundColor: ThemeService.backgroundColor,
       body: GetBuilder<ChoosePaymentController>(
+        init: ChoosePaymentController(),
         builder: (controller) => SingleChildScrollView(
           child: Column(
             children: [
@@ -54,7 +54,7 @@ class ChoosePayment extends StatelessWidget {
                                       ? LightMode.whiteColor
                                       : null),
                               payment: true,
-                              onChanged: (val) => controller.choose(val),
+                              onChanged: (val) => controller.choose(val?.toString()),
                               onTap: () => controller.choose("cash"),
                               typeUser: "cash",
                               choose: controller.payment == "cash"),
@@ -69,7 +69,7 @@ class ChoosePayment extends StatelessWidget {
                                       ? LightMode.whiteBlueColor
                                       : null),
                               payment: true,
-                              onChanged: (val) => controller.choose(val),
+                              onChanged: (val) => controller.choose(val?.toString()),
                               onTap: () =>
                                   controller.choose("credit / debit card"),
                               typeUser: "credit / debit card",
@@ -86,7 +86,7 @@ class ChoosePayment extends StatelessWidget {
                                           ? LightMode.whiteBlueColor
                                           : null),
                               payment: true,
-                              onChanged: (val) => controller.choose(val),
+                              onChanged: (val) => controller.choose(val?.toString()),
                               onTap: () => controller.choose("vodafone cash"),
                               typeUser: "vodafone cash",
                               choose: controller.payment == "vodafone cash"),
@@ -102,7 +102,7 @@ class ChoosePayment extends StatelessWidget {
                                       ? LightMode.whiteBlueColor
                                       : null),
                               payment: true,
-                              onChanged: (val) => controller.choose(val),
+                              onChanged: (val) => controller.choose(val?.toString()),
                               onTap: () => controller.choose("instapay"),
                               typeUser: "instapay",
                               choose: controller.payment == "" ||

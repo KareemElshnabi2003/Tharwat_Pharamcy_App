@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Controller/Home/Favourite/favourite_controller.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Home/home_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Categories/product_model.dart';
@@ -21,8 +22,7 @@ class HomePageController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
   StatuesRequest loadMoreStatus = StatuesRequest.none;
 
-  HomeRemoteData homeRemoteData = HomeRemoteData(
-      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
+  HomeRemoteData homeRemoteData = HomeRemoteData(Get.find<Api>());
   HomeModel? homeModel;
   List<ProductModel> searchList = [];
   bool isSearch = false;
@@ -64,20 +64,29 @@ class HomePageController extends GetxController {
 
   void checkSearch(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () async {
-      if (value.isNotEmpty) {
-        isSearch = true;
-        index = 1;
-        more = true;
-        await search();
-      } else {
-        isSearch = false;
-        searchList.clear();
-        favouriteController.favProductsId.clear();
-        index = 1;
-        more = false;
-        update();
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      isSearch = false;
+      searchList.clear();
+      index = 1;
+      more = false;
+      // Re-sync favorites for currently loaded home products
+      if (homeModel?.data?.trendingProducts?.data != null) {
+        favouriteController
+            .syncProductsFavorite(homeModel!.data!.trendingProducts!.data!);
       }
+      if (homeModel?.data?.mostOrderedProducts?.data != null) {
+        favouriteController.syncProductsFavorite(
+            homeModel!.data!.mostOrderedProducts!.data!);
+      }
+      update();
+      return;
+    }
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      isSearch = true;
+      index = 1;
+      more = true;
+      await search(query: trimmed);
     });
   }
 
@@ -85,7 +94,6 @@ class HomePageController extends GetxController {
     if (isLoadingHome) return homeModel;
     isLoadingHome = true;
     try {
-      favouriteController.favProductsId.clear();
       statuesRequest = StatuesRequest.loading;
       update();
 
@@ -99,39 +107,20 @@ class HomePageController extends GetxController {
         onSuccess: (data) {
           homeModel = HomeModel.fromJson(data);
 
-          if (data['data']?['trending_products']?['data'] != null) {
-            for (final item
-                in (data['data']['trending_products']['data'] as List)) {
-              if (item['is_favourite'] == true && item['id'] != null) {
-                final id = item['id'] is int
-                    ? item['id'] as int
-                    : int.tryParse(item['id'].toString());
-                if (id != null) {
-                  favouriteController.favProductsId.add(id);
-                }
-              }
-            }
+          if (homeModel?.data?.trendingProducts?.data != null) {
+            favouriteController
+                .syncProductsFavorite(homeModel!.data!.trendingProducts!.data!);
           }
-
-          if (data['data']?['most_ordered_products']?['data'] != null) {
-            for (final item
-                in (data['data']['most_ordered_products']['data'] as List)) {
-              if (item['is_favourite'] == true && item['id'] != null) {
-                final id = item['id'] is int
-                    ? item['id'] as int
-                    : int.tryParse(item['id'].toString());
-                if (id != null) {
-                  favouriteController.favProductsId.add(id);
-                }
-              }
-            }
+          if (homeModel?.data?.mostOrderedProducts?.data != null) {
+            favouriteController.syncProductsFavorite(
+                homeModel!.data!.mostOrderedProducts!.data!);
           }
         },
       );
       return homeModel;
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
-      return null;
+      statuesRequest = handleException(e);
+      return homeModel;
     } finally {
       isLoadingHome = false;
       update();
@@ -157,12 +146,11 @@ class HomePageController extends GetxController {
   Future<void> search({String? query, bool isLoadMore = false}) async {
     final currentRequestId = ++_searchRequestId;
     final int requestPage = isLoadMore ? index : 1;
-    final String searchQuery = query ?? searchController.text;
+    final String searchQuery = (query ?? searchController.text).trim();
 
     if (!isLoadMore) {
       isLoadingSearch = true;
       searchList.clear();
-      favouriteController.favProductsId.clear();
     }
     update();
 
@@ -188,7 +176,9 @@ class HomePageController extends GetxController {
         onSuccess: (data) {
           if (currentRequestId != _searchRequestId) return;
           List resList = data['data'] ?? [];
-          int lastPage = data['pagination']?['last_page'] ?? 1;
+          int lastPage = int.tryParse(
+                  data['pagination']?['last_page']?.toString() ?? '') ??
+              1;
           if (requestPage <= lastPage) {
             if (!isLoadMore) {
               searchList.clear();
@@ -196,19 +186,10 @@ class HomePageController extends GetxController {
             }
 
             more = requestPage < lastPage;
-            searchList
-                .addAll(resList.map((item) => ProductModel.fromJson(item)));
-
-            for (final item in resList) {
-              if (item['is_favourite'] == true && item['id'] != null) {
-                final id = item['id'] is int
-                    ? item['id'] as int
-                    : int.tryParse(item['id'].toString());
-                if (id != null) {
-                  favouriteController.favProductsId.add(id);
-                }
-              }
-            }
+            final newProducts =
+                resList.map((item) => ProductModel.fromJson(item)).toList();
+            searchList.addAll(newProducts);
+            favouriteController.syncProductsFavorite(newProducts);
 
             // Only advance upon success!
             index = requestPage + 1;
@@ -217,6 +198,10 @@ class HomePageController extends GetxController {
           }
         },
       );
+    } catch (e) {
+      if (!isLoadMore) {
+        statuesRequest = handleException(e);
+      }
     } finally {
       if (currentRequestId == _searchRequestId) {
         if (!isLoadMore) {

@@ -13,13 +13,21 @@ class HomeRemoteData {
     String? maxPrice,
     String? minPrice,
   }) {
+    final effectiveStock =
+        inStock ?? sharedPreferences?.getString("stock") ?? "";
+    final effectiveMaxPrice =
+        maxPrice ?? sharedPreferences?.getString("maxPrice") ?? "";
+    final effectiveMinPrice =
+        minPrice ?? sharedPreferences?.getString("minPrice") ?? "";
+
     return {
       'per_page': '20',
       if (page != null) 'page': page.toString(),
       if (query != null && query.isNotEmpty) 'query': query,
-      'in_stock': inStock ?? sharedPreferences?.getString("stock") ?? "",
-      'max_price': maxPrice ?? sharedPreferences?.getString("maxPrice") ?? "",
-      'min_price': minPrice ?? sharedPreferences?.getString("minPrice") ?? "",
+      if (effectiveStock.isNotEmpty && effectiveStock.toLowerCase() != "all")
+        'in_stock': effectiveStock,
+      if (effectiveMaxPrice.isNotEmpty) 'max_price': effectiveMaxPrice,
+      if (effectiveMinPrice.isNotEmpty) 'min_price': effectiveMinPrice,
     };
   }
 

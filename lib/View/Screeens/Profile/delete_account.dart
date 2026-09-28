@@ -15,10 +15,10 @@ class DeleteAccount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ProfileController());
     return Scaffold(
       backgroundColor: ThemeService.backgroundColor,
       body: GetBuilder<ProfileController>(
+        init: ProfileController(),
         builder: (controller) => Form(
           key: controller.deleteKey,
           child: Column(

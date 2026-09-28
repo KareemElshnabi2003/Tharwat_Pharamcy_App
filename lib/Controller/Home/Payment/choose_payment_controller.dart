@@ -16,13 +16,14 @@ class ChoosePaymentController extends GetxController {
   }
 
   String? payment;
-  void choose(dynamic type) {
-    payment = type?.toString();
+  void choose(String? type) {
+    payment = type;
     update();
   }
 
   @override
   void onInit() {
+    super.onInit();
     final args = Get.arguments;
     if (args is Map) {
       if (args['totalCost'] is num) {
@@ -31,7 +32,6 @@ class ChoosePaymentController extends GetxController {
         totalCost = double.tryParse(args['totalCost'].toString());
       }
     }
-    super.onInit();
   }
 
   @override

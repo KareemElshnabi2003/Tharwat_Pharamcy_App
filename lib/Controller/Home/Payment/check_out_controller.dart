@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Order/order_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Order/order_model.dart';
@@ -131,7 +132,7 @@ class CheckOutController extends GetxController {
         messageError("Error", "There is a problem. Please,  try again later");
       }
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       messageError("Error", "There is a problem. Please, try again later");
     } finally {
       if (statuesRequest == StatuesRequest.loading) {
@@ -167,6 +168,7 @@ class CheckOutController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     final args = Get.arguments;
     if (args is Map) {
       paymentMethod = args['payment']?.toString() ?? "";
@@ -176,7 +178,6 @@ class CheckOutController extends GetxController {
         totalCost = double.tryParse(args['totalCost'].toString());
       }
     }
-    super.onInit();
   }
 
   @override

@@ -10,7 +10,7 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class ForgetPassController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  AuthRemoteData authRemoteData = AuthRemoteData(Get.put(Api()));
+  AuthRemoteData authRemoteData = AuthRemoteData(Get.find<Api>());
   GlobalKey<FormState> forgetPassKey = GlobalKey();
   GlobalKey<FormState> resetPassKey = GlobalKey();
 

@@ -9,7 +9,7 @@ import 'package:tharwat_pharmacy/Data/Model/Order/ordeers_delivery_model.dart';
 
 class OrdersDeliveryController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  OrderRemoteData orderRemoteData = OrderRemoteData(Get.put(Api()));
+  OrderRemoteData orderRemoteData = OrderRemoteData(Get.find<Api>());
 
   List<OrdersDeliveryModel> completeOrdered = [];
   List<OrdersDeliveryModel> myOrdered = [];
@@ -131,17 +131,21 @@ class OrdersDeliveryController extends GetxController {
   }
 
   String editDate(String date) {
-    DateTime dateTime = DateTime.parse(date);
-    return "${DateFormat('dd MMM').format(dateTime)} / ${DateFormat('h:mm a').format(dateTime)}";
+    try {
+      DateTime dateTime = DateTime.parse(date);
+      return "${DateFormat('dd MMM').format(dateTime)} / ${DateFormat('h:mm a').format(dateTime)}";
+    } catch (_) {
+      return date;
+    }
   }
 
   bool _determineHasMore(dynamic response, int listLength) {
     if (response is Map && response['pagination'] is Map) {
       final p = response['pagination'] as Map;
-      final lastPage = p['last_page'];
-      final curr = p['current_page'];
+      final lastPage = int.tryParse(p['last_page']?.toString() ?? '');
+      final curr = int.tryParse(p['current_page']?.toString() ?? '');
       if (lastPage != null && curr != null) {
-        return (curr as int) < (lastPage as int);
+        return curr < lastPage;
       }
     }
     return listLength >= 10;

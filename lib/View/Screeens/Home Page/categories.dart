@@ -24,14 +24,16 @@ class CategoriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    HomeController homeController = Get.put(HomeController());
-    Get.put(CategoriesController());
+    final homeController = Get.isRegistered<HomeController>()
+        ? Get.find<HomeController>()
+        : Get.put(HomeController());
 
     return Scaffold(
       backgroundColor: sharedPreferences!.getString("Mood") == "Dark"
           ? LightMode.nightColor
           : LightMode.whiteColor,
       body: GetBuilder<CategoriesController>(
+        init: CategoriesController(),
         builder: (controller) => Column(
           children: [
             // App Bar

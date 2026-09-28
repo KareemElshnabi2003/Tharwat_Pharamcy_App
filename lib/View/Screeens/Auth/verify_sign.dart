@@ -19,7 +19,6 @@ class VerifySign extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(VerifyCodeController());
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -31,6 +30,7 @@ class VerifySign extends StatelessWidget {
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<VerifyCodeController>(
+          init: VerifyCodeController(),
           builder: (controller) =>
               controller.statuesRequest == StatuesRequest.loading
                   ? LoadingWidget(height: 80.h)

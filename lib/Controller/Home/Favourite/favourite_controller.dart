@@ -11,8 +11,8 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class FavouriteController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  FavouriteRemoteData favouriteRemoteData = FavouriteRemoteData(
-      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
+  FavouriteRemoteData favouriteRemoteData =
+      FavouriteRemoteData(Get.find<Api>());
 
   List<ProductModel> favItems = [];
   final Set<int> favProductsId = <int>{};
@@ -58,7 +58,26 @@ class FavouriteController extends GetxController {
   void resetPagination() {
     currentPage = 1;
     hasMoreData = true;
-    favItems.clear();
+  }
+
+  void syncProductFavorite(int id, bool isFavorite) {
+    if (isFavorite) {
+      favProductsId.add(id);
+    } else {
+      favProductsId.remove(id);
+    }
+    update(['fav_$id']);
+  }
+
+  void syncProductsFavorite(Iterable<dynamic> products) {
+    for (final item in products) {
+      final rawId = item.id;
+      final int? id =
+          rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '');
+      if (id != null) {
+        syncProductFavorite(id, item.isFavourite == true);
+      }
+    }
   }
 
   Future<void> favProducts(dynamic rawId) async {
@@ -70,7 +89,7 @@ class FavouriteController extends GetxController {
 
     // Optimistic update
     favProductsId.add(id);
-    update(['fav_$id']);
+    update(['fav_$id', 'favorites_list']);
 
     try {
       await addItemToFav(id);
@@ -93,9 +112,7 @@ class FavouriteController extends GetxController {
       removedItem = favItems.removeAt(originalIndex);
     }
     favProductsId.remove(id);
-    update(['fav_$id']);
-    // If on favorite screen, also update the list
-    update();
+    update(['fav_$id', 'favorites_list']);
 
     try {
       await removeItemFromFav(id,
@@ -123,9 +140,8 @@ class FavouriteController extends GetxController {
     isLoadingFav = true;
     try {
       if (currentPage == 1) {
-        favItems.clear();
         statuesRequest = StatuesRequest.loading;
-        update();
+        update(['favorites_list']);
       }
 
       var response = await favouriteRemoteData.getFavProducts(
@@ -149,19 +165,15 @@ class FavouriteController extends GetxController {
           favItems.addAll(newItems);
         }
 
-        for (final item in favItems) {
-          if (item.id != null) {
-            favProductsId.add(item.id!);
-          }
-        }
+        syncProductsFavorite(favItems);
 
         // Pagination metadata
         final pagination = responseBody['pagination'];
-        if (pagination is Map &&
-            pagination['last_page'] != null &&
-            pagination['current_page'] != null) {
-          final int lastPage = pagination['last_page'] as int;
-          final int curr = pagination['current_page'] as int;
+        if (pagination is Map) {
+          final int lastPage =
+              int.tryParse(pagination['last_page']?.toString() ?? '') ?? 1;
+          final int curr =
+              int.tryParse(pagination['current_page']?.toString() ?? '') ?? 1;
           hasMoreData = curr < lastPage;
         } else {
           hasMoreData = newItems.isNotEmpty;
@@ -179,7 +191,7 @@ class FavouriteController extends GetxController {
       return favItems;
     } finally {
       isLoadingFav = false;
-      update();
+      update(['favorites_list']);
     }
   }
 
@@ -188,7 +200,7 @@ class FavouriteController extends GetxController {
     if (isLoadingMore || !hasMoreData) return;
 
     isLoadingMore = true;
-    update();
+    update(['favorites_list']);
 
     try {
       final nextPage = currentPage + 1;
@@ -210,18 +222,14 @@ class FavouriteController extends GetxController {
             .toList();
 
         favItems.addAll(newItems);
-        for (final item in newItems) {
-          if (item.id != null) {
-            favProductsId.add(item.id!);
-          }
-        }
+        syncProductsFavorite(newItems);
 
         final pagination = responseBody['pagination'];
-        if (pagination is Map &&
-            pagination['last_page'] != null &&
-            pagination['current_page'] != null) {
-          final int lastPage = pagination['last_page'] as int;
-          final int curr = pagination['current_page'] as int;
+        if (pagination is Map) {
+          final int lastPage =
+              int.tryParse(pagination['last_page']?.toString() ?? '') ?? 1;
+          final int curr =
+              int.tryParse(pagination['current_page']?.toString() ?? '') ?? 1;
           hasMoreData = curr < lastPage;
         } else {
           hasMoreData = newItems.isNotEmpty;
@@ -233,7 +241,7 @@ class FavouriteController extends GetxController {
       }
     } finally {
       isLoadingMore = false;
-      update();
+      update(['favorites_list']);
     }
   }
 
@@ -247,7 +255,7 @@ class FavouriteController extends GetxController {
     } else {
       // Rollback on any failure
       favProductsId.remove(itemId);
-      update(['fav_$itemId']);
+      update(['fav_$itemId', 'favorites_list']);
 
       if (statuesRequest == StatuesRequest.socketException) {
         messageError("Error", "please, check your internet");
@@ -261,11 +269,8 @@ class FavouriteController extends GetxController {
     }
   }
 
-  Future<void> removeItemFromFav(dynamic rawId,
+  Future<void> removeItemFromFav(int itemId,
       {ProductModel? removedItem, int? originalIndex}) async {
-    final int? itemId =
-        rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '');
-    if (itemId == null) return;
     var response = await favouriteRemoteData.removeFromFav(
         id: itemId, token: sharedPreferences?.getString("token"));
     statuesRequest = handlingData(response);
@@ -283,9 +288,8 @@ class FavouriteController extends GetxController {
         } else {
           favItems.add(removedItem);
         }
-        update();
       }
-      update(['fav_$itemId']);
+      update(['fav_$itemId', 'favorites_list']);
 
       if (statuesRequest == StatuesRequest.socketException) {
         messageError("Error", "please, check your internet");
@@ -304,6 +308,6 @@ class FavouriteController extends GetxController {
     resetPagination();
     favItemsFuture = getFavItems();
     await favItemsFuture;
-    update();
+    update(['favorites_list']);
   }
 }

@@ -23,11 +23,10 @@ class MyCartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MyCartController myCartController = Get.put(MyCartController());
-
     return Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<MyCartController>(
+          init: MyCartController(),
           builder: (controller) => SingleChildScrollView(
             child: Column(
               children: [
@@ -111,7 +110,7 @@ class MyCartPage extends StatelessWidget {
                                               numOfItems:
                                                   snapshot.data!.cartItems![index].quantity ?? 1,
                                               onAdd: () {
-                                                myCartController.increaseCart(
+                                                controller.increaseCart(
                                                     qtv: snapshot
                                                             .data!
                                                             .cartItems![index]
@@ -126,14 +125,14 @@ class MyCartPage extends StatelessWidget {
                                                         .cartItems![index]
                                                         .quantity ==
                                                     1) {
-                                                  myCartController
+                                                  controller
                                                       .deleteFromCart(
                                                           productId: snapshot
                                                               .data!
                                                               .cartItems![index]
                                                               .id);
                                                 } else {
-                                                  myCartController.decreaseCart(
+                                                  controller.decreaseCart(
                                                       qtv: snapshot
                                                               .data!
                                                               .cartItems![index]

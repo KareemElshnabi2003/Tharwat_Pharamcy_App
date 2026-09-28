@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Order/order_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Order/my_order_model.dart';
@@ -14,8 +15,12 @@ class OrderDetailsController extends GetxController {
   OrderRemoteData orderRemoteData = OrderRemoteData(Get.find<Api>());
 
   String editDate(String date) {
-    DateTime dateTime = DateTime.parse(date);
-    return "${DateFormat('dd MMM').format(dateTime)} / ${DateFormat('h:mm a').format(dateTime)}";
+    try {
+      DateTime dateTime = DateTime.parse(date);
+      return "${DateFormat('dd MMM').format(dateTime)} / ${DateFormat('h:mm a').format(dateTime)}";
+    } catch (_) {
+      return date;
+    }
   }
 
   Future<void> cancelOrder({required dynamic orderId}) async {
@@ -40,7 +45,7 @@ class OrderDetailsController extends GetxController {
         messageError("Error", "There is a problem. Please,  try again later");
       }
     } catch (e) {
-      statuesRequest = StatuesRequest.serverError;
+      statuesRequest = handleException(e);
       messageError("Error", "There is a problem. Please,  try again later");
     } finally {
       if (statuesRequest == StatuesRequest.loading) {
@@ -52,12 +57,12 @@ class OrderDetailsController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     final args = Get.arguments;
     if (args is Map && args['orderModel'] is MyOrderModel) {
       orderModel = args['orderModel'] as MyOrderModel;
     } else if (args is MyOrderModel) {
       orderModel = args;
     }
-    super.onInit();
   }
 }

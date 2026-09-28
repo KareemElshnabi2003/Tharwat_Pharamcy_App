@@ -24,9 +24,9 @@ class MostOrders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(MostOrdersController());
-    Get.put(FavouriteController());
-    HomeController homeController = Get.put(HomeController());
+    final homeController = Get.isRegistered<HomeController>()
+        ? Get.find<HomeController>()
+        : Get.put(HomeController());
 
     return PopScope(
       canPop: false,
@@ -40,6 +40,9 @@ class MostOrders extends StatelessWidget {
       child: Scaffold(
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<MostOrdersController>(
+          init: Get.isRegistered<MostOrdersController>()
+              ? null
+              : MostOrdersController(),
           builder: (controller) => Column(
             children: [
               AppBarWidget(

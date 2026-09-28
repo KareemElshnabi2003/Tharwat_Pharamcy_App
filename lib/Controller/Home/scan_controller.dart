@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Home/home_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Categories/product_model.dart';
@@ -10,8 +11,7 @@ import 'package:tharwat_pharmacy/View/Widget/PublicWidget/message_error.dart';
 
 class ScanController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  final HomeRemoteData _homeRemoteData = HomeRemoteData(
-      Get.isRegistered<Api>() ? Get.find<Api>() : Get.put(Api()));
+  final HomeRemoteData _homeRemoteData = HomeRemoteData(Get.find<Api>());
   ProductModel? productModewl;
   MobileScannerController cameraController = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
@@ -31,7 +31,7 @@ class ScanController extends GetxController {
       scannedCode = barcode.rawValue;
       // Show result dialog
       await scan();
-      update();
+      if (!isClosed) update();
     }
   }
 
@@ -45,6 +45,8 @@ class ScanController extends GetxController {
         itemCode: scannedCode,
       );
 
+      if (isClosed) return;
+
       statuesRequest = handlingData(response);
 
       if (statuesRequest == StatuesRequest.success && response is Map) {
@@ -56,33 +58,37 @@ class ScanController extends GetxController {
             isScanned = false;
             scannedCode = null;
 
-            update();
+            if (!isClosed) update();
             Get.back();
           });
         } else {
           productModewl = ProductModel.fromJson(resList[0]);
-          Get.to(() => const ProductInfo(), arguments: {
-            "id": productModewl!.id.toString(),
-            "product": productModewl
-          });
-          isScanned = false;
-          scannedCode = null;
+          if (!isClosed) {
+            Get.to(() => const ProductInfo(), arguments: {
+              "id": productModewl!.id.toString(),
+              "product": productModewl
+            });
+            isScanned = false;
+            scannedCode = null;
+          }
         }
       } else if (statuesRequest == StatuesRequest.socketException) {
         messageError("Error", "please, check your internet");
       } else {
         messageError("Error", "There is a problem. Please, try again later");
       }
+    } catch (e) {
+      if (!isClosed) statuesRequest = handleException(e);
     } finally {
-      update();
+      if (!isClosed) update();
     }
   }
 
   @override
   void onInit() {
+    super.onInit();
     isScanned = false;
     scannedCode = null;
-    super.onInit();
   }
 
   @override

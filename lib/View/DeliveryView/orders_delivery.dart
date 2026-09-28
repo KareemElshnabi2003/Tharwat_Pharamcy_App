@@ -14,7 +14,9 @@ class OrdersDelivery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeController = Get.put(HomeDeliveryController());
+    final homeController = Get.isRegistered<HomeDeliveryController>()
+        ? Get.find<HomeDeliveryController>()
+        : Get.put(HomeDeliveryController());
 
     return PopScope(
       canPop: false,

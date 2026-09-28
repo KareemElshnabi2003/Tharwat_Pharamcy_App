@@ -18,8 +18,8 @@ class HomeDelivery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(HomeDeliveryController());
     return GetBuilder<HomeDeliveryController>(
+      init: HomeDeliveryController(),
       builder: (controller) => Scaffold(
         bottomNavigationBar: BottomAppBar(
           color: sharedPreferences!.getString("Mood") == "Dark"

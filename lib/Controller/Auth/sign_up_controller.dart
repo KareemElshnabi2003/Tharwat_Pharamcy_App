@@ -14,8 +14,8 @@ import 'package:tharwat_pharmacy/View/Widget/PublicWidget/message_error.dart';
 
 class SignUpController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  AuthRemoteData authRemoteData = AuthRemoteData(Get.put(Api()));
-  LocationRemoteData locationRemoteData = LocationRemoteData(Get.put(Api()));
+  AuthRemoteData authRemoteData = AuthRemoteData(Get.find<Api>());
+  LocationRemoteData locationRemoteData = LocationRemoteData(Get.find<Api>());
 
   UserAuthModel? userAuthModel;
   GlobalKey<FormState> signUpKey = GlobalKey();
@@ -249,8 +249,8 @@ class SignUpController extends GetxController {
 
   @override
   void onInit() {
-    getCountry();
     super.onInit();
+    getCountry();
   }
 
   @override

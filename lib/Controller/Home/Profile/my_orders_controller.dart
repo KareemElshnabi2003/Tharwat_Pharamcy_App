@@ -10,7 +10,7 @@ import 'package:tharwat_pharmacy/main.dart';
 
 class MyOrdersController extends GetxController {
   StatuesRequest statuesRequest = StatuesRequest.none;
-  OrderRemoteData orderRemoteData = OrderRemoteData(Get.put(Api()));
+  OrderRemoteData orderRemoteData = OrderRemoteData(Get.find<Api>());
 
   List<MyOrderModel> completeOrdered = [];
   List<MyOrderModel> cancelOrdered = [];
@@ -50,8 +50,12 @@ class MyOrdersController extends GetxController {
   }
 
   String editDate(String date) {
-    DateTime dateTime = DateTime.parse(date);
-    return "${DateFormat('dd MMM').format(dateTime)} / ${DateFormat('h:mm a').format(dateTime)}";
+    try {
+      DateTime dateTime = DateTime.parse(date);
+      return "${DateFormat('dd MMM').format(dateTime)} / ${DateFormat('h:mm a').format(dateTime)}";
+    } catch (_) {
+      return date;
+    }
   }
 
   changeIndex(int i) {
@@ -128,8 +132,10 @@ class MyOrdersController extends GetxController {
       status: statuesRequest,
       response: response,
       onSuccess: (data) {
-        lastPage = data['pagination']['last_page'];
-        List<MyOrderModel> newOrders = (data['data'] as List)
+        lastPage =
+            int.tryParse(data['pagination']?['last_page']?.toString() ?? '') ??
+                1;
+        List<MyOrderModel> newOrders = ((data['data'] ?? []) as List)
             .map((e) => MyOrderModel.fromJson(e))
             .toList();
 

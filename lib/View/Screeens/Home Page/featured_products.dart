@@ -24,13 +24,16 @@ class FeaturedProducts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(FeaturedProductsController());
-    HomeController homeController = Get.put(HomeController());
-    Get.put(FavouriteController());
+    final homeController = Get.isRegistered<HomeController>()
+        ? Get.find<HomeController>()
+        : Get.put(HomeController());
 
     return Scaffold(
       backgroundColor: ThemeService.backgroundColor,
       body: GetBuilder<FeaturedProductsController>(
+        init: Get.isRegistered<FeaturedProductsController>()
+            ? null
+            : FeaturedProductsController(),
         builder: (controller) => Column(
           children: [
             AppBarWidget(

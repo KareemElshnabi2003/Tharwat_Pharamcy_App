@@ -65,7 +65,7 @@ class HomeController extends GetxController {
     update();
   }
 
-  void goToHome(int index, [dynamic arguments]) {
+  void goToHome(int index, [Object? arguments]) {
     currentIndex = index;
     _syncChoose(index);
     Get.offAll(() => const Home(), arguments: arguments);
@@ -74,7 +74,7 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
-    _syncChoose(currentIndex);
     super.onInit();
+    _syncChoose(currentIndex);
   }
 }

@@ -14,8 +14,9 @@ class MyOrdersDelivery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(OrdersDeliveryController());
-    final homeController = Get.put(HomeDeliveryController());
+    final homeController = Get.isRegistered<HomeDeliveryController>()
+        ? Get.find<HomeDeliveryController>()
+        : Get.put(HomeDeliveryController());
 
     return PopScope(
       canPop: false,
@@ -44,6 +45,7 @@ class MyOrdersDelivery extends StatelessWidget {
             ),
             Expanded(
               child: GetBuilder<OrdersDeliveryController>(
+                init: OrdersDeliveryController(),
                 builder: (controller) =>
                     FutureBuilder<List<OrdersDeliveryModel>>(
                   future: controller.myOrdersFuture,

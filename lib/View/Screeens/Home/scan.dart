@@ -13,8 +13,9 @@ class MedicineScannerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ScanController());
-    HomeController homeController = Get.put(HomeController());
+    final homeController = Get.isRegistered<HomeController>()
+        ? Get.find<HomeController>()
+        : Get.put(HomeController());
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -28,6 +29,7 @@ class MedicineScannerScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.black,
         body: GetBuilder<ScanController>(
+          init: Get.isRegistered<ScanController>() ? null : ScanController(),
           builder: (controller) => controller.statuesRequest ==
                   StatuesRequest.loading
               ? Center(

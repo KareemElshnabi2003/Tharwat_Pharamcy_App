@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/Constant/contact_config.dart';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Profile/profile_source.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/message_error.dart';
@@ -115,7 +116,7 @@ class ContactUsController extends GetxController {
           messageError("Error", parseErrorMessage(response));
         }
       } catch (e) {
-        statuesRequest = StatuesRequest.serverError;
+        statuesRequest = handleException(e);
         messageError("Error", "There is a problem. Please,  try again later");
       } finally {
         if (statuesRequest == StatuesRequest.loading) {

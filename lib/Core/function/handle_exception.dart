@@ -1,9 +1,14 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:tharwat_pharmacy/Core/class/status_request.dart';
-
 import 'custom_exception.dart';
 
-handleException(dynamic e) {
-  if (e is BadRequestException) {
+StatuesRequest handleException(dynamic e) {
+  if (e is SocketException) {
+    return StatuesRequest.socketException;
+  } else if (e is TimeoutException) {
+    return StatuesRequest.timeoutException;
+  } else if (e is BadRequestException) {
     return StatuesRequest.badRequestException;
   } else if (e is UnauthorizedException) {
     return StatuesRequest.unauthorizedException;

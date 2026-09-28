@@ -67,7 +67,8 @@ class CategoriesRemoteData {
         "per_page": "20",
         if (page != null) "page": page.toString(),
         if (query != null && query.isNotEmpty) "query": query,
-        if (effectiveStock.isNotEmpty) "in_stock": effectiveStock,
+        if (effectiveStock.isNotEmpty && effectiveStock.toLowerCase() != "all")
+          "in_stock": effectiveStock,
         if (effectiveMin.isNotEmpty) "min_price": effectiveMin,
         if (effectiveMax.isNotEmpty) "max_price": effectiveMax,
       }),

@@ -15,7 +15,7 @@ class LoginController extends GetxController {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   StatuesRequest statuesRequest = StatuesRequest.none;
-  AuthRemoteData authRemoteData = AuthRemoteData(Get.put(Api()));
+  AuthRemoteData authRemoteData = AuthRemoteData(Get.find<Api>());
   UserAuthModel? userAuthModel;
   bool show = true;
 

@@ -15,10 +15,10 @@ class OnBoardding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(OnBoardingController());
     return Scaffold(
       backgroundColor: ThemeService.backgroundColor,
       body: GetBuilder<OnBoardingController>(
+        init: OnBoardingController(),
         builder: (controller) => SingleChildScrollView(
           child: SizedBox(
             height: 100.h,

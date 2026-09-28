@@ -21,10 +21,10 @@ class EditProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ProfileController());
     return Scaffold(
       backgroundColor: ThemeService.backgroundColor,
       body: GetBuilder<ProfileController>(
+        init: ProfileController(),
         builder: (controller) => controller.cityList.isEmpty
             ? LoadingWidget(height: 80.h)
             : SingleChildScrollView(
