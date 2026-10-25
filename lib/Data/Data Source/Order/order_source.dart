@@ -16,7 +16,6 @@ class OrderRemoteData {
     String? payment,
     String? additionalInfo,
     String? street,
-    double? total,
     String? buildingNum,
   }) async {
     var response = await api.postData(
@@ -32,7 +31,7 @@ class OrderRemoteData {
         "building_num": buildingNum,
         "street": street,
         "additional_info": additionalInfo,
-        "total": total
+        // NOTE: total is intentionally omitted - server calculates from cart
       },
     );
     return response.fold((l) => l, (r) => r);

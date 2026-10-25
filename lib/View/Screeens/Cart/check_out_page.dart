@@ -4,7 +4,7 @@ import 'package:screen_go/extensions/responsive_nums.dart';
 import 'package:tharwat_pharmacy/Controller/Home/Payment/check_out_controller.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
 import 'package:tharwat_pharmacy/Core/Constant/theme_service.dart';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/app_bar_widget.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/bottom_widget.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/loading.dart';

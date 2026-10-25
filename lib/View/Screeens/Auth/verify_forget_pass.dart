@@ -5,7 +5,7 @@ import 'package:tharwat_pharmacy/Controller/Auth/verify_code_controller.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_images.dart';
 import 'package:tharwat_pharmacy/Core/Constant/theme_service.dart';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Auth/forget_pass.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/app_bar_widget.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/loading.dart';

@@ -1,15 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home/favourite.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home/home.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home/home_page.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home/profile.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home/scan.dart';
+import 'package:flutter/material.dart';
 
 class HomeController extends GetxController {
   int currentIndex = 0;
 
-  bool choose_1 = false;
+  bool choose_1 = true;
   bool choose_2 = false;
   bool choose_3 = false;
   bool choose_4 = false;
@@ -45,11 +46,11 @@ class HomeController extends GetxController {
     update();
   }
 
-  final List<Widget> pages = [
-    const HomePage(),
-    const Favourite(),
-    const MedicineScannerScreen(),
-    const Profile(),
+  final List<Widget> pages = const [
+    HomePage(),
+    Favourite(),
+    MedicineScannerScreen(),
+    Profile(),
   ];
 
   void changePage(int pageIndex) {
@@ -72,9 +73,16 @@ class HomeController extends GetxController {
     update();
   }
 
+  /// Use SystemNavigator.pop() instead of exit(0).
+  /// iOS does not encourage programmatic app termination.
+  static void exitApp() {
+    SystemNavigator.pop();
+  }
+
   @override
   void onInit() {
     super.onInit();
     _syncChoose(currentIndex);
   }
 }
+

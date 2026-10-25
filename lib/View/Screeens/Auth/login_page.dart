@@ -4,7 +4,7 @@ import 'package:screen_go/extensions/responsive_nums.dart';
 import 'package:tharwat_pharmacy/Controller/Auth/login_controller.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
 import 'package:tharwat_pharmacy/Core/Constant/theme_service.dart';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Auth/forget_pass.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Auth/sign_up.dart';
 import 'package:tharwat_pharmacy/View/Widget/Auth/body_auth_widget.dart';

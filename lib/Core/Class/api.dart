@@ -4,8 +4,10 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/failure.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
+import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/main.dart';
 
 class Api {
@@ -76,12 +78,12 @@ class Api {
     return headers;
   }
 
-  /// Public response handler mapping HTTP status codes to StatuesRequest.
-  Either<StatuesRequest, dynamic> handleResponse(http.Response response) =>
+  /// Public response handler mapping HTTP status codes to Failure or Right(data).
+  Either<Failure, dynamic> handleResponse(http.Response response) =>
       _handleResponse(response);
 
-  /// Centralized response handler mapping HTTP status codes to StatuesRequest.
-  Either<StatuesRequest, dynamic> _handleResponse(http.Response response) {
+  /// Centralized response handler mapping HTTP status codes to Failure with server messages.
+  Either<Failure, dynamic> _handleResponse(http.Response response) {
     final statusCode = response.statusCode;
     // Support 204 No Content or 2xx with empty body
     if (statusCode == 204 ||
@@ -95,49 +97,76 @@ class Api {
         final data = jsonDecode(response.body);
         return right(data);
       } catch (e) {
-        return left(StatuesRequest.formatException);
+        return left(const Failure(status: StatuesRequest.formatException));
       }
     }
 
+    dynamic bodyData;
+    String? serverMessage;
+    try {
+      if (response.body.isNotEmpty) {
+        bodyData = jsonDecode(response.body);
+        final parsed = parseErrorMessage(bodyData, defaultMessage: '');
+        if (parsed.isNotEmpty) {
+          serverMessage = parsed;
+        }
+      }
+    } catch (_) {}
+
+    final StatuesRequest status;
     switch (statusCode) {
       case 400:
-        return left(StatuesRequest.badRequestException);
+        status = StatuesRequest.badRequestException;
+        break;
       case 401:
-        return left(StatuesRequest.unauthorizedException);
+        status = StatuesRequest.unauthorizedException;
+        break;
       case 403:
-        return left(StatuesRequest.forbiddenException);
+        status = StatuesRequest.forbiddenException;
+        break;
       case 404:
-        return left(StatuesRequest.serverException);
+        status = StatuesRequest.serverException;
+        break;
       case 409:
-        return left(StatuesRequest.conflictException);
+        status = StatuesRequest.conflictException;
+        break;
       case 422:
-        return left(StatuesRequest.unprocessableException);
+        status = StatuesRequest.unprocessableException;
+        break;
       case 500:
-        return left(StatuesRequest.serverError);
+        status = StatuesRequest.serverError;
+        break;
       default:
-        return left(StatuesRequest.defaultException);
+        status = StatuesRequest.defaultException;
+        break;
     }
+
+    return left(Failure(
+      status: status,
+      message: serverMessage,
+      responseBody: bodyData,
+    ));
   }
 
   /// Centralized request execution wrapper with timeout and exception handling.
-  Future<Either<StatuesRequest, dynamic>> _executeRequest(
+  Future<Either<Failure, dynamic>> _executeRequest(
     Future<http.Response> Function() requestFn,
   ) async {
     try {
       final response = await requestFn().timeout(requestTimeout);
       return _handleResponse(response);
     } on SocketException {
-      return left(StatuesRequest.socketException);
+      return left(const Failure(status: StatuesRequest.socketException));
     } on http.ClientException {
-      return left(StatuesRequest.clientException);
+      return left(const Failure(status: StatuesRequest.clientException));
     } on TimeoutException {
-      return left(StatuesRequest.timeoutException);
+      return left(const Failure(status: StatuesRequest.timeoutException));
     } catch (e) {
-      return left(handleException(e));
+      return left(Failure(status: handleException(e)));
     }
   }
 
-  Future<Either<StatuesRequest, dynamic>> getData(
+  Future<Either<Failure, dynamic>> getData(
     String linkUrl,
     Map<String, String>? headers,
   ) async {
@@ -149,7 +178,7 @@ class Api {
     );
   }
 
-  Future<Either<StatuesRequest, dynamic>> postData(
+  Future<Either<Failure, dynamic>> postData(
     String linkUrl,
     Map<String, String>? headers,
     Map<String, dynamic> data,
@@ -164,7 +193,7 @@ class Api {
     );
   }
 
-  Future<Either<StatuesRequest, dynamic>> updatePutData(
+  Future<Either<Failure, dynamic>> updatePutData(
     String linkUrl,
     Map<String, String>? headers,
     Map<String, dynamic> data,
@@ -179,7 +208,7 @@ class Api {
     );
   }
 
-  Future<Either<StatuesRequest, dynamic>> updatePatchData(
+  Future<Either<Failure, dynamic>> updatePatchData(
     String linkUrl,
     Map<String, String>? headers,
     Map<String, dynamic> data,
@@ -194,7 +223,7 @@ class Api {
     );
   }
 
-  Future<Either<StatuesRequest, dynamic>> deleteData(
+  Future<Either<Failure, dynamic>> deleteData(
     String linkUrl,
     Map<String, String>? headers,
   ) async {
@@ -206,7 +235,7 @@ class Api {
     );
   }
 
-  Future<Either<StatuesRequest, dynamic>> postRequestwithfile(
+  Future<Either<Failure, dynamic>> postRequestwithfile(
     String url,
     Map<String, dynamic> data,
     File? image,

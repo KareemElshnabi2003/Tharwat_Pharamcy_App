@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Home/favourite_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Categories/product_model.dart';
@@ -18,8 +18,6 @@ class FavouriteController extends GetxController {
   final Set<int> favProductsId = <int>{};
   final Set<int> _processingFavoriteIds = <int>{};
 
-  bool choose_1 = true;
-  bool choose_2 = false;
 
   // Pagination variables
   int currentPage = 1;
@@ -122,17 +120,6 @@ class FavouriteController extends GetxController {
     }
   }
 
-  void change_1() {
-    choose_1 = true;
-    choose_2 = false;
-    update();
-  }
-
-  void change_2() {
-    choose_1 = false;
-    choose_2 = true;
-    update();
-  }
 
   // Initial load
   Future<List<ProductModel>> getFavItems() async {

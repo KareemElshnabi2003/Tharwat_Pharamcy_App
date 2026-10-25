@@ -5,7 +5,7 @@ import 'package:screen_go/extensions/responsive_nums.dart';
 import 'package:tharwat_pharmacy/Controller/Home/home_controller.dart';
 import 'package:tharwat_pharmacy/Controller/Home/scan_controller.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/text_normal_widget.dart';
 
 class MedicineScannerScreen extends StatelessWidget {

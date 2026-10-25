@@ -1,23 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:tharwat_pharmacy/Core/Class/payment_method.dart';
 
 class ChoosePaymentController extends GetxController {
   double? totalCost;
   TextEditingController addressController = TextEditingController();
   GlobalKey<FormState> addressKey = GlobalKey<FormState>();
-  String? addressValidtor(String val) => addressValidator(val);
+
   String? addressValidator(String val) {
-    if (val.isEmpty) {
-      return "Please, Enter your address ";
-    } else {
-      return null;
+    if (val.trim().isEmpty) {
+      return "Please, Enter your address";
     }
+    return null;
   }
 
+  String? addressValidtor(String val) => addressValidator(val);
+
   String? payment;
-  void choose(String? type) {
-    payment = type;
+  PaymentMethod? get paymentMethod => PaymentMethod.fromDisplayName(payment);
+
+  void choose(dynamic type) {
+    if (type is PaymentMethod) {
+      payment = type.displayName;
+    } else {
+      payment = type?.toString();
+    }
     update();
   }
 

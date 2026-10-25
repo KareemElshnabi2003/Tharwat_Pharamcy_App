@@ -7,7 +7,7 @@ import 'package:tharwat_pharmacy/Controller/Home/Favourite/favourite_controller.
 import 'package:tharwat_pharmacy/Core/Constant/app_api.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_images.dart';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home%20Page/filter.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Home%20Page/product_info.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/app_bar_app_widget.dart';

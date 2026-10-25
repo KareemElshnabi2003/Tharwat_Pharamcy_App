@@ -2,13 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>NSCameraUsageDescription</key>
-    <string>We need access to your camera</string>
-     <key>NSAppTransportSecurity</key>
-     <dict>
-     <key>NSAllowsArbitraryLoads</key>
-     <true/>
-     </dict>
+	<!-- Camera permission for barcode scanning - removed duplicate entry -->
+	<key>NSCameraUsageDescription</key>
+	<string>Camera permission is required for barcode scanning</string>
+
+	<!-- NSAllowsArbitraryLoads removed: API uses HTTPS so ATS is not needed -->
 
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
@@ -53,7 +51,5 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-    <string>Camera permission is required for barcode scanning</string>
 </dict>
 </plist>

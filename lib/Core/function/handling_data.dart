@@ -1,11 +1,23 @@
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/failure.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/message_error.dart';
 
-/// Centralized parser to extract error message safely from various API response shapes.
+/// Centralized parser to extract error message safely from various API response shapes or Failure objects.
 String parseErrorMessage(dynamic response,
     {String defaultMessage = "There is a problem. Please, try again later."}) {
   if (response == null) return defaultMessage;
   if (response is String && response.isNotEmpty) return response;
+
+  if (response is Failure) {
+    if (response.message != null && response.message!.isNotEmpty) {
+      return response.message!;
+    }
+    if (response.responseBody != null) {
+      return parseErrorMessage(response.responseBody,
+          defaultMessage: defaultMessage);
+    }
+    return defaultMessage;
+  }
 
   if (response is Map) {
     // Shape 1: {"error": {"message": "..."}}
@@ -38,7 +50,9 @@ String parseErrorMessage(dynamic response,
 }
 
 StatuesRequest handlingData(dynamic response) {
-  if (response is StatuesRequest) {
+  if (response is Failure) {
+    return response.status;
+  } else if (response is StatuesRequest) {
     return response;
   } else if (response is String) {
     return StatuesRequest.serverError;

@@ -7,7 +7,7 @@ import 'package:tharwat_pharmacy/Core/Constant/app_api.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_images.dart';
 import 'package:tharwat_pharmacy/Core/Constant/theme_service.dart';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/Data/Model/Cart/cart_model.dart';
 import 'package:tharwat_pharmacy/View/Screeens/Cart/choose_payment.dart';
 import 'package:tharwat_pharmacy/View/Widget/MyCart/cart_item_widget.dart';

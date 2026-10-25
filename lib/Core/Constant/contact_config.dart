@@ -9,7 +9,7 @@ class ContactConfig {
       "https://www.facebook.com/profile.php?id=100009638558266";
   static const String instagramUrl =
       "https://www.instagram.com/kareem_elshnabi/profilecard/?igsh=ZHJia3dtdDdycnlx";
-  static const String twitterUrl = "https://www.threads.net/@FCBarcelona";
+  static const String twitterUrl = "https://twitter.com/tharwat_pharmacy";
   static const String linkedinUrl =
       "https://www.linkedin.com/company/white-eagle-event-company/";
   static const String tiktokUrl =

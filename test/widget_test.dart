@@ -12,9 +12,12 @@ import 'package:tharwat_pharmacy/Controller/Home/Payment/check_out_controller.da
 import 'package:tharwat_pharmacy/Controller/Home/Profile/order_details_controller.dart';
 import 'package:tharwat_pharmacy/Controller/Home/special_offers_controller.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/failure.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
+import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Home/favourite_source.dart';
+
 import 'package:tharwat_pharmacy/Data/Data%20Source/Home/home_source.dart';
 import 'package:tharwat_pharmacy/Data/Model/Categories/product_model.dart';
 import 'package:tharwat_pharmacy/Data/Model/Order/order_model.dart';
@@ -142,7 +145,27 @@ void main() {
       );
     });
 
+    test('Api handleResponse preserves server error messages in Failure object',
+        () {
+      final api = Api();
+      final res422 = http.Response(
+          '{"message": "Phone number already exists", "errors": {"phone": ["Invalid"]}}',
+          422);
+      final result422 = api.handleResponse(res422);
+      expect(result422.isLeft(), isTrue);
+      result422.fold(
+        (failure) {
+          expect(failure.status, StatuesRequest.unprocessableException);
+          expect(failure.message, 'Phone number already exists');
+          expect(handlingData(failure), StatuesRequest.unprocessableException);
+          expect(parseErrorMessage(failure), 'Phone number already exists');
+        },
+        (r) => fail('Should be left Failure'),
+      );
+    });
+
     test('Api.buildUrl encodes query parameters properly', () {
+
       final url = Api.buildUrl('https://example.com/api/search', {
         'query': 'بانادول اكسترا',
         'in_stock': '1',

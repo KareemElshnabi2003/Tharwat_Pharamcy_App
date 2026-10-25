@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/payment_method.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Order/order_source.dart';
@@ -23,59 +24,57 @@ class CheckOutController extends GetxController {
   TextEditingController additionalInfoController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
-  String paymentMethod = '';
+  PaymentMethod? paymentMethod;
   double? totalCost;
   String timeOnly = '';
   String dateOnly = '';
 
-  String? phoneValidtor(String val) => phoneValidator(val);
   String? phoneValidator(String val) {
     if (!val.isPhoneNumber) {
-      return "Please, Enter your phone ";
-    } else {
-      return null;
+      return "Please, Enter your phone";
     }
+    return null;
   }
+  String? phoneValidtor(String val) => phoneValidator(val);
 
-  String? streetValidtor(String val) => streetValidator(val);
   String? streetValidator(String val) {
-    if (val.length < 15) {
-      return "Please, Enter your street in detail ";
-    } else {
-      return null;
+    if (val.trim().length < 5) {
+      return "Please, Enter your street";
     }
+    return null;
   }
+  String? streetValidtor(String val) => streetValidator(val);
 
-  String? addressValidtor(String val) => addressValidator(val);
   String? addressValidator(String val) {
-    if (val.length < 20) {
-      return "Please, Enter your address in detail ";
-    } else {
-      return null;
+    if (val.trim().length < 10) {
+      return "Please, Enter your address in detail";
     }
+    return null;
   }
+  String? addressValidtor(String val) => addressValidator(val);
 
-  String? buildingValidtor(String val) => buildingValidator(val);
   String? buildingValidator(String val) {
-    if (val.isEmpty) {
-      return "Please, Enter your building ";
-    } else {
-      return null;
+    if (val.trim().isEmpty) {
+      return "Please, Enter your building";
     }
+    return null;
   }
+  String? buildingValidtor(String val) => buildingValidator(val);
 
-  String? additionalInfoValidtor(String val) => additionalInfoValidator(val);
   String? additionalInfoValidator(String val) {
-    if (val.isEmpty) {
-      return "Please, Enter your info ";
-    } else {
-      return null;
+    if (val.trim().isEmpty) {
+      return "Please, Enter additional info";
     }
+    return null;
   }
+  String? additionalInfoValidtor(String val) => additionalInfoValidator(val);
 
-  Future<void> createOrder() => craeteOrder();
-  Future<void> craeteOrder() async {
-    if (!checkKey.currentState!.validate()) {
+  Future<void> craeteOrder() => createOrder();
+  Future<void> createOrder() async {
+    if (!checkKey.currentState!.validate()) return;
+
+    if (paymentMethod == null) {
+      messageError("Error", "Please select a payment method first");
       return;
     }
 
@@ -95,6 +94,7 @@ class CheckOutController extends GetxController {
       statuesRequest = StatuesRequest.loading;
       update();
 
+      // NOTE: total is NOT sent to server — server calculates from cart items securely.
       var response = await orderRemoteData.createOrder(
           additionalInfo: additionalInfoController.text,
           address: addressController.text,
@@ -102,38 +102,29 @@ class CheckOutController extends GetxController {
           cityId: cityId,
           countryId: countryId,
           districtId: districtId,
-          payment: paymentMethod == ""
-              ? "instapay"
-              : paymentMethod == "credit / debit card"
-                  ? "card"
-                  : paymentMethod == "vodafone cash"
-                      ? "vfCash"
-                      : "cash",
+          payment: paymentMethod!.apiValue,
           phone: phoneController.text,
           street: streetController.text,
-          total: totalCost,
           token: sharedPreferences?.getString("token"));
 
       statuesRequest = handlingData(response);
 
       if (statuesRequest == StatuesRequest.success) {
         final responseBody = response["data"];
-
         orderModel = OrderModel.fromJson(responseBody);
-
-        Get.to(() => SuccessOrder(
-              orderModel: orderModel!,
-            ));
+        Get.to(() => SuccessOrder(orderModel: orderModel!));
       } else if (statuesRequest == StatuesRequest.unprocessableException) {
-        messageError("Error", "please enter all fields");
+        messageError("Error", parseErrorMessage(response,
+            defaultMessage: "Please fill all required fields"));
       } else if (statuesRequest == StatuesRequest.socketException) {
-        messageError("Error", "please, check your internet");
+        messageError("Error", "Please check your internet connection");
       } else {
-        messageError("Error", "There is a problem. Please,  try again later");
+        messageError("Error",
+            parseErrorMessage(response, defaultMessage: "There is a problem. Please try again later"));
       }
     } catch (e) {
       statuesRequest = handleException(e);
-      messageError("Error", "There is a problem. Please, try again later");
+      messageError("Error", "There is a problem. Please try again later");
     } finally {
       if (statuesRequest == StatuesRequest.loading) {
         statuesRequest = StatuesRequest.none;
@@ -171,7 +162,7 @@ class CheckOutController extends GetxController {
     super.onInit();
     final args = Get.arguments;
     if (args is Map) {
-      paymentMethod = args['payment']?.toString() ?? "";
+      paymentMethod = PaymentMethod.fromDisplayName(args['payment']?.toString());
       if (args['totalCost'] is num) {
         totalCost = (args['totalCost'] as num).toDouble();
       } else if (args['totalCost'] != null) {

@@ -1,10 +1,10 @@
-import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:screen_go/extensions/responsive_nums.dart';
 import 'package:tharwat_pharmacy/Controller/Home/Favourite/favourite_controller.dart';
+import 'package:tharwat_pharmacy/Controller/Home/home_controller.dart';
 import 'package:tharwat_pharmacy/Controller/Home/home_page_controller.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_api.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_images.dart';
@@ -44,7 +44,7 @@ class HomePage extends StatelessWidget {
             "Warning",
             "Are you sure you want to close app",
             () {
-              exit(0);
+              HomeController.exitApp();
             },
             "Close",
           );

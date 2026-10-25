@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:tharwat_pharmacy/Core/class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'custom_exception.dart';
 
 StatuesRequest handleException(dynamic e) {
