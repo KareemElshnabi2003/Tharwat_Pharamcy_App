@@ -4,7 +4,9 @@ import 'package:screen_go/extensions/responsive_nums.dart';
 import 'package:tharwat_pharmacy/Controller/Home/Profile/my_orders_controller.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
 import 'package:tharwat_pharmacy/Core/Constant/theme_service.dart';
+import 'package:tharwat_pharmacy/Core/Class/handling_data_view.dart';
 import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
+
 import 'package:tharwat_pharmacy/View/Screeens/Cart/order_details.dart';
 import 'package:tharwat_pharmacy/View/Widget/MY%20Orders/order_card_widget.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/app_bar_widget.dart';
@@ -76,23 +78,25 @@ class MyOrders extends StatelessWidget {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: controller.refreshOrders,
-                child: controller.statuesRequest == StatuesRequest.loading &&
-                        controller.getCurrentOrders().isEmpty
-                    ? LoadingWidget(height: 70.h)
-                    : controller.getCurrentOrders().isEmpty
-                        ? SingleChildScrollView(
-                            controller: controller.scrollController,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: SizedBox(
-                              height: 70.h,
-                              child: Center(
-                                child: NoDataWidget(
-                                  text:
-                                      'No ${controller.index == 0 ? "Pending" : controller.index == 1 ? "Active" : controller.index == 2 ? "Completed" : "Canceled"} Orders',
-                                ),
+                child: controller.getCurrentOrders().isEmpty
+                    ? HandlingDataRequest(
+                        statuesRequest: controller.statuesRequest,
+                        onRetry: controller.refreshOrders,
+                        widget: SingleChildScrollView(
+                          controller: controller.scrollController,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: SizedBox(
+                            height: 70.h,
+                            child: Center(
+                              child: NoDataWidget(
+                                text:
+                                    'No ${controller.index == 0 ? "Pending" : controller.index == 1 ? "Active" : controller.index == 2 ? "Completed" : "Canceled"} Orders',
                               ),
                             ),
-                          )
+                          ),
+                        ),
+                      )
+
                         : ListView.separated(
                             physics: const AlwaysScrollableScrollPhysics(),
                             controller: controller.scrollController,

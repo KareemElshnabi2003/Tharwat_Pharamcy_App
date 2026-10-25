@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
 import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
+import 'package:tharwat_pharmacy/Core/Services/session_service.dart';
 import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
+
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Data%20Location/data_location_source.dart';
 import 'package:tharwat_pharmacy/Data/Data%20Source/Profile/profile_source.dart';
@@ -458,7 +460,11 @@ class ProfileController extends GetxController {
       statuesRequest = handlingData(response);
 
       if (statuesRequest == StatuesRequest.success) {
-        sharedPreferences?.setString("pageStart", "Login");
+        if (Get.isRegistered<SessionService>()) {
+          await SessionService.to.clearUserSession();
+        } else {
+          sharedPreferences?.setString("pageStart", "Login");
+        }
         Get.offAll(() => const LoginPage());
       } else if (statuesRequest == StatuesRequest.unprocessableException) {
         messageError("Error", parseErrorMessage(response));
@@ -493,11 +499,15 @@ class ProfileController extends GetxController {
         if (response['status'] == 'error') {
           messageError("Error", "${response["message"]}");
         } else {
-          final isDark = sharedPreferences?.getString("Mood") == "Dark";
-          sharedPreferences?.clear();
-          sharedPreferences?.setString("pageStart", "Login");
-          if (isDark) {
-            sharedPreferences?.setString("Mood", "Dark");
+          if (Get.isRegistered<SessionService>()) {
+            await SessionService.to.clearUserSession();
+          } else {
+            final isDark = sharedPreferences?.getString("Mood") == "Dark";
+            sharedPreferences?.clear();
+            sharedPreferences?.setString("pageStart", "Login");
+            if (isDark) {
+              sharedPreferences?.setString("Mood", "Dark");
+            }
           }
           Get.offAll(() => const LoginPage());
         }

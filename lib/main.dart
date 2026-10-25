@@ -13,9 +13,11 @@ SharedPreferences? sharedPreferences;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  sharedPreferences = await SharedPreferences.getInstance();
-  Get.put<SessionService>(SessionService(sharedPreferences!), permanent: true);
+  final sessionService = await SessionService.init();
+  sharedPreferences = sessionService.prefs;
+  Get.put<SessionService>(sessionService, permanent: true);
   Get.put<Api>(Api(), permanent: true);
+
   runApp(
     // DevicePreview is only active in debug builds.
     // In release/profile mode it wraps with no-op builder.

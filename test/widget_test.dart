@@ -12,7 +12,6 @@ import 'package:tharwat_pharmacy/Controller/Home/Payment/check_out_controller.da
 import 'package:tharwat_pharmacy/Controller/Home/Profile/order_details_controller.dart';
 import 'package:tharwat_pharmacy/Controller/Home/special_offers_controller.dart';
 import 'package:tharwat_pharmacy/Core/Class/api.dart';
-import 'package:tharwat_pharmacy/Core/Class/failure.dart';
 import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
 import 'package:tharwat_pharmacy/Core/function/handle_exception.dart';
 import 'package:tharwat_pharmacy/Core/function/handling_data.dart';
@@ -108,9 +107,7 @@ void main() {
     Get.put<Api>(Api(), permanent: true);
   });
 
-  tearDown(() {
-    Get.reset();
-  });
+  tearDown(Get.reset);
 
   group('Api & Networking Tests', () {
     test('Api defaultHeaders and authHeaders return expected headers', () {

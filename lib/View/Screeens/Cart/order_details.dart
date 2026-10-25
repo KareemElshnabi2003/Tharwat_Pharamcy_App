@@ -5,7 +5,9 @@ import 'package:tharwat_pharmacy/Controller/Home/Profile/my_orders_controller.da
 import 'package:tharwat_pharmacy/Controller/Home/Profile/order_details_controller.dart';
 import 'package:tharwat_pharmacy/Core/Constant/app_color.dart';
 import 'package:tharwat_pharmacy/Core/Constant/theme_service.dart';
+import 'package:tharwat_pharmacy/Core/Class/handling_data_view.dart';
 import 'package:tharwat_pharmacy/Core/Class/status_request.dart';
+
 import 'package:tharwat_pharmacy/View/Widget/HomePage/bottom_sheet_message.dart';
 import 'package:tharwat_pharmacy/View/Widget/MY%20Orders/order_item_table_widget.dart';
 import 'package:tharwat_pharmacy/View/Widget/PublicWidget/app_bar_widget.dart';
@@ -34,10 +36,11 @@ class OrderDetails extends StatelessWidget {
         backgroundColor: ThemeService.backgroundColor,
         body: GetBuilder<OrderDetailsController>(
           init: OrderDetailsController(),
-          builder: (controller) => controller.statuesRequest ==
-                  StatuesRequest.loading
-              ? LoadingWidget(height: 100.h)
-              : SingleChildScrollView(
+          builder: (controller) => HandlingDataRequest(
+            statuesRequest: controller.statuesRequest,
+            onRetry: () => controller.onInit(),
+            widget: SingleChildScrollView(
+
                   child: Column(
                     children: [
                       AppBarPageWidget(
@@ -296,8 +299,10 @@ class OrderDetails extends StatelessWidget {
                     ],
                   ),
                 ),
+          ),
         ),
       ),
     );
+
   }
 }

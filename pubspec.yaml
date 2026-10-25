@@ -30,6 +30,7 @@ dependencies:
   flutter_svg:
   flutter_image_compress: ^2.4.0
   mobile_scanner:
+  flutter_secure_storage: ^11.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

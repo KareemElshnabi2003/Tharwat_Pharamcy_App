@@ -59,7 +59,9 @@ class MyCartPage extends StatelessWidget {
                             return Center(
                                 child: Text('Error: ${snapshot.error}'));
                           } else if (!snapshot.hasData ||
+                              snapshot.data?.cartItems == null ||
                               snapshot.data!.cartItems!.isEmpty) {
+
                             return const Padding(
                               padding: EdgeInsets.only(top: 50),
                               child: Center(
