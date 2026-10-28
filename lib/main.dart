@@ -19,12 +19,11 @@ void main() async {
   Get.put<Api>(Api(), permanent: true);
 
   runApp(
-    // DevicePreview is only active in debug builds.
-    // In release/profile mode it wraps with no-op builder.
-    DevicePreview(
-      enabled: kDebugMode,
-      builder: (context) => const MyApp(),
-    ),
+    // DevicePreview(
+    //   enabled: kDebugMode,
+    // builder: (context) =>
+    const MyApp(),
+    // ),
   );
 }
 
@@ -38,11 +37,9 @@ class MyApp extends StatelessWidget {
         : "ar";
     final initialLocale = Locale(langCode);
 
-
     return ScreenGo(
       materialApp: true,
       builder: (context, deviceInfo) => GetMaterialApp(
-        // DevicePreview.appBuilder is a no-op when device_preview is disabled.
         builder: DevicePreview.appBuilder,
         useInheritedMediaQuery: true,
         locale: initialLocale,

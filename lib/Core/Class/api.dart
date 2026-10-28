@@ -154,6 +154,7 @@ class Api {
   ) async {
     try {
       final response = await requestFn().timeout(requestTimeout);
+      print("respnse  😊😊😊 ${response.body}");
       return _handleResponse(response);
     } on SocketException {
       return left(const Failure(status: StatuesRequest.socketException));
